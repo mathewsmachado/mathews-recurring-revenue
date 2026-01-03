@@ -1,4 +1,13 @@
-_
+_/
+
+# dbt
+dbt_project/target/
+dbt_project/dbt_packages/
+dbt_project/logs/
 
 # Terraform
-terraform/.terraform
+terraform/.terraform/
+
+# Python
+.venv/
+__pycache__/
