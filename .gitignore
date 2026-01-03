@@ -4,6 +4,10 @@ _/
 dbt_project/target/
 dbt_project/dbt_packages/
 dbt_project/logs/
+dbt_project/.user.yml
+
+# General
+.env
 
 # Terraform
 terraform/.terraform/
