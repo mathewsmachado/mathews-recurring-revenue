@@ -1,0 +1,24 @@
+sources:
+  - name: google_sheets_raw
+    tables:
+      - name: test_spreadsheet
+        description: Tabela de teste
+        columns:
+          - name: id
+            description: id column description
+          - name: name
+            description: name column description
+          - name: age
+            description: age column description
+          - name: role
+            description: role column description
+        config:
+          meta:
+            raw_data_source: Google Sheets
+            raw_data_format: null
+            raw_data_url: https://docs.google.com/spreadsheets/d/17tFbgCxwtngdbqg-GXivLQE2nljTIYuA72023tP-NQo
+            raw_data_steward: Mathews Machado
+            table_type: External Table
+            table_granularity: null
+            table_partitioned_by: null
+            table_clustered_by: null
