@@ -1,0 +1,9 @@
+[project]
+name = "dbt_project"
+version = "0.1.0"
+description = "Mathews Recurring Revenue (a.k.a MRR) transformation layer"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "dbt-bigquery==1.11.0",
+]
