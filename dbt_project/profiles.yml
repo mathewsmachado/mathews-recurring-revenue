@@ -1,0 +1,13 @@
+dbt_project:
+  outputs:
+    dev:
+      dataset: dbt_project
+      job_execution_timeout_seconds: 120
+      job_retries: 1
+      location: US
+      method: oauth
+      priority: interactive
+      project: mathews-recurring-revenue
+      threads: 4
+      type: bigquery
+  target: dev
