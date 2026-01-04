@@ -2,21 +2,82 @@ sources:
   - name: stg
     tables:
       - name: google_sheets__incomes
-        description: Incomes
+        description: |
+          Table that represents the incomes of a certain person.
+
+          All incomes can be considered a transaction.
+          
+          It is not meant to be a copy of the account statement.
+
+          Nowadays, it only contains "one time money", like salary, money that came out
+          of the person and is coming back, like borrowed money, it's not included.
+
+          Included:
+            - Salary;
+            - Benefits;
+            - Bonuses;
+            - Gifts;
+            - etc.
+
+          Not Included:
+            - Dividends;
+            - Borrowed Money;
+            - etc.
+
         columns:
           - name: tran_date
+            description: |
+              The date that the money was received, ex: 2025-12-12, 2026-01-01.
           - name: tran_payer
+            description: |
+              The entity that made the payment, ex: TOTVS | RD Station, Claudia
+              Machado, Receita Federal.
           - name: tran_payee
+            description: |
+              The entity that received the payment, ex: Mathews Machado, Bob.
           - name: tran_payer_payee_relation
+            description: |
+              The type of relation between the payer and the payee. Only used for work
+              relations. Ex: CLT, PJ, Contractor.
           - name: tran_category
+            description: |
+              The category/type of the transaction, ex: Salário, VA/VR, Birthday.
           - name: tran_detail
+            description: |
+              Details about the transaction category, ex: First Installment, Birthday
+              Gift.
           - name: tran_currency
+            description: |
+              Transaction currency, ex: BRL, USD.
           - name: tran_amount_net
+            description: |
+              The transaction net amount. Needs to be lower than or equal the
+              transaction gross amount. Ex: 3812.75.
           - name: tran_amount_gross
+            description: |
+              The transaction gross amount. Can't be greater than transaction net
+              amount. Ex: 3812.75.              
           - name: tran_amount_gross_variation_category
+            description: |
+              The reason what the gross amount has changed compared to the last income
+              of the same type, util for tracking job promotions and salary
+              increase/decrease over time. Only used for work relations. Ex: Horizontal
+              Promotion, Company Change, Role Change.
           - name: tran_amount_gross_variation_detail
+            description: |
+              Details about the gross amount change compared to the last income of the
+              same type. Only used for work relations. Ex: Entry Level Software
+              Engineer Contractor Company XYZ -> Mid Level Software Engineer Contractor
+              Company XYZ.
           - name: accounting_month
+            description: |
+              The month that the received money is supposed to be used. For example, an
+              income received on the last day of a certain month should be used on the
+              next month. Ex: 2025-12-12, 2026-01-01.
           - name: accounting_status
+            description: |
+              The accounting status of the transaction, indicates if the transaction
+              can suffer updates or not, ex: Open, Closed.
         config:
           meta:
             raw_data_source: Google Sheets
