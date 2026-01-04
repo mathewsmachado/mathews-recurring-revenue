@@ -54,7 +54,7 @@ final as (
         accounting_month,
         accounting_status,
         _processed_at
-    from filtered
+    from enriched
 )
 select *
 from final
