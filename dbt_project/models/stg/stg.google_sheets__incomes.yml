@@ -1,0 +1,32 @@
+sources:
+  - name: stg
+    tables:
+      - name: google_sheets__incomes
+        description: Incomes
+        columns:
+          - name: tran_date
+          - name: tran_payer
+          - name: tran_payee
+          - name: tran_payer_payee_relation
+          - name: tran_category
+          - name: tran_detail
+          - name: tran_currency
+          - name: tran_amount_net
+          - name: tran_amount_gross
+          - name: tran_amount_gross_variation_category
+          - name: tran_amount_gross_variation_detail
+          - name: accounting_month
+          - name: accounting_status
+        config:
+          meta:
+            raw_data_source: Google Sheets
+            raw_data_format: null
+            raw_data_url: https://docs.google.com/spreadsheets/d/1BAdR_wHcAb2o7WAIBK36hdH-yTRt7HG8Vt-RcZFkBik
+            raw_data_steward: Mathews Machado
+            table_type: External Table
+            table_granularity:
+              - transaction (tran_category) 
+              - by person (tran_payee)
+              - by date (tran_date)
+            table_partitioned_by: null
+            table_clustered_by: null
