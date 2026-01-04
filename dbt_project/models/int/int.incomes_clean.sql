@@ -23,24 +23,23 @@ cleaned as (
         nullif(trim(tran_currency), '') as tran_currency,
         nullif(trim(tran_amount_gross_variation_category), '') as tran_amount_gross_variation_category,
         nullif(trim(tran_amount_gross_variation_detail), '') as tran_amount_gross_variation_detail,
-        nullif(trim(accounting_status), '') as accounting_status
+        nullif(trim(accounting_status), '') as accounting_status,
     from source
+),
+filtered as (
+    select *
+    from cleaned
+    where concat(tran_category, tran_payee, tran_date) is not null
 ),
 enriched as (
     select
         *,
-        to_hex(md5(concat(tran_category, tran_payee, tran_date))) as tran_id,
         timestamp("{{ _processed_at }}") as _processed_at
-    from cleaned
-),
-filtered as (
-    select *
-    from enriched
-    where tran_id is not null
+    from filtered
+    where concat(tran_category, tran_payee, tran_date) is not null
 ),
 final as (
     select
-        tran_id,
         tran_date,
         tran_payer,
         tran_payee,
@@ -58,4 +57,4 @@ final as (
     from filtered
 )
 select *
-from filtered
+from final
