@@ -23,10 +23,10 @@ resource "google_bigquery_table" "google_sheets__incomes" {
         { "name": "tran_category", "type": "STRING" },
         { "name": "tran_detail", "type": "STRING" },
         { "name": "tran_currency", "type": "STRING" },
-        { "name": "tran_amount_net", "type": "STRING" },
-        { "name": "tran_amount_gross", "type": "STRING" },
-        { "name": "tran_amount_gross_variation_category", "type": "STRING" },
-        { "name": "tran_amount_gross_variation_detail", "type": "STRING" },
+        { "name": "tran_net", "type": "STRING" },
+        { "name": "tran_gross", "type": "STRING" },
+        { "name": "tran_gross_delta_category", "type": "STRING" },
+        { "name": "tran_gross_delta_detail", "type": "STRING" },
         { "name": "accounting_month", "type": "STRING" },
         { "name": "accounting_status", "type": "STRING" }
       ]

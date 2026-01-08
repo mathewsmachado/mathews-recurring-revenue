@@ -11,8 +11,8 @@ cleaned as (
         date(nullif(trim(accounting_month), '')) as accounting_month,
 
         -- float64
-        cast(nullif(trim(tran_amount_net), '') as float64) as tran_amount_net,
-        cast(nullif(trim(tran_amount_gross), '') as float64) as tran_amount_gross,
+        cast(nullif(trim(tran_net), '') as float64) as tran_net,
+        cast(nullif(trim(tran_gross), '') as float64) as tran_gross,
 
         -- string
         nullif(trim(tran_payer), '') as tran_payer,
@@ -21,8 +21,8 @@ cleaned as (
         nullif(trim(tran_category), '') as tran_category,
         nullif(trim(tran_detail), '') as tran_detail,
         nullif(trim(tran_currency), '') as tran_currency,
-        nullif(trim(tran_amount_gross_variation_category), '') as tran_amount_gross_variation_category,
-        nullif(trim(tran_amount_gross_variation_detail), '') as tran_amount_gross_variation_detail,
+        nullif(trim(tran_gross_delta_category), '') as tran_gross_delta_category,
+        nullif(trim(tran_gross_delta_detail), '') as tran_gross_delta_detail,
         nullif(trim(accounting_status), '') as accounting_status,
     from source
 ),
@@ -47,10 +47,10 @@ final as (
         tran_category,
         tran_detail,
         tran_currency,
-        tran_amount_net,
-        tran_amount_gross,
-        tran_amount_gross_variation_category,
-        tran_amount_gross_variation_detail,
+        tran_net,
+        tran_gross,
+        tran_gross_delta_category,
+        tran_gross_delta_detail,
         accounting_month,
         accounting_status,
         _processed_at

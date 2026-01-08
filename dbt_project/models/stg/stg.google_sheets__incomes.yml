@@ -49,21 +49,21 @@ sources:
           - name: tran_currency
             description: |
               Transaction currency, ex: BRL, USD.
-          - name: tran_amount_net
+          - name: tran_net
             description: |
               The transaction net amount. Needs to be lower than or equal the
               transaction gross amount. Ex: 3812.75.
-          - name: tran_amount_gross
+          - name: tran_gross
             description: |
               The transaction gross amount. Can't be greater than transaction net
               amount. Ex: 3812.75.              
-          - name: tran_amount_gross_variation_category
+          - name: tran_gross_delta_category
             description: |
               The reason what the gross amount has changed compared to the last income
               of the same type, util for tracking job promotions and salary
               increase/decrease over time. Only used for work relations. Ex: Horizontal
               Promotion, Company Change, Role Change.
-          - name: tran_amount_gross_variation_detail
+          - name: tran_gross_delta_detail
             description: |
               Details about the gross amount change compared to the last income of the
               same type. Only used for work relations. Ex: Entry Level Software
