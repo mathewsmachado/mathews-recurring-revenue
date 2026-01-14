@@ -13,6 +13,51 @@ provider "google" {
   region  = var.project_region
 }
 
+resource "google_service_account" "terraform" {
+  account_id                   = "terraform"
+  create_ignore_already_exists = null
+  description                  = "Terraform Service Account"
+  disabled                     = false
+  display_name                 = "terraform"
+  project                      = "mathews-recurring-revenue"
+}
+
+resource "google_project_iam_member" "iam_service_account_admin" {
+  member  = "serviceAccount:terraform@mathews-recurring-revenue.iam.gserviceaccount.com"
+  project = "mathews-recurring-revenue"
+  role    = "roles/iam.serviceAccountAdmin"
+}
+
+resource "google_project_iam_member" "resourcemanager_project_iam_admin" {
+  member  = "serviceAccount:terraform@mathews-recurring-revenue.iam.gserviceaccount.com"
+  project = "mathews-recurring-revenue"
+  role    = "roles/resourcemanager.projectIamAdmin"
+}
+
+resource "google_project_iam_member" "storage_admin" {
+  member  = "serviceAccount:terraform@mathews-recurring-revenue.iam.gserviceaccount.com"
+  project = "mathews-recurring-revenue"
+  role    = "roles/storage.admin"
+}
+
+resource "google_project_iam_member" "bigquery_admin" {
+  member  = "serviceAccount:terraform@mathews-recurring-revenue.iam.gserviceaccount.com"
+  project = "mathews-recurring-revenue"
+  role    = "roles/bigquery.admin"
+}
+
+resource "google_project_iam_member" "iam_service_account_token_creator" {
+  member  = "serviceAccount:terraform@mathews-recurring-revenue.iam.gserviceaccount.com"
+  project = "mathews-recurring-revenue"
+  role    = "roles/iam.serviceAccountTokenCreator"
+}
+
+resource "google_project_iam_member" "storage_object_admin" {
+  member  = "serviceAccount:terraform@mathews-recurring-revenue.iam.gserviceaccount.com"
+  project = "mathews-recurring-revenue"
+  role    = "roles/storage.objectAdmin"
+}
+
 resource "google_storage_bucket" "mathews_recurring_revenue_terraform_bucket" {
   default_event_based_hold    = false
   enable_object_retention     = false
@@ -51,8 +96,3 @@ terraform {
     bucket                      = "mathews-recurring-revenue-terraform-bucket"
   }
 }
-
-# import {
-#   id = "mathews-recurring-revenue/mathews-recurring-revenue-terraform-bucket"
-#   to = google_storage_bucket.default
-# }
