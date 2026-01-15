@@ -58,6 +58,12 @@ resource "google_project_iam_member" "storage_object_admin" {
   role    = "roles/storage.objectAdmin"
 }
 
+resource "google_project_iam_member" "serviceusage_service_usage_admin" {
+  member  = "serviceAccount:terraform@mathews-recurring-revenue.iam.gserviceaccount.com"
+  project = "mathews-recurring-revenue"
+  role    = "roles/serviceusage.serviceUsageAdmin"
+}
+
 resource "google_storage_bucket" "mathews_recurring_revenue_terraform_bucket" {
   default_event_based_hold    = false
   enable_object_retention     = false
