@@ -1,17 +1,25 @@
 _/
 
-# dbt
-dbt_project/target/
+# dbt_project
+dbt_project/.env
+dbt_project/.user.yml
+dbt_project/.venv/
+dbt_project/__pycache__/
 dbt_project/dbt_packages/
 dbt_project/logs/
-dbt_project/.user.yml
+dbt_project/target/
 
-# General
-.env
+# evidence
+evidence/*.options.yaml
+evidence/.DS_Store
+evidence/.env
+evidence/.evidence/meta
+evidence/.evidence/template
+evidence/.svelte-kit
+evidence/.vscode/settings.json
+evidence/build
+evidence/node_modules
+evidence/static/data
 
-# Terraform
+# terraform
 terraform/.terraform/
-
-# Python
-.venv/
-__pycache__/
