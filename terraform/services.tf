@@ -1,5 +1,5 @@
-locals {
-  apis = [
+resource "google_project_service" "services" {
+  for_each = toset([
     "analyticshub.googleapis.com",
     "bigquery.googleapis.com",
     "bigqueryconnection.googleapis.com",
@@ -25,11 +25,7 @@ locals {
     "storage-api.googleapis.com",
     "storage-component.googleapis.com",
     "storage.googleapis.com"
-  ]
-}
-
-resource "google_project_service" "apis" {
-  for_each = toset(local.apis)
+  ])
 
   project            = var.project_id
   service            = each.value
