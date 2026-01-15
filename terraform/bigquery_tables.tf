@@ -14,7 +14,7 @@ resource "google_bigquery_table" "google_sheets__incomes" {
     }
 
     autodetect = false
-    schema = <<EOF
+    schema     = <<EOF
       [
         { "name": "tran_date", "type": "STRING" },
         { "name": "tran_payer", "type": "STRING" },
