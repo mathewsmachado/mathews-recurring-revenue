@@ -1,0 +1,6 @@
+# This file was automatically generated
+name: mathews_recurring_revenue
+type: bigquery
+options:
+  authenticator: gcloud-cli
+  location: US

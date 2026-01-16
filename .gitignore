@@ -19,6 +19,7 @@ evidence/.svelte-kit
 evidence/.vscode/settings.json
 evidence/build
 evidence/node_modules
+evidence/sources/**/connection.options.yaml
 evidence/static/data
 
 # terraform
