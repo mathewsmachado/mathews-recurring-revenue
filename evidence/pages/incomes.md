@@ -62,6 +62,14 @@ select
 from lagged
 ```
 
+```sql net_value_per_month
+select
+    accounting_month::date + interval 27 hour as accounting_month,
+    sum(tran_net) as nvpm,
+from mathews_recurring_revenue.incomes
+group by all
+```
+
 <!-- UI -->
 <div>
     <Note class="text-sm">
@@ -87,22 +95,36 @@ from lagged
 </div>
 <LineBreak/>
 
-<BarChart
-    title='NVpY'
-    subtitle='Net Value per Year'
-    data={net_value_per_year}
-    y=nvpy
-    x=accounting_year
-    labels=true
-    labelFmt=brl2k
-    labelPosition=inside
->
-    {#each net_value_per_year as nvpy}
-        <ReferenceArea
-            xMin={nvpy.accounting_year}
-            xMax={nvpy.accounting_year}
-            label={nvpy.nvpy_delta > 0 ? `(+${nvpy.nvpy_delta}%)` : `(${nvpy.nvpy_delta}%)`}
-            labelColor={nvpy.nvpy_delta >= 0 ? '#16A34A' : '#FF0000'}
-        />
-    {/each}
-</BarChart>
+<div class="grid grid-cols-1 xl:grid-cols-2 gap-4">
+    <BarChart
+        title='NVpY'
+        subtitle='Net Value per Year'
+        data={net_value_per_year}
+        y=nvpy
+        x=accounting_year
+        labels=true
+        labelFmt=brl2k
+        labelPosition=inside
+    >
+        {#each net_value_per_year as nvpy}
+            <ReferenceArea
+                xMin={nvpy.accounting_year}
+                xMax={nvpy.accounting_year}
+                label={nvpy.nvpy_delta > 0 ? `(+${nvpy.nvpy_delta}%)` : `(${nvpy.nvpy_delta}%)`}
+                labelColor={nvpy.nvpy_delta >= 0 ? '#16A34A' : '#FF0000'}
+            />
+        {/each}
+    </BarChart>
+
+    <LineChart
+        title='NVpM'
+        subtitle='Net Value per Month'
+        data={net_value_per_month}
+        y=nvpm
+        x=accounting_month
+        labels=true
+        labelFmt=brl2k
+        labelPosition=above
+    />
+</div>
+<LineBreak/>
