@@ -9,7 +9,7 @@ full_width: true
 
 <!-- Queries -->
 ```sql last_refreshed
-select max(_processed_at)::string as last_refreshed
+select timezone('Etc/UTC', max(_processed_at))::string as last_refreshed
 from mathews_recurring_revenue.incomes
 ```
 
@@ -32,10 +32,10 @@ from base
 ```sql net_value_cumulated_per_year
 with grouped as (
 	select
-        concat(year(accounting_month), '-01-01')::date + interval 27 hour as accounting_year,
+        accounting_year + interval 27 hour as accounting_year,
         sum(tran_net) as tran_net,
     from mathews_recurring_revenue.incomes
-	group by all
+	group by 1
 )
 select
     accounting_year,
@@ -47,10 +47,10 @@ order by 1 desc
 ```sql net_value_per_year
 with grouped as (
 	select
-        concat(year(accounting_month), '-01-01')::date + interval 27 hour as accounting_year,
+        accounting_year + interval 24 hour as accounting_year,
         sum(tran_net) as nvpy,
     from mathews_recurring_revenue.incomes
-	group by all
+	group by 1
 ),
 lagged as (
     select
@@ -68,34 +68,34 @@ from lagged
 
 ```sql net_value_per_month
 select
-    accounting_month::date + interval 27 hour as accounting_month,
+    accounting_month + interval 24 hour as accounting_month,
     sum(tran_net) as nvpm,
 from mathews_recurring_revenue.incomes
-group by all
+group by 1
 ```
 
 ```sql net_value_by_year_by_category
 select
-    (concat(year(accounting_month), '-01-01')::date + interval 27 hour)::string as accounting_year,
+    string_split(accounting_year, ' ')[1] as accounting_year,
     tran_category,
     sum(tran_net) as tran_net
 from mathews_recurring_revenue.incomes
-group by all
+group by 1, 2
 order by 1 desc, 3 desc
 ```
 
 ```sql net_value_by_month_by_category
 select
-    (accounting_month + interval 27 hour)::string as accounting_month,
+    string_split(accounting_month, ' ')[1] as accounting_month,
     tran_category,
     sum(tran_net) as tran_net
 from mathews_recurring_revenue.incomes
-group by all
+group by 1, 2
 order by 1 desc, 3 desc
 ```
 
 ```sql accounting_month
-select distinct accounting_month::string as accounting_month from mathews_recurring_revenue.incomes
+select distinct string_split(accounting_month, ' ')[1] as accounting_month from mathews_recurring_revenue.incomes
 ```
 
 ```sql accounting_status
@@ -125,7 +125,7 @@ select distinct tran_currency from mathews_recurring_revenue.incomes
 ```sql incomes
 select
     * exclude(accounting_month),
-    (accounting_month + interval 27 hour)::string as accounting_month
+    string_split(accounting_month, ' ')[1] as accounting_month,
 from mathews_recurring_revenue.incomes
 where
     (tran_payer in ${inputs.tran_payer.value} or '%' in ${inputs.tran_payer.value}) and
@@ -133,7 +133,7 @@ where
     (tran_payer_payee_relation in ${inputs.tran_payer_payee_relation.value} or '%' in ${inputs.tran_payer_payee_relation.value}) and
     (tran_category in ${inputs.tran_category.value} or '%' in ${inputs.tran_category.value}) and
     (tran_currency in ${inputs.tran_currency.value} or '%' in ${inputs.tran_currency.value}) and
-    (accounting_month::string in ${inputs.accounting_month.value} or '%' in ${inputs.accounting_month.value}) and
+    (string_split(accounting_month, ' ')[1] in ${inputs.accounting_month.value} or '%' in ${inputs.accounting_month.value})
     (accounting_status in ${inputs.accounting_status.value} or '%' in ${inputs.accounting_status.value})
 order by accounting_month desc, tran_net desc
 ```
