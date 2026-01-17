@@ -4,10 +4,11 @@ full_width: true
 ---
 
 <script>
-    $: ACCOUNTING_LIFE_START_DATE = import.meta.env.VITE_ACCOUNTING_LIFE_START_DATE
+    $: ACCOUNTING_LIFE_START_DATE =
+        import.meta.env.VITE_ACCOUNTING_LIFE_START_DATE
 </script>
 
-<!-- Queries -->
+<!-- SQL -->
 ```sql last_refreshed
 select timezone('Etc/UTC', max(_processed_at))::string as last_refreshed
 from mathews_recurring_revenue.incomes
@@ -95,35 +96,43 @@ order by 1 desc, 3 desc
 ```
 
 ```sql accounting_year
-select distinct string_split(accounting_year, ' ')[1] as accounting_year from mathews_recurring_revenue.incomes
+select distinct string_split(accounting_year, ' ')[1] as accounting_year
+from mathews_recurring_revenue.incomes
 ```
 
 ```sql accounting_month
-select distinct string_split(accounting_month, ' ')[1] as accounting_month from mathews_recurring_revenue.incomes
+select distinct string_split(accounting_month, ' ')[1] as accounting_month
+from mathews_recurring_revenue.incomes
 ```
 
 ```sql accounting_status
-select distinct accounting_status from mathews_recurring_revenue.incomes
+select distinct accounting_status
+from mathews_recurring_revenue.incomes
 ```
 
 ```sql tran_category
-select distinct tran_category from mathews_recurring_revenue.incomes
+select distinct tran_category
+from mathews_recurring_revenue.incomes
 ```
 
 ```sql tran_payer
-select distinct tran_payer from mathews_recurring_revenue.incomes
+select distinct tran_payer
+from mathews_recurring_revenue.incomes
 ```
 
 ```sql tran_payee
-select distinct tran_payee from mathews_recurring_revenue.incomes
+select distinct tran_payee
+from mathews_recurring_revenue.incomes
 ```
 
 ```sql tran_payer_payee_relation
-select distinct tran_payer_payee_relation from mathews_recurring_revenue.incomes
+select distinct tran_payer_payee_relation
+from mathews_recurring_revenue.incomes
 ```
 
 ```sql tran_currency
-select distinct tran_currency from mathews_recurring_revenue.incomes
+select distinct tran_currency
+from mathews_recurring_revenue.incomes
 ```
 
 ```sql incomes
@@ -133,18 +142,46 @@ select
     string_split(accounting_month, ' ')[1] as accounting_month,
 from mathews_recurring_revenue.incomes
 where
-    (tran_payer in ${inputs.tran_payer.value} or '%' in ${inputs.tran_payer.value}) and
-    (tran_payee in ${inputs.tran_payee.value} or '%' in ${inputs.tran_payee.value}) and
-    (tran_payer_payee_relation in ${inputs.tran_payer_payee_relation.value} or '%' in ${inputs.tran_payer_payee_relation.value}) and
-    (tran_category in ${inputs.tran_category.value} or '%' in ${inputs.tran_category.value}) and
-    (tran_currency in ${inputs.tran_currency.value} or '%' in ${inputs.tran_currency.value}) and
-    (string_split(accounting_year, ' ')[1] in ${inputs.accounting_year.value} or '%' in ${inputs.accounting_year.value})
-    (string_split(accounting_month, ' ')[1] in ${inputs.accounting_month.value} or '%' in ${inputs.accounting_month.value})
-    (accounting_status in ${inputs.accounting_status.value} or '%' in ${inputs.accounting_status.value})
-order by accounting_month desc, tran_net desc
+    (
+        string_split(accounting_year, ' ')[1] in ${inputs.accounting_year.value}
+        or '%' in ${inputs.accounting_year.value}
+    )
+    and (
+        string_split(accounting_month, ' ')[1] in ${
+            inputs.accounting_month.value
+        }
+        or '%' in ${inputs.accounting_month.value}
+    )
+    and (
+        accounting_status in ${inputs.accounting_status.value}
+        or '%' in ${inputs.accounting_status.value}
+    )
+    and (
+        tran_category in ${inputs.tran_category.value}
+        or '%' in ${inputs.tran_category.value}
+    )
+    and (
+        tran_payer in ${inputs.tran_payer.value}
+        or '%' in ${inputs.tran_payer.value}
+    )
+    and (
+        tran_payee in ${inputs.tran_payee.value}
+        or '%' in ${inputs.tran_payee.value}
+    )
+    and (
+        tran_payer_payee_relation in ${inputs.tran_payer_payee_relation.value}
+        or '%' in ${inputs.tran_payer_payee_relation.value}
+    )
+    and (
+        tran_currency in ${inputs.tran_currency.value}
+        or '%' in ${inputs.tran_currency.value}
+    )
+order by
+    tran_date desc,
+    tran_net desc
 ```
 
-<!-- UI -->
+<!-- MDX -->
 <div>
     <Note class="text-sm">
         Last refreshed at <Value data={last_refreshed} column=last_refreshed />
@@ -184,7 +221,11 @@ order by accounting_month desc, tran_net desc
             <ReferenceArea
                 xMin={nvpy.accounting_year}
                 xMax={nvpy.accounting_year}
-                label={nvpy.nvpy_delta > 0 ? `(+${nvpy.nvpy_delta}%)` : `(${nvpy.nvpy_delta}%)`}
+                label={
+                    nvpy.nvpy_delta > 0
+                        ? `(+${nvpy.nvpy_delta}%)`
+                        : `(${nvpy.nvpy_delta}%)`
+                }
                 labelColor={nvpy.nvpy_delta >= 0 ? '#16A34A' : '#FF0000'}
             />
         {/each}
@@ -245,7 +286,7 @@ order by accounting_month desc, tran_net desc
         disableSelectAll=true
         defaultValue="%"
     >
-        <DropdownOption value="%" valueLabel="All"/>
+        <DropdownOption value="%" valueLabel="*"/>
     </Dropdown>
 
     <Dropdown
@@ -257,7 +298,7 @@ order by accounting_month desc, tran_net desc
         disableSelectAll=true
         defaultValue="%"
     >
-        <DropdownOption value="%" valueLabel="All"/>
+        <DropdownOption value="%" valueLabel="*"/>
     </Dropdown>
 
     <Dropdown
@@ -269,7 +310,7 @@ order by accounting_month desc, tran_net desc
         disableSelectAll=true
         defaultValue="%"
     >
-        <DropdownOption value="%" valueLabel="All"/>
+        <DropdownOption value="%" valueLabel="*"/>
     </Dropdown>
 
     <Dropdown
@@ -281,7 +322,7 @@ order by accounting_month desc, tran_net desc
         disableSelectAll=true
         defaultValue="%"
     >
-        <DropdownOption value="%" valueLabel="All"/>
+        <DropdownOption value="%" valueLabel="*"/>
     </Dropdown>
 
     <Dropdown
@@ -293,7 +334,7 @@ order by accounting_month desc, tran_net desc
         disableSelectAll=true
         defaultValue="%"
     >
-        <DropdownOption value="%" valueLabel="All"/>
+        <DropdownOption value="%" valueLabel="*"/>
     </Dropdown>
 
     <Dropdown
@@ -305,7 +346,7 @@ order by accounting_month desc, tran_net desc
         disableSelectAll=true
         defaultValue="%"
     >
-        <DropdownOption value="%" valueLabel="All"/>
+        <DropdownOption value="%" valueLabel="*"/>
     </Dropdown>
 
     <Dropdown
@@ -317,7 +358,7 @@ order by accounting_month desc, tran_net desc
         disableSelectAll=true
         defaultValue="%"
     >
-        <DropdownOption value="%" valueLabel="All"/>
+        <DropdownOption value="%" valueLabel="*"/>
     </Dropdown>
 
     <Dropdown
@@ -329,7 +370,7 @@ order by accounting_month desc, tran_net desc
         disableSelectAll=true
         defaultValue="%"
     >
-        <DropdownOption value="%" valueLabel="All"/>
+        <DropdownOption value="%" valueLabel="*"/>
     </Dropdown>
 
     <DataTable
