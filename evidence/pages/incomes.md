@@ -40,6 +40,28 @@ from grouped
 order by 1 desc
 ```
 
+```sql net_value_per_year
+with grouped as (
+	select
+        concat(year(accounting_month), '-01-01')::date + interval 27 hour as accounting_year,
+        sum(tran_net) as nvpy,
+    from mathews_recurring_revenue.incomes
+	group by all
+),
+lagged as (
+    select
+        accounting_year,
+        nvpy,
+        lag(nvpy, 1) over(order by accounting_year) as nvpy_prev,
+    from grouped
+)
+select
+    accounting_year,
+    nvpy,
+    round(coalesce((nvpy - nvpy_prev) / nvpy_prev * 100, 0), 2) as nvpy_delta
+from lagged
+```
+
 <!-- UI -->
 <div>
     <Note class="text-sm">
@@ -64,3 +86,23 @@ order by 1 desc
     />
 </div>
 <LineBreak/>
+
+<BarChart
+    title='NVpY'
+    subtitle='Net Value per Year'
+    data={net_value_per_year}
+    y=nvpy
+    x=accounting_year
+    labels=true
+    labelFmt=brl2k
+    labelPosition=inside
+>
+    {#each net_value_per_year as nvpy}
+        <ReferenceArea
+            xMin={nvpy.accounting_year}
+            xMax={nvpy.accounting_year}
+            label={nvpy.nvpy_delta > 0 ? `(+${nvpy.nvpy_delta}%)` : `(${nvpy.nvpy_delta}%)`}
+            labelColor={nvpy.nvpy_delta >= 0 ? '#16A34A' : '#FF0000'}
+        />
+    {/each}
+</BarChart>
