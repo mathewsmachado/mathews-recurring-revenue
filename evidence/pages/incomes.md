@@ -94,6 +94,10 @@ group by 1, 2
 order by 1 desc, 3 desc
 ```
 
+```sql accounting_year
+select distinct string_split(accounting_year, ' ')[1] as accounting_year from mathews_recurring_revenue.incomes
+```
+
 ```sql accounting_month
 select distinct string_split(accounting_month, ' ')[1] as accounting_month from mathews_recurring_revenue.incomes
 ```
@@ -124,7 +128,8 @@ select distinct tran_currency from mathews_recurring_revenue.incomes
 
 ```sql incomes
 select
-    * exclude(accounting_month),
+    * exclude(accounting_year, accounting_month),
+    string_split(accounting_year, ' ')[1] as accounting_year,
     string_split(accounting_month, ' ')[1] as accounting_month,
 from mathews_recurring_revenue.incomes
 where
@@ -133,6 +138,7 @@ where
     (tran_payer_payee_relation in ${inputs.tran_payer_payee_relation.value} or '%' in ${inputs.tran_payer_payee_relation.value}) and
     (tran_category in ${inputs.tran_category.value} or '%' in ${inputs.tran_category.value}) and
     (tran_currency in ${inputs.tran_currency.value} or '%' in ${inputs.tran_currency.value}) and
+    (string_split(accounting_year, ' ')[1] in ${inputs.accounting_year.value} or '%' in ${inputs.accounting_year.value})
     (string_split(accounting_month, ' ')[1] in ${inputs.accounting_month.value} or '%' in ${inputs.accounting_month.value})
     (accounting_status in ${inputs.accounting_status.value} or '%' in ${inputs.accounting_status.value})
 order by accounting_month desc, tran_net desc
@@ -230,6 +236,18 @@ order by accounting_month desc, tran_net desc
 <LineBreak/>
 
 <Details title="Incomes" open=false>
+    <Dropdown
+        data={accounting_year}
+        name=accounting_year
+        value=accounting_year
+        order='accounting_year desc'
+        multiple=true
+        disableSelectAll=true
+        defaultValue="%"
+    >
+        <DropdownOption value="%" valueLabel="All"/>
+    </Dropdown>
+
     <Dropdown
         data={accounting_month}
         name=accounting_month
