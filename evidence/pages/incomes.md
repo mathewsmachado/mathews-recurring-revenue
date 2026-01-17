@@ -70,6 +70,12 @@ from mathews_recurring_revenue.incomes
 group by all
 ```
 
+```sql incomes
+select *
+from mathews_recurring_revenue.incomes
+order by tran_date desc
+```
+
 <!-- UI -->
 <div>
     <Note class="text-sm">
@@ -128,3 +134,7 @@ group by all
     />
 </div>
 <LineBreak/>
+
+<Details title="Incomes" open=false>
+    <DataTable data={incomes} />
+</Details>
