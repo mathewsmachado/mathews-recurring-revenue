@@ -80,6 +80,16 @@ group by all
 order by 1 desc, 3 desc
 ```
 
+```sql net_value_by_category_by_month
+select
+    (accounting_month + interval 27 hour)::string as accounting_month,
+    tran_category,
+    sum(tran_net) as tran_net
+from mathews_recurring_revenue.incomes
+group by all
+order by 1 desc, 3 desc
+```
+
 ```sql incomes
 select *
 from mathews_recurring_revenue.incomes
@@ -159,6 +169,22 @@ order by tran_date desc
 	<Column id=tran_category  totalAgg=count totalFmt='0 "categories"' /> 
 	<Column id=tran_net fmt=brl2 /> 
 </DataTable>
+<LineBreak/>
+
+<Details title='NVbCbM (Net Value by Category Month)' open=false>
+    <DataTable
+        data={net_value_by_category_by_month}
+        search=true
+        subtotals=true
+        sort='accounting_month desc'
+        groupBy=accounting_month
+        groupType=section
+    >
+        <Column id=accounting_month />
+        <Column id=tran_category  totalAgg=count totalFmt='0 "categories"' /> 
+        <Column id=tran_net fmt=brl2 />
+    </DataTable>
+</Details>
 <LineBreak/>
 
 <Details title="Incomes" open=false>
