@@ -35,6 +35,7 @@ final as (
         tran_gross_delta_detail,
         tran_taxes,
         tran_taxes_pct,
+        accounting_year,
         accounting_month,
         accounting_status,
         _processed_at
