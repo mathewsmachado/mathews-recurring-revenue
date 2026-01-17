@@ -70,6 +70,16 @@ from mathews_recurring_revenue.incomes
 group by all
 ```
 
+```sql net_value_by_category_by_year
+select
+    (concat(year(accounting_month), '-01-01')::date + interval 27 hour)::string as accounting_year,
+    tran_category,
+    sum(tran_net) as tran_net
+from mathews_recurring_revenue.incomes
+group by all
+order by 1 desc, 3 desc
+```
+
 ```sql incomes
 select *
 from mathews_recurring_revenue.incomes
@@ -135,6 +145,22 @@ order by tran_date desc
 </div>
 <LineBreak/>
 
+<DataTable
+    title='NVbCbY'
+    subtitle='Net Value by Category Year'
+    data={net_value_by_category_by_year}
+    search=true
+    subtotals=true
+    sort='accounting_year desc'
+    groupBy=accounting_year
+    groupType=section
+>
+	<Column id=accounting_year />
+	<Column id=tran_category  totalAgg=count totalFmt='0 "categories"' /> 
+	<Column id=tran_net fmt=brl2 /> 
+</DataTable>
+<LineBreak/>
+
 <Details title="Incomes" open=false>
-    <DataTable data={incomes} />
+    <DataTable data={incomes} formatColumnTitles=false />
 </Details>
