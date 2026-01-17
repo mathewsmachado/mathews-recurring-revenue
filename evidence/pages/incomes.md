@@ -70,7 +70,7 @@ from mathews_recurring_revenue.incomes
 group by all
 ```
 
-```sql net_value_by_category_by_year
+```sql net_value_by_year_by_category
 select
     (concat(year(accounting_month), '-01-01')::date + interval 27 hour)::string as accounting_year,
     tran_category,
@@ -80,7 +80,7 @@ group by all
 order by 1 desc, 3 desc
 ```
 
-```sql net_value_by_category_by_month
+```sql net_value_by_month_by_category
 select
     (accounting_month + interval 27 hour)::string as accounting_month,
     tran_category,
@@ -90,10 +90,48 @@ group by all
 order by 1 desc, 3 desc
 ```
 
+```sql accounting_month
+select distinct accounting_month::string as accounting_month from mathews_recurring_revenue.incomes
+```
+
+```sql accounting_status
+select distinct accounting_status from mathews_recurring_revenue.incomes
+```
+
+```sql tran_category
+select distinct tran_category from mathews_recurring_revenue.incomes
+```
+
+```sql tran_payer
+select distinct tran_payer from mathews_recurring_revenue.incomes
+```
+
+```sql tran_payee
+select distinct tran_payee from mathews_recurring_revenue.incomes
+```
+
+```sql tran_payer_payee_relation
+select distinct tran_payer_payee_relation from mathews_recurring_revenue.incomes
+```
+
+```sql tran_currency
+select distinct tran_currency from mathews_recurring_revenue.incomes
+```
+
 ```sql incomes
-select *
+select
+    * exclude(accounting_month),
+    (accounting_month + interval 27 hour)::string as accounting_month
 from mathews_recurring_revenue.incomes
-order by tran_date desc
+where
+    (tran_payer in ${inputs.tran_payer.value} or '%' in ${inputs.tran_payer.value}) and
+    (tran_payee in ${inputs.tran_payee.value} or '%' in ${inputs.tran_payee.value}) and
+    (tran_payer_payee_relation in ${inputs.tran_payer_payee_relation.value} or '%' in ${inputs.tran_payer_payee_relation.value}) and
+    (tran_category in ${inputs.tran_category.value} or '%' in ${inputs.tran_category.value}) and
+    (tran_currency in ${inputs.tran_currency.value} or '%' in ${inputs.tran_currency.value}) and
+    (accounting_month::string in ${inputs.accounting_month.value} or '%' in ${inputs.accounting_month.value}) and
+    (accounting_status in ${inputs.accounting_status.value} or '%' in ${inputs.accounting_status.value})
+order by accounting_month desc, tran_net desc
 ```
 
 <!-- UI -->
@@ -156,24 +194,24 @@ order by tran_date desc
 <LineBreak/>
 
 <DataTable
-    title='NVbCbY'
-    subtitle='Net Value by Category Year'
-    data={net_value_by_category_by_year}
+    title='NVbYbC'
+    subtitle='Net Value by Year by Category'
+    data={net_value_by_year_by_category}
     search=true
     subtotals=true
     sort='accounting_year desc'
     groupBy=accounting_year
     groupType=section
 >
-	<Column id=accounting_year />
-	<Column id=tran_category  totalAgg=count totalFmt='0 "categories"' /> 
-	<Column id=tran_net fmt=brl2 /> 
+    <Column id=accounting_year />
+    <Column id=tran_category  totalAgg=count totalFmt='0 "categories"' /> 
+    <Column id=tran_net fmt=brl2 /> 
 </DataTable>
 <LineBreak/>
 
-<Details title='NVbCbM (Net Value by Category Month)' open=false>
+<Details title='NVbMbC (Net Value by Month by Category)' open=false>
     <DataTable
-        data={net_value_by_category_by_month}
+        data={net_value_by_month_by_category}
         search=true
         subtotals=true
         sort='accounting_month desc'
@@ -188,5 +226,96 @@ order by tran_date desc
 <LineBreak/>
 
 <Details title="Incomes" open=false>
-    <DataTable data={incomes} formatColumnTitles=false />
+    <Dropdown
+        data={accounting_month}
+        name=accounting_month
+        value=accounting_month
+        order='accounting_month desc'
+        multiple=true
+        disableSelectAll=true
+        defaultValue="%"
+    >
+        <DropdownOption value="%" valueLabel="All"/>
+    </Dropdown>
+
+    <Dropdown
+        data={accounting_status}
+        name=accounting_status
+        value=accounting_status
+        order='accounting_status asc'
+        multiple=true
+        disableSelectAll=true
+        defaultValue="%"
+    >
+        <DropdownOption value="%" valueLabel="All"/>
+    </Dropdown>
+
+    <Dropdown
+        data={tran_category}
+        name=tran_category
+        value=tran_category
+        order='tran_category asc'
+        multiple=true
+        disableSelectAll=true
+        defaultValue="%"
+    >
+        <DropdownOption value="%" valueLabel="All"/>
+    </Dropdown>
+
+    <Dropdown
+        data={tran_payer}
+        name=tran_payer
+        value=tran_payer
+        order='tran_payer asc'
+        multiple=true
+        disableSelectAll=true
+        defaultValue="%"
+    >
+        <DropdownOption value="%" valueLabel="All"/>
+    </Dropdown>
+
+    <Dropdown
+        data={tran_payee}
+        name=tran_payee
+        value=tran_payee
+        order='tran_payee asc'
+        multiple=true
+        disableSelectAll=true
+        defaultValue="%"
+    >
+        <DropdownOption value="%" valueLabel="All"/>
+    </Dropdown>
+
+    <Dropdown
+        data={tran_payer_payee_relation}
+        name=tran_payer_payee_relation
+        value=tran_payer_payee_relation
+        order='tran_payer_payee_relation asc'
+        multiple=true
+        disableSelectAll=true
+        defaultValue="%"
+    >
+        <DropdownOption value="%" valueLabel="All"/>
+    </Dropdown>
+
+    <Dropdown
+        data={tran_currency}
+        name=tran_currency
+        value=tran_currency
+        order='tran_currency asc'
+        multiple=true
+        disableSelectAll=true
+        defaultValue="%"
+    >
+        <DropdownOption value="%" valueLabel="All"/>
+    </Dropdown>
+
+    <DataTable
+        data={incomes}
+        search=true
+        sort='accounting_month desc'
+        groupBy=accounting_month
+        groupType=section
+        formatColumnTitles=false
+    />
 </Details>
