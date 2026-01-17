@@ -34,6 +34,7 @@ filtered as (
 enriched as (
     select
         *,
+        date_trunc(accounting_month, year) as accounting_year,
         timestamp("{{ _processed_at }}") as _processed_at
     from filtered
     where concat(tran_category, tran_payee, tran_date) is not null
@@ -51,6 +52,7 @@ final as (
         tran_gross,
         tran_gross_delta_category,
         tran_gross_delta_detail,
+        accounting_year,
         accounting_month,
         accounting_status,
         _processed_at
