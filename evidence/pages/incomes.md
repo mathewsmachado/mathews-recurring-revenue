@@ -3,6 +3,10 @@ title: Incomes
 full_width: true
 ---
 
+<script>
+    $: ACCOUNTING_LIFE_START_DATE = import.meta.env.VITE_ACCOUNTING_LIFE_START_DATE
+</script>
+
 <!-- Queries -->
 ```sql last_refreshed
 select max(_processed_at)::string as last_refreshed
@@ -11,7 +15,7 @@ from mathews_recurring_revenue.incomes
 
 ```sql time_delta
 with base as (
-    select age(current_date(), '2022-01-04') as time_delta
+    select age(current_date(), '${ACCOUNTING_LIFE_START_DATE}') as time_delta
 )
 select
     concat(
