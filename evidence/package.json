@@ -5,6 +5,7 @@
     "build": "evidence build",
     "build:strict": "evidence build:strict",
     "clean": "rm -rf .evidence/meta .evidence/template",
+    "clean:strict": "rm -rf .evidence/meta .evidence/template node_modules",
     "dev": "evidence dev --open /",
     "test": "evidence build",
     "sources": "evidence sources",
