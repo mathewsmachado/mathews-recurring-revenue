@@ -36,6 +36,7 @@ with grouped as (
         accounting_year + interval 27 hour as accounting_year,
         sum(tran_net) as tran_net,
     from mathews_recurring_revenue.incomes
+    where accounting_status = 'Closed'
 	group by 1
 )
 select
@@ -51,6 +52,7 @@ with grouped as (
         accounting_year + interval 24 hour as accounting_year,
         sum(tran_net) as nvpy,
     from mathews_recurring_revenue.incomes
+    where accounting_status = 'Closed'
 	group by 1
 ),
 lagged as (
@@ -72,6 +74,7 @@ select
     accounting_month + interval 24 hour as accounting_month,
     sum(tran_net) as nvpm,
 from mathews_recurring_revenue.incomes
+where accounting_status = 'Closed'
 group by 1
 ```
 
@@ -81,6 +84,7 @@ select
     tran_category,
     sum(tran_net) as tran_net
 from mathews_recurring_revenue.incomes
+where accounting_status = 'Closed'
 group by 1, 2
 order by 1 desc, 3 desc
 ```
@@ -91,6 +95,7 @@ select
     tran_category,
     sum(tran_net) as tran_net
 from mathews_recurring_revenue.incomes
+where accounting_status = 'Closed'
 group by 1, 2
 order by 1 desc, 3 desc
 ```
