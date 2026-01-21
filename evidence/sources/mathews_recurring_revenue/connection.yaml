@@ -1,6 +1,11 @@
 # This file was automatically generated
+# https://github.com/evidence-dev/evidence/issues/3165
+# https://github.com/evidence-dev/evidence/issues/2867
+# https://github.com/evidence-dev/evidence/issues/1319
+
 name: mathews_recurring_revenue
 type: bigquery
 options:
   authenticator: gcloud-cli
   location: US
+  project_id: mathews-recurring-revenue-dev

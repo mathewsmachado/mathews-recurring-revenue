@@ -13,6 +13,7 @@ dbt_project/target/
 evidence/*.options.yaml
 evidence/.DS_Store
 evidence/.env
+evidence/.evidence/data
 evidence/.evidence/meta
 evidence/.evidence/template
 evidence/.svelte-kit
