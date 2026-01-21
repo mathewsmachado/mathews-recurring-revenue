@@ -3,34 +3,34 @@ dbt_project:
   outputs:
     dev:
       type: bigquery
-      location: US
-      project: mathews-recurring-revenue
+      location: '{{ env_var("GCP_LOCATION") }}'
+      project: '{{ env_var("GCP_PROJECT_ID") }}'
       dataset: dbt_project
       priority: interactive
       job_execution_timeout_seconds: 120
       job_retries: 1
       threads: 4
       method: oauth
-      impersonate_service_account: dbt-project@mathews-recurring-revenue.iam.gserviceaccount.com
+      impersonate_service_account: '{{ env_var("GCP_CLIENT_EMAIL") }}'
 
-    prd:
-      type: bigquery
-      location: US
-      project: mathews-recurring-revenue
-      dataset: dbt_project
-      priority: interactive
-      job_execution_timeout_seconds: 120
-      job_retries: 1
-      threads: 4
-      method: service-account-json
-      keyfile_json:
-        type: service_account
-        project_id: mathews-recurring-revenue
-        private_key_id: '{{ env_var("GCP_PRIVATE_KEY_ID") }}'
-        private_key: '{{ env_var("GCP_PRIVATE_KEY") }}'
-        client_email: dbt-project@mathews-recurring-revenue.iam.gserviceaccount.com
-        client_id: '{{ env_var("GCP_CLIENT_ID") }}'
-        auth_uri: https://accounts.google.com/o/oauth2/auth
-        token_uri: https://oauth2.googleapis.com/token
-        auth_provider_x509_cert_url: https://www.googleapis.com/oauth2/v1/certs
-        client_x509_cert_url: https://www.googleapis.com/robot/v1/metadata/x509/dbt-project%40mathews-recurring-revenue.iam.gserviceaccount.com
+    # prd:
+    #   type: bigquery
+    #   location: US
+    #   project: '{{ env_var("GCP_PROJECT_ID") }}'
+    #   dataset: dbt_project
+    #   priority: interactive
+    #   job_execution_timeout_seconds: 120
+    #   job_retries: 1
+    #   threads: 4
+    #   method: service-account-json
+    #   keyfile_json:
+    #     type: service_account
+    #     project_id: '{{ env_var("GCP_PROJECT_ID") }}'
+    #     private_key_id: '{{ env_var("GCP_PRIVATE_KEY_ID") }}'
+    #     private_key: '{{ env_var("GCP_PRIVATE_KEY") }}'
+    #     client_email: '{{ env_var("GCP_CLIENT_EMAIL") }}'
+    #     client_id: '{{ env_var("GCP_CLIENT_ID") }}'
+    #     auth_uri: https://accounts.google.com/o/oauth2/auth
+    #     token_uri: https://oauth2.googleapis.com/token
+    #     auth_provider_x509_cert_url: https://www.googleapis.com/oauth2/v1/certs
+    #     client_x509_cert_url: '{{ env_var("GCP_CLIENT_X509_CERT_URL") }}'

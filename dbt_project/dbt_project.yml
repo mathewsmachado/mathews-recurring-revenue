@@ -25,7 +25,7 @@ query-comment:
 # https://docs.getdbt.com/reference/model-configs
 models:
   dbt_project:
-    +database: mathews-recurring-revenue
+    +database: '{{ env_var("GCP_PROJECT_ID") }}'
     +materialized: table
     +on_schema_change: sync_all_columns
     +persist_docs:
