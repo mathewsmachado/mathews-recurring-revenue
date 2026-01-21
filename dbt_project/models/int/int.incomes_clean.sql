@@ -2,7 +2,7 @@
 
 with source as (
     select *
-    from {{ source('stg', 'google_sheets__incomes') }}
+    from {{ source('raw', 'google_sheets__incomes') }}
 ),
 cleaned as (
     select
