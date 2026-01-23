@@ -11,6 +11,10 @@ on:
     paths:
       - 'terraform/mathews-recurring-revenue-stg/**'
 
+permissions:
+  contents: "read"
+  id-token: "write"
+
 jobs:
   deploy-terraform-stg:
     uses: ./.github/workflows/terraform-deploy.yml
