@@ -50,7 +50,7 @@ jobs:
         run: echo "$MATRIX_CONTEXT"
 
       - name: Get test file content
-        run: cat ${{ github.workspace }}/terraform/mathews-recurring-revenue-stg/test.txt
+        run: cat ${{ github.workspace }}/terraform/mathews-recurring-revenue-stg/env.txt
 
       - name: Print GitHub Workspace 
         run: echo ${{ github.workspace }}
