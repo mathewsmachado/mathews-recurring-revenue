@@ -2,18 +2,18 @@ name: Terraform Deploy Staging
 
 on:
   pull_request:
-    types: 
+    types:
       - opened
       - reopened
       - synchronize
     branches-ignore:
       - main
     paths:
-      - 'terraform/mathews-recurring-revenue-stg/**'
+      - terraform/mathews-recurring-revenue-stg/**
 
 permissions:
-  contents: "read"
-  id-token: "write"
+  contents: read
+  id-token: write
 
 jobs:
   deploy-terraform-stg:
