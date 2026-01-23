@@ -13,59 +13,28 @@ on:
     #   - terraform/mathews-recurring-revenue-stg/**
 
 jobs:
-  deploy-terraform-stg:
+  deploy-terraform:
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      id-token: write
+
     steps:
       - name: Check out repository code
         uses: actions/checkout@v5
+      # https://github.com/google-github-actions/auth
 
-      - name: Dump GitHub context
-        env:
-          GITHUB_CONTEXT: ${{ toJson(github) }}
-        run: echo "$GITHUB_CONTEXT"
+      - uses: google-github-actions/auth@v3
+        with:
+          project_id: ${{ inputs.gcp-project }}
+          workload_identity_provider: ${{ inputs.gcp-workload-identity-provider }}
 
-      - name: Dump job context
-        env:
-          JOB_CONTEXT: ${{ toJson(job) }}
-        run: echo "$JOB_CONTEXT"
+      - name: List authenticated accounts
+        run: gcloud auth list
 
-      - name: Dump steps context
-        env:
-          STEPS_CONTEXT: ${{ toJson(steps) }}
-        run: echo "$STEPS_CONTEXT"
+      - name: List projects
+        run: gcloud projects list
 
-      - name: Dump runner context
-        env:
-          RUNNER_CONTEXT: ${{ toJson(runner) }}
-        run: echo "$RUNNER_CONTEXT"
-
-      - name: Dump strategy context
-        env:
-          STRATEGY_CONTEXT: ${{ toJson(strategy) }}
-        run: echo "$STRATEGY_CONTEXT"
-
-      - name: Dump matrix context
-        env:
-          MATRIX_CONTEXT: ${{ toJson(matrix) }}
-        run: echo "$MATRIX_CONTEXT"
-
-      - name: Get test file content
-        run: cat ${{ github.workspace }}/terraform/mathews-recurring-revenue-stg/env.txt
-
-      - name: Print GitHub Workspace 
-        run: echo ${{ github.workspace }}
-
-      - name: Print working directory
-        run: pwd
-
-# permissions:
-#   contents: read
-#   id-token: write
-
-# jobs:
-#   deploy-terraform-stg:
-#     uses: ./.github/workflows/terraform-deploy.yml
-#     with:
-#       tf-project: terraform/mathews-recurring-revenue-stg
-#       gcp-project: mathews-recurring-revenue-stg
-#       gcp-workload-identity-provider: projects/724228842720/locations/global/workloadIdentityPools/github/providers/mathews-recurring-revenue
+      - name: List terraform directory content
+        run: ls -la ${{ inputs.tf-project }}
