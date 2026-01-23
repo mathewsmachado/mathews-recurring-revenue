@@ -1,8 +1,7 @@
 name: Terraform Deploy Staging
 
 on:
-  # pull_request:
-  push:
+  pull_request:
     branches-ignore:
       - main
     paths:
