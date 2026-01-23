@@ -12,3 +12,5 @@ jobs:
     uses: ./.github/workflows/terraform-deploy.yml
     with:
       tf-project: terraform/mathews-recurring-revenue-stg
+      gcp-project: mathews-recurring-revenue-stg
+      gcp-workload-identity-provider: projects/724228842720/locations/global/workloadIdentityPools/github/providers/mathews-recurring-revenue
