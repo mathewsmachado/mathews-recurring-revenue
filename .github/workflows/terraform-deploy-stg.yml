@@ -2,10 +2,15 @@ name: Terraform Deploy Staging
 
 on:
   pull_request:
+    types: 
+      - opened
+      - reopened
+      - synchronize
     branches-ignore:
       - main
     paths:
       - 'terraform/mathews-recurring-revenue-stg/**'
+
 jobs:
   deploy-terraform-stg:
     uses: ./.github/workflows/terraform-deploy.yml
