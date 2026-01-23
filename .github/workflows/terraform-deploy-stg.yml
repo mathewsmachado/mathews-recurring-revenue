@@ -1,0 +1,14 @@
+name: Terraform Deploy Staging
+
+on:
+  # pull_request:
+  push:
+    branches-ignore:
+      - main
+    paths:
+      - 'terraform/mathews-recurring-revenue-stg/**'
+jobs:
+  deploy-terraform-stg:
+    uses: ./.github/workflows/terraform-deploy.yml
+    with:
+      tf-project: terraform/mathews-recurring-revenue-stg
