@@ -31,6 +31,3 @@ jobs:
 
       - name: List terraform directory content
         run: ls -la terraform/mathews-recurring-revenue-stg
-
-      - name: Debug credentials
-        run: cat /home/runner/work/mathews-recurring-revenue/mathews-recurring-revenue/*
