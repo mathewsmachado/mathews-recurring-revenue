@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - 'terraform/mathews-recurring-revenue-prd/**'
+      - terraform/mathews-recurring-revenue-prd/**
 jobs:
   deploy-terraform-prd:
     uses: ./.github/workflows/terraform-deploy.yml
