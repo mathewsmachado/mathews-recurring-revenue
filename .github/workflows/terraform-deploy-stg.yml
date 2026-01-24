@@ -10,9 +10,9 @@ on:
   push:
     paths:
       # - 'terraform/mathews-recurring-revenue-stg/**'
-      - 'terraform/mathews-recurring-revenue-stg/**/*.txt'
-    branches-ignore:
-      - main
+      - 'terraform/mathews-recurring-revenue-stg/**'
+    # branches-ignore:
+    #   - main
 
 # Failed trigger 2
 # on:
