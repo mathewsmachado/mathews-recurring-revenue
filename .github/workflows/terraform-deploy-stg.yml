@@ -5,7 +5,7 @@ on:
     branches-ignore:
       - main
     paths:
-      - terraform/mathews-recurring-revenue-stg/**
+      - 'terraform/mathews-recurring-revenue-stg/**'
 
 # on:
   # pull_request:
