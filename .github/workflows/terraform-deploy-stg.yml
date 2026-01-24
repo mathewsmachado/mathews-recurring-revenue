@@ -40,7 +40,7 @@ jobs:
 
       - name: Terraform Init
         id: terraform_init
-        run: terraform -chdir=terraform/mathews-recurring-revenue-stg init
+        run: terraform -chdir=terraform/mathews-recurring-revenue-stg init -no-color
 
       - name: Terraform Validate
         id: terraform_validate
