@@ -116,8 +116,6 @@ jobs:
     permissions:
       pull-requests: write
 
-    environment: mathews-recurring-revenue-stg
-
     needs: 
       - terraform-validate
       - terraform-plan
@@ -158,6 +156,8 @@ jobs:
 
   terraform-apply:
     runs-on: ubuntu-latest
+
+    environment: mathews-recurring-revenue-stg
 
     needs: terraform-print
 
