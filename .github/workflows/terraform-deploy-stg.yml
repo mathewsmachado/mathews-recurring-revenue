@@ -62,9 +62,7 @@ jobs:
                 <b>Initialization:</b>
                 <span>${{ steps.terraform_init.outcome }}</span>
               </summary>
-              <pre>
-                ${{ steps.terraform_init.outputs.stdout }}
-              </pre>
+              <pre>${{ steps.terraform_init.outputs.stdout }}</pre>
             </details>
 
             <details>
@@ -72,9 +70,7 @@ jobs:
                 <b>Validation:</b>
                 <span>${{ steps.terraform_validate.outcome }}</span>
               </summary>
-              <pre>
-                ${{ steps.terraform_validate.outputs.stdout }}
-              </pre>
+              <pre>${{ steps.terraform_validate.outputs.stdout }}</pre>
             </details>
 
             <details>
@@ -82,9 +78,7 @@ jobs:
                 <b>Plan:</b>
                 <span>${{ steps.terraform_plan.outcome }}</span>
               </summary>
-              <pre>
-                ${{ steps.terraform_plan.outputs.stdout }}
-              </pre>
+              <pre>${{ steps.terraform_plan.outputs.stdout }}</pre>
             </details>
             `
 
