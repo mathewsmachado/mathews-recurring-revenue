@@ -12,7 +12,7 @@ on:
       - main
     paths:
       # - 'terraform/mathews-recurring-revenue-stg/**'
-      - '/home/runner/work/mathews-recurring-revenue/mathews-recurring-revenue/terraform/mathews-recurring-revenue-stg/**/*'
+      - 'terraform/mathews-recurring-revenue-stg/**/*'
 
 # Failed trigger 2
 # on:
