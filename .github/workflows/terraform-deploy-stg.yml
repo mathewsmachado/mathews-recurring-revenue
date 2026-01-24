@@ -1,0 +1,252 @@
+name: Terraform Deploy Staging
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'terraform/mathews-recurring-revenue-stg/**'
+  push:
+    branches:
+      - main
+    paths:
+      - 'terraform/mathews-recurring-revenue-stg/**'
+
+jobs:
+  terraform-validate:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      id-token: write
+
+    outputs:
+      summary: ${{ steps.persist_result.outputs.summary }}
+      details: ${{ steps.persist_result.outputs.details }}
+
+    steps:
+      - name: Clone Repository
+        uses: actions/checkout@v5
+
+      # https://github.com/google-github-actions/auth
+      - name: Authenticate to Google Cloud Platform
+        uses: google-github-actions/auth@v3
+        with:
+          project_id: mathews-recurring-revenue-stg
+          workload_identity_provider: projects/724228842720/locations/global/workloadIdentityPools/github/providers/mathews-recurring-revenue
+          service_account: github-actions@mathews-recurring-revenue-stg.iam.gserviceaccount.com
+
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.12.2"
+
+      - name: Terraform Init
+        run: terraform -chdir=terraform/mathews-recurring-revenue-stg init -no-color
+
+      - name: Terraform Validate
+        id: terraform_command
+        run: terraform -chdir=terraform/mathews-recurring-revenue-stg validate -no-color
+
+      - name: Persist Terraform Validate Output
+        id: persist_result
+        run: |
+          {
+            echo 'summary<<EOF'
+            echo '${{ steps.terraform_command.outcome }}'
+            echo 'EOF'
+
+            echo 'details<<EOF'
+            echo '${{ steps.terraform_command.outputs.stdout }}'
+            echo 'EOF'
+          } >> "$GITHUB_OUTPUT"
+
+  terraform-plan:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      id-token: write
+
+    needs: terraform-validate
+
+    outputs:
+      summary: ${{ steps.persist_result.outputs.summary }}
+      details: ${{ steps.persist_result.outputs.details }}
+
+    steps:
+      - name: Clone Repository
+        uses: actions/checkout@v5
+
+      - name: Authenticate to Google Cloud Platform
+        uses: google-github-actions/auth@v3
+        with:
+          project_id: mathews-recurring-revenue-stg
+          workload_identity_provider: projects/724228842720/locations/global/workloadIdentityPools/github/providers/mathews-recurring-revenue
+          service_account: github-actions@mathews-recurring-revenue-stg.iam.gserviceaccount.com
+
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.12.2"
+
+      - name: Terraform Init
+        run: terraform -chdir=terraform/mathews-recurring-revenue-stg init -no-color
+
+      - name: Terraform Plan
+        id: terraform_command
+        run: terraform -chdir=terraform/mathews-recurring-revenue-stg plan -no-color -out=mathews-recurring-revenue-stg.tfplan
+
+      - name: Persist Terraform Plan File
+        uses: actions/upload-artifact@v4
+        with:
+          name: mathews-recurring-revenue-stg.tfplan
+          path: terraform/mathews-recurring-revenue-stg/mathews-recurring-revenue-stg.tfplan
+          retention-days: 1
+
+      - name: Persist Terraform Plan Output
+        id: persist_result
+        run: |
+          {
+            echo 'summary<<EOF'
+            echo '${{ steps.terraform_command.outcome }}'
+            echo 'EOF'
+
+            echo 'details<<EOF'
+            echo '${{ steps.terraform_command.outputs.stdout }}'
+            echo 'EOF'
+          } >> "$GITHUB_OUTPUT"
+
+  terraform-print-validate-and-plan:
+    runs-on: ubuntu-latest
+
+    permissions:
+      pull-requests: write
+
+    needs:
+      - terraform-validate
+      - terraform-plan
+
+    steps:
+      - name: Decorate PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const body = `
+            <h2>Terraform</h2>
+
+            <details>
+              <summary>
+                <b>Validation:</b>
+                <span>${{ needs.terraform-validate.outputs.summary }}</span>
+              </summary>
+
+              <pre>${{ needs.terraform-validate.outputs.details }}</pre>
+            </details>
+
+            <details>
+              <summary>
+                <b>Plan:</b>
+                <span>${{ needs.terraform-plan.outputs.summary }}</span>
+              </summary>
+
+              <pre>${{ needs.terraform-plan.outputs.details }}</pre>
+            </details>
+            `
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body
+            })
+
+  terraform-apply:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      id-token: write
+
+    environment: mathews-recurring-revenue-stg
+
+    needs: terraform-print-validate-and-plan
+
+    outputs:
+      summary: ${{ steps.persist_result.outputs.summary }}
+      details: ${{ steps.persist_result.outputs.details }}
+
+    steps:
+      - name: Clone Repository
+        uses: actions/checkout@v5
+
+      - name: Authenticate to Google Cloud Platform
+        uses: google-github-actions/auth@v3
+        with:
+          project_id: mathews-recurring-revenue-stg
+          workload_identity_provider: projects/724228842720/locations/global/workloadIdentityPools/github/providers/mathews-recurring-revenue
+          service_account: github-actions@mathews-recurring-revenue-stg.iam.gserviceaccount.com
+
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.12.2"
+
+      - name: Terraform Init
+        run: terraform -chdir=terraform/mathews-recurring-revenue-stg init -no-color
+
+      - name: Retrieve Terraform Plan File
+        uses: actions/download-artifact@v5
+        with:
+          name: mathews-recurring-revenue-stg.tfplan
+          path: terraform/mathews-recurring-revenue-stg
+
+      - name: Terraform Apply
+        id: terraform_command
+        run: terraform -chdir=terraform/mathews-recurring-revenue-stg apply -no-color -auto-approve mathews-recurring-revenue-stg.tfplan
+
+      - name: Persist Terraform Apply Output
+        id: persist_result
+        run: |
+          {
+            echo 'summary<<EOF'
+            echo '${{ steps.terraform_command.outcome }}'
+            echo 'EOF'
+
+            echo 'details<<EOF'
+            echo '${{ steps.terraform_command.outputs.stdout }}'
+            echo 'EOF'
+          } >> "$GITHUB_OUTPUT"
+
+  terraform-print-apply:
+    runs-on: ubuntu-latest
+
+    permissions:
+      pull-requests: write
+
+    needs: terraform-apply
+
+    steps:
+      - name: Decorate PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const body = `
+            <h2>Terraform</h2>
+
+            <details>
+              <summary>
+                <b>Apply:</b>
+                <span>${{ needs.terraform-apply.outputs.summary }}</span>
+              </summary>
+
+              <pre>${{ needs.terraform-apply.outputs.details }}</pre>
+            </details>
+            `
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body
+            })

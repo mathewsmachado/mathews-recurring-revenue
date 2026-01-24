@@ -1,6 +1,6 @@
 variable "project_id" {
   description = "Google Cloud Project Id"
-  default = "mathews-recurring-revenue-dev"
+  default = "mathews-recurring-revenue-stg"
 }
 
 variable "project_location" {
@@ -15,5 +15,5 @@ variable "project_region" {
 
 variable "env" {
   description = "Environment"
-  default = "dev"
+  default = "stg"
 }
