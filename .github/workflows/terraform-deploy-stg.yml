@@ -1,28 +1,9 @@
 name: Terraform Deploy Staging
 
-# on:
-#   push:
-#     branches-ignore:
-#       - main
-
-# Failed trigger 1
 on:
   push:
     paths:
-      # - 'terraform/mathews-recurring-revenue-stg/**'
       - 'terraform/mathews-recurring-revenue-stg/**'
-    # branches-ignore:
-    #   - main
-
-# Failed trigger 2
-# on:
-#   pull_request:
-#     branches-ignore:
-#       - main
-#     types:
-#       - opened
-#       - reopened
-#       - synchronize
 
 jobs:
   deploy-terraform:
