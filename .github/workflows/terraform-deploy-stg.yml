@@ -71,28 +71,20 @@ jobs:
 
               #### Details
 
-              <details>
-                <summary>
-                  <b>Initialization:</b>
-                </summary>
+            - **Initialization:** 
+              \`\`\`\n
+              ${{ steps.terraform_init.outputs.stdout }}
+              \`\`\`
 
-                <pre>${{ steps.terraform_init.outputs.stdout }}</pre>
-              </details>
+            - **Validation:** 
+              \`\`\`\n
+              ${{ steps.terraform_validate.outputs.stdout }}
+              \`\`\`
 
-              <details>
-                <summary>
-                  <b>Validation:</b>
-                </summary>
-
-                <pre>${{ steps.terraform_validate.outputs.stdout }}</pre>
-              </details>
-
-              <details>
-                <summary>
-                  <b>Plan:</b>
-                </summary>
-                <pre>${{ steps.terraform_plan.outputs.stdout }}</pre>
-              </details>
+            - **Plan:** 
+              \`\`\`
+              ${{ steps.terraform_plan.outputs.stdout }}
+              \`\`\`
             `;
 
             github.rest.issues.createComment({
