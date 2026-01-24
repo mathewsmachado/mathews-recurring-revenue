@@ -117,9 +117,9 @@ jobs:
             echo 'summary<<EOF'
             echo '${{ steps.terraform_plan.outcome }}'
             echo 'EOF'
-          } >> "$GITHUB_ENV"
+          } >> "$GITHUB_OUTPUT"
 
-          echo 'details<<EOF\n${{ steps.terraform_plan.outputs.stdout }}\nEOF' >> "$GITHUB_ENV"
+          echo 'details<<EOF\n${{ steps.terraform_plan.outputs.stdout }}\nEOF' >> "$GITHUB_OUTPUT"
 
   terraform-print:
     runs-on: ubuntu-latest
