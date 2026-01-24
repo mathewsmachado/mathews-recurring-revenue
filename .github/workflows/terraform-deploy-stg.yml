@@ -197,6 +197,7 @@ jobs:
         uses: actions/download-artifact@v5
         with:
           name: mathews-recurring-revenue-stg.tfplan
+          path: terraform/mathews-recurring-revenue-stg
 
       - name: Terraform Apply
         id: terraform_command
