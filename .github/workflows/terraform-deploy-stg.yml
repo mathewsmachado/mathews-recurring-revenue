@@ -12,7 +12,7 @@ on:
       - main
     paths:
       # - 'terraform/mathews-recurring-revenue-stg/**'
-      - 'terraform/mathews-recurring-revenue-stg/**/*'
+      - 'terraform/mathews-recurring-revenue-stg/**/*.txt'
 
 # Failed trigger 2
 # on:
