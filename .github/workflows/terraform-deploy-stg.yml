@@ -2,8 +2,8 @@ name: Terraform Deploy Staging
 
 on:
   push:
-    branches:
-      - ci/add-ci-cd
+    branches-ignore:
+      - main
     # paths:
     #   - 'terraform/mathews-recurring-revenue-stg/**'
 
