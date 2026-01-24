@@ -55,37 +55,34 @@ jobs:
         with:
           script: |
             const output = `
-            ## Terraform
+            <h2>Terraform</h2>
 
-            #### Info
+            <details>
+              <summary>
+                <b>Initialization:</b>
+                <span>${{ steps.terraform_init.outcome }}</span>
+              </summary>
 
-            - **Pusher:** @${{ github.actor }}
-            - **Action:** ${{ github.event_name }}
-            - **Workflow:** ${{ github.workflow }}
+              <pre>${{ steps.terraform_init.outputs.stdout }}</pre>
+            </details>
 
-            #### Summary
+            <details>
+              <summary>
+                <b>Validation:</b>
+                <span>${{ steps.terraform_validate.outcome }}</span>
+              </summary>
 
-            - **Initialization:** ${{ steps.terraform_init.outcome }}
-            - **Validation:** ${{ steps.terraform_validate.outcome }}
-            - **Plan:** ${{ steps.terraform_plan.outcome }}
+              <pre>${{ steps.terraform_validate.outputs.stdout }}</pre>
+            </details>
 
-            #### Details
+            <details>
+              <summary>
+                <b>Plan:</b>
+                <span>${{ steps.terraform_plan.outcome }}</span>
+              </summary>
 
-            - **Initialization:** 
-            \`\`\`\n
-            ${{ steps.terraform_init.outputs.stdout }}
-            \`\`\`
-
-            - **Validation:** 
-            \`\`\`\n
-            ${{ steps.terraform_validate.outputs.stdout }}
-            \`\`\`
-
-            - **Plan:** 
-            \`\`\`
-            ${{ steps.terraform_plan.outputs.stdout }}
-            \`\`\`
-            `;
+              <pre>${{ steps.terraform_plan.outputs.stdout }}</pre>
+            </details>
 
             github.rest.issues.createComment({
               issue_number: context.issue.number,
