@@ -1,9 +1,20 @@
 name: Terraform Deploy Staging
 
+# on:
+#   push:
+#     branches-ignore:
+#       - main
+#     paths:
+#       - terraform/mathews-recurring-revenue-stg/**
+
 on:
-  push:
+  pull_request:
     branches-ignore:
       - main
+    # types:
+    #   - opened
+    #   - reopened
+    #   - synchronize
 
 jobs:
   deploy-terraform:
