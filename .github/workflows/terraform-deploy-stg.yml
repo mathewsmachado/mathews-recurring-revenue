@@ -39,5 +39,21 @@ jobs:
         run: |
           terraform \
             -chdir=terraform/mathews-recurring-revenue-stg \
-            init \
-            -input=false
+            init # \
+            # -input=false \
+            # -backend=false
+
+      - name: Terraform Plan
+        run: |
+          terraform \
+            -chdir=terraform/mathews-recurring-revenue-stg \
+            plan
+            -out=terraform_plan # \
+            # -input=false \
+
+      - name: Print Dir Content
+        run: |
+          echo "."
+          ls -lA .
+          echo "terraform/mathews-recurring-revenue-stg"
+          ls -lA terraform/mathews-recurring-revenue-stg
