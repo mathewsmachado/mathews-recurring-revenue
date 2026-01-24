@@ -21,8 +21,8 @@ jobs:
       id-token: write
 
     outputs:
-      summary: ${{ steps.persist_summary.outputs }}
-      details: ${{ steps.persist_details.outputs }}
+      summary: ${{ steps.persist_summary.outputs.value }}
+      details: ${{ steps.persist_details.outputs.value }}
 
     steps:
       - name: Clone Repository
@@ -50,11 +50,11 @@ jobs:
 
       - name: Persist Summary
         id: persist_summary
-        run: echo "${{ steps.terraform_validate.outcome }}" >> "$GITHUB_OUTPUT"
+        run: echo "value=${{ steps.terraform_validate.outcome }}" >> "$GITHUB_OUTPUT"
 
       - name: Persist Details
         id: persist_details
-        run: echo "${{ steps.terraform_validate.outputs.stdout }}" >> "$GITHUB_OUTPUT"
+        run: echo "value=${{ steps.terraform_validate.outputs.stdout }}" >> "$GITHUB_OUTPUT"
 
   # terraform-plan:
   #   runs-on: ubuntu-latest
