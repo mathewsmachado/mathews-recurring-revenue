@@ -48,13 +48,19 @@ jobs:
         id: terraform_validate
         run: terraform -chdir=terraform/mathews-recurring-revenue-stg validate -no-color
 
+      # - name: Persist Result
+      #   id: persist_result
+      #   run: |
+      #     cat <<EOF >> "$GITHUB_OUTPUT"
+      #     summary=${{ steps.terraform_validate.outcome }}
+      #     details=${{ steps.terraform_validate.outputs.stdout }}
+      #     EOF
+
       - name: Persist Result
         id: persist_result
         run: |
-          cat <<EOF >> "$GITHUB_OUTPUT"
-          summary=${{ steps.terraform_validate.outcome }}
-          details=${{ steps.terraform_validate.outputs.stdout }}
-          EOF
+          echo "summary<<EOF"$'\n'"${{ steps.terraform_validate.outcome }}"$'\n'EOF >> "$GITHUB_OUTPUT".
+          echo "details<<EOF"$'\n'"${{ steps.terraform_validate.outputs.stdout }}"$'\n'EOF >> "$GITHUB_OUTPUT".
 
   terraform-plan:
     runs-on: ubuntu-latest
@@ -106,10 +112,9 @@ jobs:
       - name: Persist Result
         id: persist_result
         run: |
-          cat <<EOF >> "$GITHUB_OUTPUT"
-          summary=${{ steps.terraform_plan.outcome }}
-          details=${{ steps.terraform_plan.outputs.stdout }}
-          EOF
+          echo "summary<<EOF"$'\n'"${{ steps.terraform_plan.outcome }}"$'\n'EOF >> "$GITHUB_OUTPUT".
+          echo "details<<EOF"$'\n'"${{ steps.terraform_plan.outputs.stdout }}"$'\n'EOF >> "$GITHUB_OUTPUT".
+
 
   terraform-print:
     runs-on: ubuntu-latest
