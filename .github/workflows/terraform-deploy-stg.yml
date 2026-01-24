@@ -72,12 +72,10 @@ jobs:
 
     # needs: terraform-validate
 
-    # outputs:
-    #   summary: ${{ steps.persist_summary.outputs.value }}
-    #   details: ${{ steps.persist_details.outputs.value }}
     outputs:
-      summary: ${{ steps.persist_plan.outputs.value }}
-      details: ${{ steps.persist_plan.outputs.value }}
+      summary: ${{ steps.persist_result.outputs.summary }}
+      details: ${{ steps.persist_result.outputs.details }}
+
 
     steps:
       - name: Clone Repository
