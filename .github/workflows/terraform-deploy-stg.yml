@@ -123,7 +123,9 @@ jobs:
     permissions:
       pull-requests: write
 
-    needs: terraform-plan
+    needs:
+      - terraform-validate
+      - terraform-plan
 
     steps:
       - name: Decorate PR
