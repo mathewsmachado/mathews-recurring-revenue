@@ -83,6 +83,7 @@ jobs:
 
               <pre>${{ steps.terraform_plan.outputs.stdout }}</pre>
             </details>
+            `
 
             github.rest.issues.createComment({
               issue_number: context.issue.number,
