@@ -48,7 +48,7 @@ jobs:
         id: terraform_command
         run: terraform -chdir=terraform/mathews-recurring-revenue-stg validate -no-color
 
-      - name: Persist Result
+      - name: Persist Terraform Command Result
         id: persist_result
         run: |
           {
@@ -95,9 +95,16 @@ jobs:
 
       - name: Terraform Plan
         id: terraform_command
-        run: terraform -chdir=terraform/mathews-recurring-revenue-stg plan -no-color -out=terraform_plan
+        run: terraform -chdir=terraform/mathews-recurring-revenue-stg plan -no-color -out=mathews-recurring-revenue-stg.tfplan
 
-      - name: Persist Result
+      - name: Persist Terraform Plan File
+        uses: actions/upload-artifact@v4
+        with:
+          name: mathews-recurring-revenue-stg.tfplan
+          path: terraform/mathews-recurring-revenue-stg/mathews-recurring-revenue-stg.tfplan
+          retention-days: 1
+
+      - name: Persist Terraform Command Result
         id: persist_result
         run: |
           {
@@ -110,15 +117,13 @@ jobs:
             echo 'EOF'
           } >> "$GITHUB_OUTPUT"
 
-  terraform-print:
+  terraform-print-validate-and-plan:
     runs-on: ubuntu-latest
 
     permissions:
       pull-requests: write
 
-    needs: 
-      - terraform-validate
-      - terraform-plan
+    needs: terraform-plan
 
     steps:
       - name: Decorate PR
@@ -153,14 +158,3 @@ jobs:
               repo: context.repo.repo,
               body
             })
-
-  terraform-apply:
-    runs-on: ubuntu-latest
-
-    environment: mathews-recurring-revenue-stg
-
-    needs: terraform-print
-
-    steps:
-      - name: Terraform Apply
-        run: echo "terraform apply"
