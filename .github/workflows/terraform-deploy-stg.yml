@@ -37,16 +37,19 @@ jobs:
 
       - name: Terraform Init
         run: |
-          terraform \
-            -chdir=terraform/mathews-recurring-revenue-stg \
+          terraform -chdir=terraform/mathews-recurring-revenue-stg \
             init # \
             # -input=false \
             # -backend=false
 
+      - name: Terraform Validate
+        run: |
+          terraform -chdir=terraform/mathews-recurring-revenue-stg \
+            validate
+
       - name: Terraform Plan
         run: |
-          terraform \
-            -chdir=terraform/mathews-recurring-revenue-stg \
+          terraform -chdir=terraform/mathews-recurring-revenue-stg \
             plan \
             -out=terraform_plan # \
             # -input=false \
