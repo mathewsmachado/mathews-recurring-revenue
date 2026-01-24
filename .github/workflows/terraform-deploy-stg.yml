@@ -49,76 +49,6 @@ jobs:
       - name: Terraform Plan
         id: terraform_plan
         run: terraform -chdir=terraform/mathews-recurring-revenue-stg plan -no-color -out=terraform_plan
-  
-      # - name: Print Message
-      #   run: |
-      #     cat <<EOF
-      #       ## Terraform
-
-      #       #### Info
-
-      #       - **Pusher:** @${{ github.actor }}
-      #       - **Action:** ${{ github.event_name }}
-      #       - **Workflow:** ${{ github.workflow }}
-
-      #       #### Summary
-
-      #       - **Initialization:** ${{ steps.terraform_init.outcome }}
-      #       - **Validation:** ${{ steps.terraform_validate.outcome }}
-      #       - **Plan:** ${{ steps.terraform_plan.outcome }}
-
-      #       #### Details
-
-      #     - **Initialization:** 
-      #       \`\`\`\n
-      #       ${{ steps.terraform_init.outputs.stdout }}
-      #       \`\`\`
-
-      #     - **Validation:** 
-      #       \`\`\`\n
-      #       ${{ steps.terraform_validate.outputs.stdout }}
-      #       \`\`\`
-
-      #     - **Plan:** 
-      #       \`\`\`\n
-      #       ${{ steps.terraform_plan.outputs.stdout }}
-      #       \`\`\`
-      #     EOF
-
-      # - name: Print Message
-      #   run: |
-      #     cat <<EOF
-      #       ## Terraform
-
-      #       #### Info
-
-      #       - **Pusher:** @${{ github.actor }}
-      #       - **Action:** ${{ github.event_name }}
-      #       - **Workflow:** ${{ github.workflow }}
-
-      #       #### Summary
-
-      #       - **Initialization:** ${{ steps.terraform_init.outcome }}
-      #       - **Validation:** ${{ steps.terraform_validate.outcome }}
-      #       - **Plan:** ${{ steps.terraform_plan.outcome }}
-
-      #       #### Details
-
-      #     - **Initialization:** 
-      #       ```
-      #       ${{ steps.terraform_init.outputs.stdout }}
-      #       ```
-
-      #     - **Validation:** 
-      #       ```
-      #       ${{ steps.terraform_validate.outputs.stdout }}
-      #       ```
-
-      #     - **Plan:** 
-      #       ```
-      #       ${{ steps.terraform_plan.outputs.stdout }}
-      #       ```
-      #     EOF
 
       - name: Decorate PR
         uses: actions/github-script@v7
@@ -142,17 +72,17 @@ jobs:
             #### Details
 
             - **Initialization:** 
-            ```
+            \`\`\`\n
             ${{ steps.terraform_init.outputs.stdout }}
-            ```
+            \`\`\`
 
             - **Validation:** 
-            \`\`\`
+            \`\`\`\n
             ${{ steps.terraform_validate.outputs.stdout }}
             \`\`\`
 
             - **Plan:** 
-            \`\`\`\n
+            \`\`\`
             ${{ steps.terraform_plan.outputs.stdout }}
             \`\`\`
             `;
