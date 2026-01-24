@@ -65,9 +65,12 @@ jobs:
 
     needs: terraform-validate
 
+    # outputs:
+    #   summary: ${{ steps.persist_summary.outputs.value }}
+    #   details: ${{ steps.persist_details.outputs.value }}
     outputs:
-      summary: ${{ steps.persist_summary.outputs.value }}
-      details: ${{ steps.persist_details.outputs.value }}
+      summary: ${{ steps.persist_plan.outputs.value }}
+      details: ${{ steps.persist_plan.outputs.value }}
 
     steps:
       - name: Clone Repository
@@ -92,13 +95,21 @@ jobs:
         id: terraform_plan
         run: terraform -chdir=terraform/mathews-recurring-revenue-stg plan -no-color -out=terraform_plan
 
-      - name: Persist Summary
-        id: persist_summary
-        run: echo "value=${{ steps.terraform_plan.outcome }}" >> "$GITHUB_OUTPUT"
+      # - name: Persist Summary
+      #   id: persist_summary
+      #   run: echo "value=${{ steps.terraform_plan.outcome }}" >> "$GITHUB_OUTPUT"
 
-      - name: Persist Details
-        id: persist_details
-        run: echo "value=${{ steps.terraform_plan.outputs.stdout }}" >> "$GITHUB_OUTPUT"
+      # - name: Persist Details
+      #   id: persist_details
+      #   run: echo "value=${{ steps.terraform_plan.outputs.stdout }}" >> "$GITHUB_OUTPUT"
+
+      - name: Persist Result
+        id: persist_result
+        run: |
+          cat <<EOF >> "$GITHUB_OUTPUT"
+          summary=${{ steps.terraform_plan.outcome }}
+          details=${{ steps.terraform_plan.outputs.stdout }}
+          EOF
 
   terraform-print:
     runs-on: ubuntu-latest
