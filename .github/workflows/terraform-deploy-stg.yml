@@ -4,17 +4,22 @@ on:
   push:
     branches-ignore:
       - main
-    paths:
-      - 'terraform/mathews-recurring-revenue-stg/**'
 
 # on:
-  # pull_request:
-  #   branches-ignore:
-  #     - main
-    # types:
-    #   - opened
-    #   - reopened
-    #   - synchronize
+#   push:
+#     branches-ignore:
+#       - main
+#     paths:
+#       - 'terraform/mathews-recurring-revenue-stg/**'
+
+# on:
+#   pull_request:
+#     branches-ignore:
+#       - main
+#     types:
+#       - opened
+#       - reopened
+#       - synchronize
 
 jobs:
   deploy-terraform:
