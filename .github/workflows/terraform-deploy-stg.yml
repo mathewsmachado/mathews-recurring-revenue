@@ -128,7 +128,7 @@ jobs:
       - name: Wait For Manual Approval
         uses: trstringer/manual-approval@v1
         with:
-          # secret: ${{ github.TOKEN }}
+          secret: ${{ github.TOKEN }}
           approvers: mathewsmachado
           minimum-approvals: 1
           issue-title: "Terraform Staging Approval"
