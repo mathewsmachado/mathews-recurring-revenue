@@ -1,16 +1,16 @@
 name: Terraform Deploy Staging
 
-# on:
-#   push:
-#     branches-ignore:
-#       - main
-#     paths:
-#       - terraform/mathews-recurring-revenue-stg/**
-
 on:
-  pull_request:
+  push:
     branches-ignore:
       - main
+    paths:
+      - terraform/mathews-recurring-revenue-stg/**
+
+# on:
+  # pull_request:
+  #   branches-ignore:
+  #     - main
     # types:
     #   - opened
     #   - reopened
