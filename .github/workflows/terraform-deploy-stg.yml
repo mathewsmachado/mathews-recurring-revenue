@@ -50,44 +50,92 @@ jobs:
         id: terraform_plan
         run: terraform -chdir=terraform/mathews-recurring-revenue-stg plan -no-color -out=terraform_plan
 
-      - name: Decorate PR
-        uses: actions/github-script@v7
+      - name: Create Approval Message
+        run: |
+          cat <<EOF > terraform_output.html
+          <h2>Terraform</h2>
+
+          <details>
+            <summary>
+              <b>Initialization:</b>
+              <span>${{ steps.terraform_init.outcome }}</span>
+            </summary>
+
+            <pre>${{ steps.terraform_init.outputs.stdout }}</pre>
+          </details>
+
+          <details>
+            <summary>
+              <b>Validation:</b>
+              <span>${{ steps.terraform_validate.outcome }}</span>
+            </summary>
+
+            <pre>${{ steps.terraform_validate.outputs.stdout }}</pre>
+          </details>
+
+          <details>
+            <summary>
+              <b>Plan:</b>
+              <span>${{ steps.terraform_plan.outcome }}</span>
+            </summary>
+
+            <pre>${{ steps.terraform_plan.outputs.stdout }}</pre>
+          </details>
+          EOF
+
+      # - name: Decorate PR
+      #   uses: actions/github-script@v7
+      #   with:
+      #     script: |
+      #       const body = `
+      #       <h2>Terraform</h2>
+
+      #       <details>
+      #         <summary>
+      #           <b>Initialization:</b>
+      #           <span>${{ steps.terraform_init.outcome }}</span>
+      #         </summary>
+
+      #         <pre>${{ steps.terraform_init.outputs.stdout }}</pre>
+      #       </details>
+
+      #       <details>
+      #         <summary>
+      #           <b>Validation:</b>
+      #           <span>${{ steps.terraform_validate.outcome }}</span>
+      #         </summary>
+
+      #         <pre>${{ steps.terraform_validate.outputs.stdout }}</pre>
+      #       </details>
+
+      #       <details>
+      #         <summary>
+      #           <b>Plan:</b>
+      #           <span>${{ steps.terraform_plan.outcome }}</span>
+      #         </summary>
+
+      #         <pre>${{ steps.terraform_plan.outputs.stdout }}</pre>
+      #       </details>
+      #       `
+
+      #       github.rest.issues.createComment({
+      #         issue_number: context.issue.number,
+      #         owner: context.repo.owner,
+      #         repo: context.repo.repo,
+      #         body
+      #       })
+
+      - name: Wait For Manual Approval
+        uses: trstringer/manual-approval@v1
         with:
-          script: |
-            const body = `
-            <h2>Terraform</h2>
-
-            <details>
-              <summary>
-                <b>Initialization:</b>
-                <span>${{ steps.terraform_init.outcome }}</span>
-              </summary>
-
-              <pre>${{ steps.terraform_init.outputs.stdout }}</pre>
-            </details>
-
-            <details>
-              <summary>
-                <b>Validation:</b>
-                <span>${{ steps.terraform_validate.outcome }}</span>
-              </summary>
-
-              <pre>${{ steps.terraform_validate.outputs.stdout }}</pre>
-            </details>
-
-            <details>
-              <summary>
-                <b>Plan:</b>
-                <span>${{ steps.terraform_plan.outcome }}</span>
-              </summary>
-
-              <pre>${{ steps.terraform_plan.outputs.stdout }}</pre>
-            </details>
-            `
-
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body
-            })
+          # secret: ${{ github.TOKEN }}
+          approvers: mathewsmachado
+          minimum-approvals: 1
+          issue-title: "Terraform Staging Approval"
+          # issue-body: "Please approve or deny the deployment of version v1.3.5."
+          issue-body-file-path: terraform_output.html
+          exclude-workflow-initiator-as-approver: false
+          fail-on-denial: true
+          # additional-approved-words: ''
+          # additional-denied-words: ''
+          polling-interval-seconds: 10
