@@ -54,24 +54,37 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            const format_step = (step_title, step) => `
+            const body = `
+            <h2>Terraform</h2>
+
             <details>
               <summary>
-                <b>${step_title}:</b>
-                <span>${{ step.outcome }}</span>
+                <b>Initialization:</b>
+                <span>${{ steps.terraform_init.outcome }}</span>
               </summary>
-              <pre>${{ step.outputs.stdout }}</pre>
+              <pre>${{ steps.terraform_init.outputs.stdout }}</pre>
+            </details>
+
+            <details>
+              <summary>
+                <b>Validation:</b>
+                <span>${{ steps.terraform_validate.outcome }}</span>
+              </summary>
+              <pre>${{ steps.terraform_validate.outputs.stdout }}</pre>
+            </details>
+
+            <details>
+              <summary>
+                <b>Plan:</b>
+                <span>${{ steps.terraform_plan.outcome }}</span>
+              </summary>
+              <pre>${{ steps.terraform_plan.outputs.stdout }}</pre>
             </details>
             `
-
+            
             github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.issue.number,
-              body: `
-                <h2>Terraform</h2>
-                ${format_step('Initialization', ${{ steps.terraform_init }})}
-                ${format_step('Validation', ${{ steps.terraform_validate }})}
-                ${format_step('Plan', ${{ steps.terraform_plan }})}
-              `
+              body,
             })
