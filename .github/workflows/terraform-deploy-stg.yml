@@ -58,33 +58,36 @@ jobs:
             <h2>Terraform</h2>
 
             <details>
-            <summary>
-            <b>Initialization:</b>
-            <span>${{ steps.terraform_init.outcome }}</span>
-            </summary>
-            <pre>${{ steps.terraform_init.outputs.stdout }}</pre>
+              <summary>
+                <b>Initialization:</b>
+                <span>${{ steps.terraform_init.outcome }}</span>
+              </summary>
+
+              <pre>${{ steps.terraform_init.outputs.stdout }}</pre>
             </details>
 
             <details>
-            <summary>
-            <b>Validation:</b>
-            <span>${{ steps.terraform_validate.outcome }}</span>
-            </summary>
-            <pre>${{ steps.terraform_validate.outputs.stdout }}</pre>
+              <summary>
+                <b>Validation:</b>
+                <span>${{ steps.terraform_validate.outcome }}</span>
+              </summary>
+
+              <pre>${{ steps.terraform_validate.outputs.stdout }}</pre>
             </details>
 
             <details>
-            <summary>
-            <b>Plan:</b>
-            <span>${{ steps.terraform_plan.outcome }}</span>
-            </summary>
-            <pre>${{ steps.terraform_plan.outputs.stdout }}</pre>
+              <summary>
+                <b>Plan:</b>
+                <span>${{ steps.terraform_plan.outcome }}</span>
+              </summary>
+
+              <pre>${{ steps.terraform_plan.outputs.stdout }}</pre>
             </details>
             `
-            
+
             github.rest.issues.createComment({
+              issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              issue_number: context.issue.number,
-              body,
+              body
             })
