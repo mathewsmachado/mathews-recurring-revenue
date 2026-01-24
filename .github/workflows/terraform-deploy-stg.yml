@@ -23,8 +23,8 @@ jobs:
     steps:
       - name: Check out repository code
         uses: actions/checkout@v5
-      # https://github.com/google-github-actions/auth
 
+      # https://github.com/google-github-actions/auth
       - uses: google-github-actions/auth@v3
         with:
           project_id: mathews-recurring-revenue-stg
@@ -33,3 +33,10 @@ jobs:
       - uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: "1.12.2"
+
+      - name: Terraform Init
+        run: |
+          terraform \
+            -chdir=terraform/mathews-recurring-revenue-stg \
+            init \
+            -input=false
