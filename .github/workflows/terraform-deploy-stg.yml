@@ -30,11 +30,6 @@ jobs:
           project_id: mathews-recurring-revenue-stg
           workload_identity_provider: projects/724228842720/locations/global/workloadIdentityPools/github/providers/mathews-recurring-revenue
 
-      - name: List authenticated accounts
-        run: gcloud auth list
-
-      - name: List projects
-        run: gcloud projects list
-
-      - name: List terraform directory content
-        run: ls -la terraform/mathews-recurring-revenue-stg
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.12.2"
