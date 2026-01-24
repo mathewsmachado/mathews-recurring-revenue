@@ -8,11 +8,11 @@ name: Terraform Deploy Staging
 # Failed trigger 1
 on:
   push:
-    branches-ignore:
-      - main
     paths:
       # - 'terraform/mathews-recurring-revenue-stg/**'
       - 'terraform/mathews-recurring-revenue-stg/**/*.txt'
+    branches-ignore:
+      - main
 
 # Failed trigger 2
 # on:
