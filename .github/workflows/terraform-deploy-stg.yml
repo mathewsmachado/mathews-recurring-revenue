@@ -73,33 +73,27 @@ jobs:
 
               <details>
                 <summary>
-                  <b>Initialization</b>
+                  <b>Initialization:</b>
                 </summary>
 
-                \`\`\`\n
                 ${{ steps.terraform_init.outputs.stdout }}
-                \`\`\`
               </details>
 
 
               <details>
                 <summary>
-                  <b>Validation</b>
+                  <b>Validation:</b>
                 </summary>
 
-                \`\`\`\n
                 ${{ steps.terraform_validate.outputs.stdout }}
-                \`\`\`
               </details>
 
               <details>
                 <summary>
-                  <b>Plan</b>
+                  <b>Plan:</b>
                 </summary>
 
-                \`\`\`\n
-                ${{ steps.terraform_plan.outputs.stdout }}
-                \`\`\`
+                <code>${{ steps.terraform_plan.outputs.stdout }}</code>
               </details>
             `;
 
