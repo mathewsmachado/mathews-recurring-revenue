@@ -65,7 +65,7 @@ jobs:
             echo 'EOF'
 
             echo 'details<<EOF'
-            echo '${{ steps.terraform-validate.outcome == "success" && steps.terraform-validate.outputs.stdout || steps.terraform-validate.outputs.stderr }}'
+            echo "${{ steps.terraform-validate.outcome == 'success' && steps.terraform-validate.outputs.stdout || steps.terraform-validate.outputs.stderr }}"
             echo 'EOF'
           } >> "$GITHUB_OUTPUT"
 
@@ -120,7 +120,7 @@ jobs:
             echo 'EOF'
 
             echo 'details<<EOF'
-            echo '${{ steps.terraform-plan.outcome == "success" && steps.terraform-plan.outputs.stdout || steps.terraform-plan.outputs.stderr }}'
+            echo "${{ steps.terraform-plan.outcome == 'success' && steps.terraform-plan.outputs.stdout || steps.terraform-plan.outputs.stderr }}"
             echo 'EOF'
           } >> "$GITHUB_OUTPUT"
 
@@ -225,7 +225,7 @@ jobs:
             echo 'EOF'
 
             echo 'details<<EOF'
-            echo '${{ steps.terraform-apply.outcome == "success" && steps.terraform-apply.outputs.stdout || steps.terraform-apply.outputs.stderr }}'
+            echo "${{ steps.terraform-apply.outcome == 'success' && steps.terraform-apply.outputs.stdout || steps.terraform-apply.outputs.stderr }}"
             echo 'EOF'
           } >> "$GITHUB_OUTPUT"
 
