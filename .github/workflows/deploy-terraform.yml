@@ -16,7 +16,7 @@ on:
 
 env:
   terraform-version: "1.12.2"
-#   terraform-plan-file-retention-days: 1
+  terraform-plan-file-retention-days: 1
 #   terraform-environment: "terraform-manual-approval"
 
 jobs:
@@ -108,7 +108,7 @@ jobs:
         with:
           name: ${{ inputs.gcp-project-id }}
           path: ${{ inputs.terraform-project }}/${{ inputs.gcp-project-id }}
-          retention-days: 1
+          retention-days: ${{ env.terraform-plan-file-retention-days }}
 
       - name: Persist Terraform Plan Output
         id: persist-terraform-cmd-output
