@@ -39,8 +39,8 @@ runs:
       uses: actions/cache@v4
       with:
         path: ${{ inputs.terraform-project }}/.terraform
-        key: ${{ inputs.terraform-project }}-${{ hashFiles(format('{0}/.terraform.lock.hcl', inputs.terraform-project)) }}
-        restore-keys: ${{ inputs.terraform-project }}-
+        key: ${{ runner.os }}-${{ inputs.terraform-project }}-${{ hashFiles(format('{0}/.terraform.lock.hcl', inputs.terraform-project)) }}
+        restore-keys: ${{ runner.os }}-${{ inputs.terraform-project }}-
 
     - name: Terraform Init
       shell: bash
