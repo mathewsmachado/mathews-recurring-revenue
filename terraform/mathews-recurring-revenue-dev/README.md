@@ -8,14 +8,14 @@ This project is intended to be executed only manually, do not execute it by CI/C
 
 1. Create a GCP project called "mathews-recurring-revenue-dev" through UI and associate a billing account. If you already have a default billing account, it will be automatically associated.
 
-2. Enable Credentials API:
+1. Enable Credentials API:
 
 ```sh
 gcloud services enable iamcredentials.googleapis.com \
     --project mathews-recurring-revenue-dev
 ```
     
-3. Create a bucket to store Terraform state:
+1. Create a bucket to store Terraform state:
 
 ```sh
 gcloud storage buckets create gs://mathews-recurring-revenue-dev-terraform-bucket \
@@ -26,7 +26,7 @@ gcloud storage buckets create gs://mathews-recurring-revenue-dev-terraform-bucke
     --soft-delete-duration=7d
 ```
 
-4. Create a Service Account:
+1. Create a Service Account:
 
 ```sh
 gcloud iam service-accounts create terraform \
@@ -34,7 +34,7 @@ gcloud iam service-accounts create terraform \
     --display-name="Terraform Service Account"
 ```
 
-5. Bind IAM Policies to the Service Account:
+1. Bind IAM Policies to the Service Account:
 
 ```sh
 for role in \
@@ -52,7 +52,7 @@ for role in \
     done
 ```
 
-6. Allow your user to impersonate the Service Account:
+1. Allow your user to impersonate the Service Account:
 
 ```sh
 gcloud iam service-accounts add-iam-policy-binding terraform@mathews-recurring-revenue-dev.iam.gserviceaccount.com \
@@ -61,7 +61,8 @@ gcloud iam service-accounts add-iam-policy-binding terraform@mathews-recurring-r
     --role="roles/iam.serviceAccountTokenCreator"
 ```
 
-7. Reauthenticate, impersonating the Service Account:
+1. Reauthenticate, impersonating the Service Account:
+
 ```sh
 gcloud auth application-default login \
     --project="mathews-recurring-revenue-dev" \

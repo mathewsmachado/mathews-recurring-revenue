@@ -4,10 +4,6 @@ resource "google_bigquery_dataset" "raw" {
   dataset_id                 = "raw"
   friendly_name              = "Raw Dataset"
   delete_contents_on_destroy = false
-
-  invalid_key {
-    value = true
-  }
 }
 
 # Remember to share the spreadsheet with DBT's Project Service Account
