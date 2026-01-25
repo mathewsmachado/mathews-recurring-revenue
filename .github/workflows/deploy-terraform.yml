@@ -39,6 +39,9 @@ jobs:
       details: ${{ steps.persist-terraform-validate-output.outputs.details }}
 
     steps:
+      - name: Clone Repository
+        uses: actions/checkout@v5
+
       - name: Setup Terraform on Google Cloud Platform
         uses: ./.github/actions/setup-terraform-on-gcp
         with:
@@ -83,6 +86,9 @@ jobs:
       details: ${{ steps.persist-terraform-plan-output.outputs.details }}
 
     steps:
+      - name: Clone Repository
+        uses: actions/checkout@v5
+
       - name: Setup Terraform on Google Cloud Platform
         uses: ./.github/actions/setup-terraform-on-gcp
         with:
@@ -180,6 +186,9 @@ jobs:
       details: ${{ steps.persist-terraform-apply-output.outputs.details }}
 
     steps:
+      - name: Clone Repository
+        uses: actions/checkout@v5
+
       - name: Setup Terraform on Google Cloud Platform
         uses: ./.github/actions/setup-terraform-on-gcp
         with:

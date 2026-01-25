@@ -1,5 +1,5 @@
 name: Setup Terraform on Google Cloud Platform
-description: Clone Repository, Authenticate to GCP, Install and Initialize Terraform
+description: Authenticate to GCP, Install and Initialize Terraform
 author: Mathews Machado
 
 inputs:
@@ -22,9 +22,6 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Clone Repository
-      uses: actions/checkout@v4
-
     - name: Authenticate to Google Cloud Platform
       uses: google-github-actions/auth@v3
       with:
