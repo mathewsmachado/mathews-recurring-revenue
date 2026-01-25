@@ -1,0 +1,17 @@
+name: Deploy Terraform Production
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - terraform/mathews-recurring-revenue-prd/**.tf
+
+jobs:
+  deploy-terraform-prd:
+    uses: ./.github/workflows/deploy-terraform.yml
+    with:
+      gcp-project-id: mathews-recurring-revenue-prd
+      gcp-workload-identity-provider: projects/753917517701/locations/global/workloadIdentityPools/github/providers/mathews-recurring-revenue
+      gcp-service-account: github@mathews-recurring-revenue-prd.iam.gserviceaccount.com
+      terraform-project: terraform/mathews-recurring-revenue-prd

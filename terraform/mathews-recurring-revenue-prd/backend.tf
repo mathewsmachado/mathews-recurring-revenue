@@ -9,7 +9,7 @@ terraform {
   required_version = "~> 1.12.2"
 
   backend "gcs" {
-    bucket = "mathews-recurring-revenue-stg-terraform-bucket"
+    bucket = "mathews-recurring-revenue-prd-terraform-bucket"
     prefix = "state"
   }
 }
