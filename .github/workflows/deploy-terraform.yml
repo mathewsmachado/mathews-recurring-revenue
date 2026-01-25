@@ -39,7 +39,8 @@ jobs:
       - name: Clone Repository
         uses: actions/checkout@v5
 
-      - uses: ./.github/actions/setup-terraform-on-gcp
+      - name: Setup Terraform on Google Cloud Platform
+        uses: ./.github/actions/setup-terraform-on-gcp
         with:
           gcp-project-id: ${{ inputs.gcp-project-id }}
           gcp-workload-identity-provider: ${{ inputs.gcp-workload-identity-provider }}
@@ -51,7 +52,8 @@ jobs:
         id: terraform-validate
         run: terraform validate -no-color
 
-      - uses: ./.github/actions/comment-terraform-command-result-on-pull-request
+      - name: Comment Terraform Validate Result on Pull Request
+        uses: ./.github/actions/comment-terraform-command-result-on-pull-request
         if: always()
         with:
           terraform-project: ${{ inputs.terraform-project }}
@@ -78,7 +80,8 @@ jobs:
       - name: Clone Repository
         uses: actions/checkout@v5
 
-      - uses: ./.github/actions/setup-terraform-on-gcp
+      - name: Setup Terraform on Google Cloud Platform
+        uses: ./.github/actions/setup-terraform-on-gcp
         with:
           gcp-project-id: ${{ inputs.gcp-project-id }}
           gcp-workload-identity-provider: ${{ inputs.gcp-workload-identity-provider }}
@@ -97,7 +100,8 @@ jobs:
           path: ${{ inputs.terraform-project }}/${{ inputs.gcp-project-id }}
           retention-days: ${{ env.terraform-plan-file-retention-days }}
 
-      - uses: ./.github/actions/comment-terraform-command-result-on-pull-request
+      - name: Comment Terraform Plan Result on Pull Request
+        uses: ./.github/actions/comment-terraform-command-result-on-pull-request
         if: always()
         with:
           terraform-project: ${{ inputs.terraform-project }}
@@ -126,7 +130,8 @@ jobs:
       - name: Clone Repository
         uses: actions/checkout@v5
 
-      - uses: ./.github/actions/setup-terraform-on-gcp
+      - name: Setup Terraform on Google Cloud Platform
+        uses: ./.github/actions/setup-terraform-on-gcp
         with:
           gcp-project-id: ${{ inputs.gcp-project-id }}
           gcp-workload-identity-provider: ${{ inputs.gcp-workload-identity-provider }}
@@ -144,7 +149,8 @@ jobs:
         id: terraform-apply
         run: terraform apply -no-color -auto-approve ${{ inputs.gcp-project-id }}
 
-      - uses: ./.github/actions/comment-terraform-command-result-on-pull-request
+      - name: Comment Terraform Apply Result on Pull Request
+        uses: ./.github/actions/comment-terraform-command-result-on-pull-request
         if: always()
         with:
           terraform-project: ${{ inputs.terraform-project }}
