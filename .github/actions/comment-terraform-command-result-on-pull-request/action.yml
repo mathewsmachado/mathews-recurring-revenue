@@ -1,0 +1,49 @@
+# <pre>${{ inputs.command-outcome == 'success' && inputs.command-stdout || inputs.command-stderr }}</pre>
+name: Comment Terraform Command Result on Pull Request
+description: Comment Terraform Command Result on Pull Request
+author: Mathews Machado
+
+inputs:
+  message-title:
+    required: true
+    description: Message Title
+  command-outcome:
+    required: true
+    description: Command Outcome
+  command-stdout:
+    required: true
+    description: Command Stdout
+  command-stderr:
+    required: true
+    description: Command Stderr
+
+runs:
+  using: composite
+  steps:
+    - name: Comment Terraform Command Result on Pull Request
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const body = `
+          <h2>${{ inputs.message-title }}</h2>
+
+          <span>
+            <b>Summary: </b>
+            <span>${{ inputs.command-outcome }}</span>
+          </span>
+
+          <details>
+            <summary>
+              <b>Details: </b>
+            </summary>
+
+            <pre>${{ inputs.command-stdout }}${{ inputs.command-stderr }}</pre>
+          </details>
+          `
+
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body
+          })

@@ -19,7 +19,7 @@ env:
   terraform-plan-file-retention-days: 1
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ inputs.gcp-project-id }}
   cancel-in-progress: true
 
 jobs:
@@ -34,16 +34,11 @@ jobs:
       run:
         working-directory: ${{ inputs.terraform-project }}
 
-    outputs:
-      summary: ${{ steps.persist-terraform-validate-output.outputs.summary }}
-      details: ${{ steps.persist-terraform-validate-output.outputs.details }}
-
     steps:
       - name: Clone Repository
         uses: actions/checkout@v5
 
-      - name: Setup Terraform on Google Cloud Platform
-        uses: ./.github/actions/setup-terraform-on-gcp
+      - uses: ./.github/actions/setup-terraform-on-gcp
         with:
           gcp-project-id: ${{ inputs.gcp-project-id }}
           gcp-workload-identity-provider: ${{ inputs.gcp-workload-identity-provider }}
@@ -55,19 +50,12 @@ jobs:
         id: terraform-validate
         run: terraform validate -no-color
 
-      - name: Persist Terraform Validate Output
-        id: persist-terraform-validate-output
-        if: always()
-        run: |
-          {
-            echo 'summary<<EOF'
-            echo '${{ steps.terraform-validate.outcome }}'
-            echo 'EOF'
-
-            echo 'details<<EOF'
-            echo "${{ steps.terraform-validate.outcome == 'success' && steps.terraform-validate.outputs.stdout || steps.terraform-validate.outputs.stderr }}"
-            echo 'EOF'
-          } >> "$GITHUB_OUTPUT"
+      - uses: ./.github/actions/comment-terraform-command-result-on-pull-request
+        with:
+          message_title: Terraform Validate [${{ inputs.gcp-project-id }}]
+          command-outcome: ${{ steps.terraform-validate.outcome }}
+          command-stdout: ${{ steps.terraform-validate.outputs.stdout }}
+          command-stderr: ${{ steps.terraform-validate.outputs.stderr }}
 
   terraform-plan:
     runs-on: ubuntu-latest
@@ -82,16 +70,11 @@ jobs:
       run:
         working-directory: ${{ inputs.terraform-project }}
 
-    outputs:
-      summary: ${{ steps.persist-terraform-plan-output.outputs.summary }}
-      details: ${{ steps.persist-terraform-plan-output.outputs.details }}
-
     steps:
       - name: Clone Repository
         uses: actions/checkout@v5
 
-      - name: Setup Terraform on Google Cloud Platform
-        uses: ./.github/actions/setup-terraform-on-gcp
+      - uses: ./.github/actions/setup-terraform-on-gcp
         with:
           gcp-project-id: ${{ inputs.gcp-project-id }}
           gcp-workload-identity-provider: ${{ inputs.gcp-workload-identity-provider }}
@@ -110,68 +93,12 @@ jobs:
           path: ${{ inputs.terraform-project }}/${{ inputs.gcp-project-id }}
           retention-days: ${{ env.terraform-plan-file-retention-days }}
 
-      - name: Persist Terraform Plan Output
-        id: persist-terraform-plan-output
-        if: always()
-        run: |
-          {
-            echo 'summary<<EOF'
-            echo '${{ steps.terraform-plan.outcome }}'
-            echo 'EOF'
-
-            echo 'details<<EOF'
-            echo "${{ steps.terraform-plan.outcome == 'success' && steps.terraform-plan.outputs.stdout || steps.terraform-plan.outputs.stderr }}"
-            echo 'EOF'
-          } >> "$GITHUB_OUTPUT"
-
-  terraform-print-validate-and-plan:
-    runs-on: ubuntu-latest
-
-    permissions:
-      pull-requests: write
-
-    needs:
-      - terraform-validate
-      - terraform-plan
-
-    if: |
-      always()
-      && (needs.terraform-validate.result == 'success' || needs.terraform-validate.result == 'failure')
-      && (needs.terraform-plan.result == 'success' || needs.terraform-plan.result == 'failure' || needs.terraform-plan.result == 'skipped')
-
-    steps:
-      - name: Comment on Pull Request
-        uses: actions/github-script@v7
+      - uses: ./.github/actions/comment-terraform-command-result-on-pull-request
         with:
-          script: |
-            const body = `
-            <h2>Terraform [${{ inputs.gcp-project-id }}]</h2>
-
-            <details>
-              <summary>
-                <b>Validate:</b>
-                <span>${{ needs.terraform-validate.outputs.summary }}</span>
-              </summary>
-
-              <pre>${{ needs.terraform-validate.outputs.details }}</pre>
-            </details>
-
-            <details>
-              <summary>
-                <b>Plan:</b>
-                <span>${{ needs.terraform-plan.outputs.summary }}</span>
-              </summary>
-
-              <pre>${{ needs.terraform-plan.outputs.details }}</pre>
-            </details>
-            `
-
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body
-            })
+          message_title: Terraform Plan [${{ inputs.gcp-project-id }}]
+          command-outcome: ${{ steps.terraform-plan.outcome }}
+          command-stdout: ${{ steps.terraform-plan.outputs.stdout }}
+          command-stderr: ${{ steps.terraform-plan.outputs.stderr }}
 
   terraform-apply:
     runs-on: ubuntu-latest
@@ -182,22 +109,17 @@ jobs:
 
     environment: terraform-manual-approval
 
-    needs: terraform-print-validate-and-plan
+    needs: terraform-plan
 
     defaults:
       run:
         working-directory: ${{ inputs.terraform-project }}
 
-    outputs:
-      summary: ${{ steps.persist-terraform-apply-output.outputs.summary }}
-      details: ${{ steps.persist-terraform-apply-output.outputs.details }}
-
     steps:
       - name: Clone Repository
         uses: actions/checkout@v5
 
-      - name: Setup Terraform on Google Cloud Platform
-        uses: ./.github/actions/setup-terraform-on-gcp
+      - uses: ./.github/actions/setup-terraform-on-gcp
         with:
           gcp-project-id: ${{ inputs.gcp-project-id }}
           gcp-workload-identity-provider: ${{ inputs.gcp-workload-identity-provider }}
@@ -215,53 +137,9 @@ jobs:
         id: terraform-apply
         run: terraform apply -no-color -auto-approve ${{ inputs.gcp-project-id }}
 
-      - name: Persist Terraform Apply Output
-        id: persist-terraform-apply-output
-        if: always()
-        run: |
-          {
-            echo 'summary<<EOF'
-            echo '${{ steps.terraform-apply.outcome }}'
-            echo 'EOF'
-
-            echo 'details<<EOF'
-            echo "${{ steps.terraform-apply.outcome == 'success' && steps.terraform-apply.outputs.stdout || steps.terraform-apply.outputs.stderr }}"
-            echo 'EOF'
-          } >> "$GITHUB_OUTPUT"
-
-  terraform-print-apply:
-    runs-on: ubuntu-latest
-
-    permissions:
-      pull-requests: write
-
-    needs: terraform-apply
-
-    if: |
-      always()
-      && (needs.terraform-apply.result == 'success' || needs.terraform-apply.result == 'failure')
-
-    steps:
-      - name: Comment on Pull Request
-        uses: actions/github-script@v7
+      - uses: ./.github/actions/comment-terraform-command-result-on-pull-request
         with:
-          script: |
-            const body = `
-            <h2>Terraform [${{ inputs.gcp-project-id }}]</h2>
-
-            <details>
-              <summary>
-                <b>Apply:</b>
-                <span>${{ needs.terraform-apply.outputs.summary }}</span>
-              </summary>
-
-              <pre>${{ needs.terraform-apply.outputs.details }}</pre>
-            </details>
-            `
-
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body
-            })
+          message_title: Terraform Apply [${{ inputs.gcp-project-id }}]
+          command-outcome: ${{ steps.terraform-apply.outcome }}
+          command-stdout: ${{ steps.terraform-apply.outputs.stdout }}
+          command-stderr: ${{ steps.terraform-apply.outputs.stderr }}
