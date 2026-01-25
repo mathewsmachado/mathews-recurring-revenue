@@ -46,7 +46,7 @@ jobs:
       - name: Install Terraform
         uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: "1.12.2"
+          terraform_version: ${{ env.terraform-version }}
 
       - name: Terraform Init
         run: terraform -chdir=${{ inputs.terraform-project }} init -no-color
@@ -94,7 +94,7 @@ jobs:
       - name: Install Terraform
         uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: "1.12.2"
+          terraform_version: ${{ env.terraform-version }}
 
       - name: Terraform Init
         run: terraform -chdir=${{ inputs.terraform-project }} init -no-color
@@ -196,7 +196,7 @@ jobs:
       - name: Install Terraform
         uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: "1.12.2"
+          terraform_version: ${{ env.terraform-version }}
 
       - name: Terraform Init
         run: terraform -chdir=${{ inputs.terraform-project }} init -no-color
