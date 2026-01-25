@@ -6,11 +6,6 @@ on:
       - main
     paths:
       - 'terraform/mathews-recurring-revenue-stg/**'
-  push:
-    branches:
-      - main
-    paths:
-      - 'terraform/mathews-recurring-revenue-stg/**'
 
 jobs:
   terraform-validate:
