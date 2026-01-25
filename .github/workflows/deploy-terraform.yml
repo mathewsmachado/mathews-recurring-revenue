@@ -174,7 +174,7 @@ jobs:
       contents: read
       id-token: write
 
-    environment: terraform-manual-approval
+    environment: ${{ env.terraform-environment }}
 
     needs: terraform-print-validate-and-plan
 
