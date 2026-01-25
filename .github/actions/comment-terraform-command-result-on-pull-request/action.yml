@@ -30,11 +30,8 @@ runs:
           ## Terraform Comment
 
           **Project:** ${{ inputs.terraform-project }}
-
           **Command:** ${{ inputs.terraform-command }}
-
           **Outcome:** ${{ inputs.terraform-command-outcome }}
-
           <details>
             <summary>
               <b>Output: </b>
