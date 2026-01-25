@@ -52,7 +52,7 @@ jobs:
 
       - uses: ./.github/actions/comment-terraform-command-result-on-pull-request
         with:
-          message_title: Terraform Validate [${{ inputs.gcp-project-id }}]
+          message-title: Terraform Validate [${{ inputs.gcp-project-id }}]
           command-outcome: ${{ steps.terraform-validate.outcome }}
           command-stdout: ${{ steps.terraform-validate.outputs.stdout }}
           command-stderr: ${{ steps.terraform-validate.outputs.stderr }}
@@ -95,7 +95,7 @@ jobs:
 
       - uses: ./.github/actions/comment-terraform-command-result-on-pull-request
         with:
-          message_title: Terraform Plan [${{ inputs.gcp-project-id }}]
+          message-title: Terraform Plan [${{ inputs.gcp-project-id }}]
           command-outcome: ${{ steps.terraform-plan.outcome }}
           command-stdout: ${{ steps.terraform-plan.outputs.stdout }}
           command-stderr: ${{ steps.terraform-plan.outputs.stderr }}
@@ -139,7 +139,7 @@ jobs:
 
       - uses: ./.github/actions/comment-terraform-command-result-on-pull-request
         with:
-          message_title: Terraform Apply [${{ inputs.gcp-project-id }}]
+          message-title: Terraform Apply [${{ inputs.gcp-project-id }}]
           command-outcome: ${{ steps.terraform-apply.outcome }}
           command-stdout: ${{ steps.terraform-apply.outputs.stdout }}
           command-stderr: ${{ steps.terraform-apply.outputs.stderr }}
