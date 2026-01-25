@@ -5,11 +5,10 @@ on:
     branches:
       - main
     paths:
-      - terraform/mathews-recurring-revenue-stg/**
-      - terraform/mathews-recurring-revenue-prd/**
+      - terraform/mathews-recurring-revenue-stg/**.tf
 
 jobs:
-  terraform-validate:
+  terraform-stg-validate:
     runs-on: ubuntu-latest
 
     permissions:
@@ -30,7 +29,7 @@ jobs:
         with:
           project_id: mathews-recurring-revenue-stg
           workload_identity_provider: projects/724228842720/locations/global/workloadIdentityPools/github/providers/mathews-recurring-revenue
-          service_account: github-actions@mathews-recurring-revenue-stg.iam.gserviceaccount.com
+          service_account: github@mathews-recurring-revenue-stg.iam.gserviceaccount.com
 
       - name: Install Terraform
         uses: hashicorp/setup-terraform@v3
@@ -57,14 +56,14 @@ jobs:
             echo 'EOF'
           } >> "$GITHUB_OUTPUT"
 
-  terraform-plan:
+  terraform-stg-plan:
     runs-on: ubuntu-latest
 
     permissions:
       contents: read
       id-token: write
 
-    needs: terraform-validate
+    needs: terraform-stg-validate
 
     outputs:
       summary: ${{ steps.persist_result.outputs.summary }}
@@ -79,7 +78,7 @@ jobs:
         with:
           project_id: mathews-recurring-revenue-stg
           workload_identity_provider: projects/724228842720/locations/global/workloadIdentityPools/github/providers/mathews-recurring-revenue
-          service_account: github-actions@mathews-recurring-revenue-stg.iam.gserviceaccount.com
+          service_account: github@mathews-recurring-revenue-stg.iam.gserviceaccount.com
 
       - name: Install Terraform
         uses: hashicorp/setup-terraform@v3
@@ -113,15 +112,15 @@ jobs:
             echo 'EOF'
           } >> "$GITHUB_OUTPUT"
 
-  terraform-print-validate-and-plan:
+  terraform-stg-print-validate-and-plan:
     runs-on: ubuntu-latest
 
     permissions:
       pull-requests: write
 
     needs:
-      - terraform-validate
-      - terraform-plan
+      - terraform-stg-validate
+      - terraform-stg-plan
 
     steps:
       - name: Decorate PR
@@ -134,19 +133,19 @@ jobs:
             <details>
               <summary>
                 <b>Validation:</b>
-                <span>${{ needs.terraform-validate.outputs.summary }}</span>
+                <span>${{ needs.terraform-stg-validate.outputs.summary }}</span>
               </summary>
 
-              <pre>${{ needs.terraform-validate.outputs.details }}</pre>
+              <pre>${{ needs.terraform-stg-validate.outputs.details }}</pre>
             </details>
 
             <details>
               <summary>
                 <b>Plan:</b>
-                <span>${{ needs.terraform-plan.outputs.summary }}</span>
+                <span>${{ needs.terraform-stg-plan.outputs.summary }}</span>
               </summary>
 
-              <pre>${{ needs.terraform-plan.outputs.details }}</pre>
+              <pre>${{ needs.terraform-stg-plan.outputs.details }}</pre>
             </details>
             `
 
@@ -157,16 +156,16 @@ jobs:
               body
             })
 
-  terraform-apply:
+  terraform-stg-apply:
     runs-on: ubuntu-latest
 
     permissions:
       contents: read
       id-token: write
 
-    environment: mathews-recurring-revenue-stg
+    environment: terraform-manual-approval
 
-    needs: terraform-print-validate-and-plan
+    needs: terraform-stg-print-validate-and-plan
 
     outputs:
       summary: ${{ steps.persist_result.outputs.summary }}
@@ -181,7 +180,7 @@ jobs:
         with:
           project_id: mathews-recurring-revenue-stg
           workload_identity_provider: projects/724228842720/locations/global/workloadIdentityPools/github/providers/mathews-recurring-revenue
-          service_account: github-actions@mathews-recurring-revenue-stg.iam.gserviceaccount.com
+          service_account: github@mathews-recurring-revenue-stg.iam.gserviceaccount.com
 
       - name: Install Terraform
         uses: hashicorp/setup-terraform@v3
@@ -214,13 +213,13 @@ jobs:
             echo 'EOF'
           } >> "$GITHUB_OUTPUT"
 
-  terraform-print-apply:
+  terraform-stg-print-apply:
     runs-on: ubuntu-latest
 
     permissions:
       pull-requests: write
 
-    needs: terraform-apply
+    needs: terraform-stg-apply
 
     steps:
       - name: Decorate PR
@@ -233,10 +232,10 @@ jobs:
             <details>
               <summary>
                 <b>Apply:</b>
-                <span>${{ needs.terraform-apply.outputs.summary }}</span>
+                <span>${{ needs.terraform-stg-apply.outputs.summary }}</span>
               </summary>
 
-              <pre>${{ needs.terraform-apply.outputs.details }}</pre>
+              <pre>${{ needs.terraform-stg-apply.outputs.details }}</pre>
             </details>
             `
 
