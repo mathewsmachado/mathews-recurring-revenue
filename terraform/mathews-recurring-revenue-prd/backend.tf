@@ -9,12 +9,12 @@ terraform {
   required_version = "~> 1.12.2"
 
   backend "gcs" {
-    bucket                      = "mathews-recurring-revenue-prd-terraform-bucket"
-    prefix                      = "state"
+    bucket = "mathews-recurring-revenue-prd-terraform-bucket"
+    prefix = "state"
   }
 }
 
 provider "google" {
-  project                     = var.project_id
-  region                      = var.project_region
+  project = var.project_id
+  region  = var.project_region
 }

@@ -78,7 +78,7 @@ gcloud iam service-accounts add-iam-policy-binding \
     --member="principalSet://iam.googleapis.com/projects/753917517701/locations/global/workloadIdentityPools/github/attribute.repository/mathewsmachado/mathews-recurring-revenue"
 ```
 
-8. Create a Bucket to store Terraform state:
+9. Create a Bucket to store Terraform state:
 
 ```sh
 gcloud storage buckets create gs://mathews-recurring-revenue-prd-terraform-bucket \
