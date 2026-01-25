@@ -16,8 +16,8 @@ on:
 
 env:
   terraform-version: "1.12.2"
-  terraform-plan-file-retention-days: 1
   terraform-ma: "terraform-manual-approval"
+  terraform-plan-file-retention-days: 1
 
 jobs:
   terraform-validate:
