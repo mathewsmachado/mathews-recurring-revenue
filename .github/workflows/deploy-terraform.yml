@@ -22,6 +22,10 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+defaults:
+  run:
+    working-directory: ${{ inputs.terraform-project }}
+
 jobs:
   terraform-validate:
     runs-on: ubuntu-latest
@@ -51,11 +55,11 @@ jobs:
           terraform_version: ${{ env.terraform-version }}
 
       - name: Terraform Init
-        run: terraform -chdir=${{ inputs.terraform-project }} init -no-color
+        run: terraform init -no-color
 
       - name: Terraform Validate
         id: terraform-validate
-        run: terraform -chdir=${{ inputs.terraform-project }} validate -no-color
+        run: terraform validate -no-color
 
       - name: Persist Terraform Validate Output
         id: persist-terraform-validate-output
@@ -100,11 +104,11 @@ jobs:
           terraform_version: ${{ env.terraform-version }}
 
       - name: Terraform Init
-        run: terraform -chdir=${{ inputs.terraform-project }} init -no-color
+        run: terraform init -no-color
 
       - name: Terraform Plan
         id: terraform-plan
-        run: terraform -chdir=${{ inputs.terraform-project }} plan -no-color -out=${{ inputs.gcp-project-id }}
+        run: terraform plan -no-color -out=${{ inputs.gcp-project-id }}
 
       - name: Persist Terraform Plan Output File
         uses: actions/upload-artifact@v4
@@ -202,7 +206,7 @@ jobs:
           terraform_version: ${{ env.terraform-version }}
 
       - name: Terraform Init
-        run: terraform -chdir=${{ inputs.terraform-project }} init -no-color
+        run: terraform init -no-color
 
       - name: Retrieve Terraform Plan File
         uses: actions/download-artifact@v5
@@ -212,7 +216,7 @@ jobs:
 
       - name: Terraform Apply
         id: terraform-apply
-        run: terraform -chdir=${{ inputs.terraform-project }} apply -no-color -auto-approve ${{ inputs.gcp-project-id }}
+        run: terraform apply -no-color -auto-approve ${{ inputs.gcp-project-id }}
 
       - name: Persist Terraform Apply Output
         id: persist-terraform-apply-output
