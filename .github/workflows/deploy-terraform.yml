@@ -14,10 +14,10 @@ on:
         required: true
         type: string
 
-env:
-  terraform-version: "1.12.2"
-  terraform-plan-file-retention-days: 1
-  terraform-environment: "terraform-manual-approval"
+# env:
+#   terraform-version: "1.12.2"
+#   terraform-plan-file-retention-days: 1
+#   terraform-environment: "terraform-manual-approval"
 
 jobs:
   terraform-validate:
@@ -46,7 +46,7 @@ jobs:
       - name: Install Terraform
         uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: ${{ env.terraform-version }}
+          terraform_version: "1.12.2"
 
       - name: Terraform Init
         run: terraform -chdir=${{ inputs.terraform-project }} init -no-color
@@ -94,7 +94,7 @@ jobs:
       - name: Install Terraform
         uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: ${{ env.terraform-version }}
+          terraform_version: "1.12.2"
 
       - name: Terraform Init
         run: terraform -chdir=${{ inputs.terraform-project }} init -no-color
@@ -108,7 +108,7 @@ jobs:
         with:
           name: ${{ inputs.gcp-project-id }}
           path: ${{ inputs.terraform-project }}/${{ inputs.gcp-project-id }}
-          retention-days: ${{ env.terraform-plan-file-retention-days }}
+          retention-days: 1
 
       - name: Persist Terraform Plan Output
         id: persist-terraform-cmd-output
@@ -174,7 +174,7 @@ jobs:
       contents: read
       id-token: write
 
-    environment: ${{ env.terraform-environment }}
+    environment: terraform-manual-approval
 
     needs: terraform-print-validate-and-plan
 
@@ -196,7 +196,7 @@ jobs:
       - name: Install Terraform
         uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: ${{ env.terraform-version }}
+          terraform_version: "1.12.2"
 
       - name: Terraform Init
         run: terraform -chdir=${{ inputs.terraform-project }} init -no-color
