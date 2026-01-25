@@ -29,31 +29,28 @@ runs:
           const body = `
           <h2>Terraform Comment</h2>
 
-          <ul>
-            <li>
-              <b>Terraform Project: </b>
-              <span>${{ inputs.terraform-project }}</span>
-            </li>
+          <span>
+            <b>Project: </b>
+            ${{ inputs.terraform-project }}
+          </span>
 
-            <li>
-              <b>Terraform Command: </b>
-              <span>${{ inputs.terraform-command }}</span>
-            </li>
+          <span>
+            <b>Command: </b>
+            ${{ inputs.terraform-command }}
+          </span>
 
-            <li>
-              <b>Terraform Command Outcome: </b>
-              <span>${{ inputs.terraform-command-outcome }}</span>
-            </li>
-            <li>
-              <details>
-                <summary>
-                  <b>Terraform Command Output: </b>
-                </summary>
+          <span>
+            <b>Outcome: </b>
+            ${{ inputs.terraform-command-outcome }}
+          </span>
 
-                <pre>${{ inputs.terraform-command-stdout }}${{ inputs.terraform-command-stderr }}</pre>
-              </details>
-            </li>
-          </ul>
+          <details>
+            <summary>
+              <b>Output: </b>
+            </summary>
+
+            <pre>${{ inputs.terraform-command-stdout }}${{ inputs.terraform-command-stderr }}</pre>
+          </details>
           `
 
           github.rest.issues.createComment({
