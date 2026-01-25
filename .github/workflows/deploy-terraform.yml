@@ -5,7 +5,8 @@ on:
     branches:
       - main
     paths:
-      - 'terraform/mathews-recurring-revenue-stg/**'
+      - terraform/mathews-recurring-revenue-stg/**
+      - terraform/mathews-recurring-revenue-prd/**
 
 jobs:
   terraform-validate:
