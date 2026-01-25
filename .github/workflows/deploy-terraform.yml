@@ -39,23 +39,14 @@ jobs:
       details: ${{ steps.persist-terraform-validate-output.outputs.details }}
 
     steps:
-      - name: Clone Repository
-        uses: actions/checkout@v5
-
-      - name: Authenticate to Google Cloud Platform
-        uses: google-github-actions/auth@v3
+      - name: Setup Terraform on Google Cloud Platform
+        uses: ./.github/actions/setup-terraform-on-gcp
         with:
-          project_id: ${{ inputs.gcp-project-id }}
-          workload_identity_provider: ${{ inputs.gcp-workload-identity-provider }}
-          service_account: ${{ inputs.gcp-service-account }}
-
-      - name: Install Terraform
-        uses: hashicorp/setup-terraform@v3
-        with:
-          terraform_version: ${{ env.terraform-version }}
-
-      - name: Terraform Init
-        run: terraform init -no-color
+          gcp-project-id: ${{ inputs.gcp-project-id }}
+          gcp-workload-identity-provider: ${{ inputs.gcp-workload-identity-provider }}
+          gcp-service-account: ${{ inputs.gcp-service-account }}
+          terraform-project: ${{ inputs.terraform-project }}
+          terraform-version: ${{ env.terraform-version }}
 
       - name: Terraform Validate
         id: terraform-validate
@@ -92,23 +83,14 @@ jobs:
       details: ${{ steps.persist-terraform-plan-output.outputs.details }}
 
     steps:
-      - name: Clone Repository
-        uses: actions/checkout@v5
-
-      - name: Authenticate to Google Cloud Platform
-        uses: google-github-actions/auth@v3
+      - name: Setup Terraform on Google Cloud Platform
+        uses: ./.github/actions/setup-terraform-on-gcp
         with:
-          project_id: ${{ inputs.gcp-project-id }}
-          workload_identity_provider: ${{ inputs.gcp-workload-identity-provider }}
-          service_account: ${{ inputs.gcp-service-account }}
-
-      - name: Install Terraform
-        uses: hashicorp/setup-terraform@v3
-        with:
-          terraform_version: ${{ env.terraform-version }}
-
-      - name: Terraform Init
-        run: terraform init -no-color
+          gcp-project-id: ${{ inputs.gcp-project-id }}
+          gcp-workload-identity-provider: ${{ inputs.gcp-workload-identity-provider }}
+          gcp-service-account: ${{ inputs.gcp-service-account }}
+          terraform-project: ${{ inputs.terraform-project }}
+          terraform-version: ${{ env.terraform-version }}
 
       - name: Terraform Plan
         id: terraform-plan
@@ -198,23 +180,14 @@ jobs:
       details: ${{ steps.persist-terraform-apply-output.outputs.details }}
 
     steps:
-      - name: Clone Repository
-        uses: actions/checkout@v5
-
-      - name: Authenticate to Google Cloud Platform
-        uses: google-github-actions/auth@v3
+      - name: Setup Terraform on Google Cloud Platform
+        uses: ./.github/actions/setup-terraform-on-gcp
         with:
-          project_id: ${{ inputs.gcp-project-id }}
-          workload_identity_provider: ${{ inputs.gcp-workload-identity-provider }}
-          service_account: ${{ inputs.gcp-service-account }}
-
-      - name: Install Terraform
-        uses: hashicorp/setup-terraform@v3
-        with:
-          terraform_version: ${{ env.terraform-version }}
-
-      - name: Terraform Init
-        run: terraform init -no-color
+          gcp-project-id: ${{ inputs.gcp-project-id }}
+          gcp-workload-identity-provider: ${{ inputs.gcp-workload-identity-provider }}
+          gcp-service-account: ${{ inputs.gcp-service-account }}
+          terraform-project: ${{ inputs.terraform-project }}
+          terraform-version: ${{ env.terraform-version }}
 
       - name: Retrieve Terraform Plan File
         uses: actions/download-artifact@v5
