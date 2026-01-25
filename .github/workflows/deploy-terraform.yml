@@ -65,7 +65,7 @@ jobs:
             echo 'EOF'
 
             echo 'details<<EOF'
-            echo '${{ steps.terraform-validate.outputs.stdout }}'
+            echo '${{ steps.terraform-validate.outcome == "success" && steps.terraform-validate.outputs.stdout || steps.terraform-validate.outputs.stderr }}'
             echo 'EOF'
           } >> "$GITHUB_OUTPUT"
 
@@ -120,7 +120,7 @@ jobs:
             echo 'EOF'
 
             echo 'details<<EOF'
-            echo '${{ steps.terraform-plan.outputs.stdout }}'
+            echo '${{ steps.terraform-plan.outcome == "success" && steps.terraform-plan.outputs.stdout || steps.terraform-plan.outputs.stderr }}'
             echo 'EOF'
           } >> "$GITHUB_OUTPUT"
 
@@ -134,7 +134,10 @@ jobs:
       - terraform-validate
       - terraform-plan
 
-    if: always() && needs.terraform-validate.result != 'cancelled' && needs.terraform-plan.result != 'cancelled'
+    if: |
+      always()
+      && (needs.terraform-validate.result != 'success' || needs.terraform-validate.result != 'failure')
+      && (needs.terraform-plan.result != 'success' || needs.terraform-plan.result != 'failure')
 
     steps:
       - name: Comment on Pull Request
@@ -222,7 +225,7 @@ jobs:
             echo 'EOF'
 
             echo 'details<<EOF'
-            echo '${{ steps.terraform-apply.outputs.stdout }}'
+            echo '${{ steps.terraform-apply.outcome == "success" && steps.terraform-apply.outputs.stdout || steps.terraform-apply.outputs.stderr }}'
             echo 'EOF'
           } >> "$GITHUB_OUTPUT"
 
@@ -234,7 +237,9 @@ jobs:
 
     needs: terraform-apply
 
-    if: always() && needs.terraform-apply.result != 'cancelled'
+    if: |
+      always()
+      && (needs.terraform-apply.result != 'success' || needs.terraform-apply.result != 'failure')
 
     steps:
       - name: Comment on Pull Request
