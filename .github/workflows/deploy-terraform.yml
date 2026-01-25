@@ -54,10 +54,11 @@ jobs:
       - uses: ./.github/actions/comment-terraform-command-result-on-pull-request
         if: always()
         with:
-          message-title: Terraform Validate [${{ inputs.gcp-project-id }}]
-          command-outcome: ${{ steps.terraform-validate.outcome }}
-          command-stdout: ${{ steps.terraform-validate.outputs.stdout }}
-          command-stderr: ${{ steps.terraform-validate.outputs.stderr }}
+          terraform-project: ${{ inputs.terraform-project }}
+          terraform-command: validate
+          terraform-command-outcome: ${{ steps.terraform-validate.outcome }}
+          terraform-command-stdout: ${{ steps.terraform-validate.outputs.stdout }}
+          terraform-command-stderr: ${{ steps.terraform-validate.outputs.stderr }}
 
   terraform-plan:
     runs-on: ubuntu-latest
@@ -99,10 +100,11 @@ jobs:
       - uses: ./.github/actions/comment-terraform-command-result-on-pull-request
         if: always()
         with:
-          message-title: Terraform Plan [${{ inputs.gcp-project-id }}]
-          command-outcome: ${{ steps.terraform-plan.outcome }}
-          command-stdout: ${{ steps.terraform-plan.outputs.stdout }}
-          command-stderr: ${{ steps.terraform-plan.outputs.stderr }}
+          terraform-project: ${{ inputs.terraform-project }}
+          terraform-command: plan
+          terraform-command-outcome: ${{ steps.terraform-plan.outcome }}
+          terraform-command-stdout: ${{ steps.terraform-plan.outputs.stdout }}
+          terraform-command-stderr: ${{ steps.terraform-plan.outputs.stderr }}
 
   terraform-apply:
     runs-on: ubuntu-latest
@@ -145,7 +147,8 @@ jobs:
       - uses: ./.github/actions/comment-terraform-command-result-on-pull-request
         if: always()
         with:
-          message-title: Terraform Apply [${{ inputs.gcp-project-id }}]
-          command-outcome: ${{ steps.terraform-apply.outcome }}
-          command-stdout: ${{ steps.terraform-apply.outputs.stdout }}
-          command-stderr: ${{ steps.terraform-apply.outputs.stderr }}
+          terraform-project: ${{ inputs.terraform-project }}
+          terraform-command: apply
+          terraform-command-outcome: ${{ steps.terraform-apply.outcome }}
+          terraform-command-stdout: ${{ steps.terraform-apply.outputs.stdout }}
+          terraform-command-stderr: ${{ steps.terraform-apply.outputs.stderr }}

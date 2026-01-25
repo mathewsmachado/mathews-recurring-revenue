@@ -1,21 +1,23 @@
-# <pre>${{ inputs.command-outcome == 'success' && inputs.command-stdout || inputs.command-stderr }}</pre>
 name: Comment Terraform Command Result on Pull Request
 description: Comment Terraform Command Result on Pull Request
 author: Mathews Machado
 
 inputs:
-  message-title:
+  terraform-project:
     required: true
-    description: Message Title
-  command-outcome:
+    description: Terraform Project
+  terraform-command:
     required: true
-    description: Command Outcome
-  command-stdout:
+    description: Terraform Command
+  terraform-command-outcome:
     required: true
-    description: Command Stdout
-  command-stderr:
+    description: Terraform Command Outcome
+  terraform-command-stdout:
     required: true
-    description: Command Stderr
+    description: Terraform Command Stdout
+  terraform-command-stderr:
+    required: true
+    description: Terraform Command Stderr
 
 runs:
   using: composite
@@ -25,20 +27,33 @@ runs:
       with:
         script: |
           const body = `
-          <h2>${{ inputs.message-title }}</h2>
+          <h2>Terraform Comment</h2>
 
-          <span>
-            <b>Summary: </b>
-            <span>${{ inputs.command-outcome }}</span>
-          </span>
+          <ul>
+            <li>
+              <b>Terraform Project: </b>
+              <span>${{ inputs.terraform-project }}</span>
+            </li>
 
-          <details>
-            <summary>
-              <b>Details: </b>
-            </summary>
+            <li>
+              <b>Terraform Command: </b>
+              <span>${{ inputs.terraform-command }}</span>
+            </li>
 
-            <pre>${{ inputs.command-stdout }}${{ inputs.command-stderr }}</pre>
-          </details>
+            <li>
+              <b>Terraform Command Outcome: </b>
+              <span>${{ inputs.terraform-command-outcome }}</span>
+            </li>
+            <li>
+              <details>
+                <summary>
+                  <b>Terraform Command Output: </b>
+                </summary>
+
+                <pre>${{ inputs.terraform-command-stdout }}${{ inputs.terraform-command-stderr }}</pre>
+              </details>
+            </li>
+          </ul>
           `
 
           github.rest.issues.createComment({
