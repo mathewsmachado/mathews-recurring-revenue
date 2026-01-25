@@ -34,6 +34,14 @@ runs:
       with:
         terraform_version: ${{ inputs.terraform-version }}
 
+    - name: Cache Terraform Modules and Providers
+      id: cache-terraform
+      uses: actions/cache@v4
+      with:
+        path: ${{ inputs.terraform-project }}/.terraform
+        key: ${{ inputs.terraform-project }}-${{ hashFiles(format('{0}/.terraform.lock.hcl', inputs.terraform-project)) }}
+        restore-keys: ${{ inputs.terraform-project }}-
+
     - name: Terraform Init
       shell: bash
       working-directory: ${{ inputs.terraform-project }}
