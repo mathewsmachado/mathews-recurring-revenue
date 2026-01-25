@@ -1,17 +1,17 @@
 resource "google_bigquery_dataset" "raw" {
-  project       = var.project_id
-  location      = var.project_location
-  dataset_id    = "raw"
-  friendly_name = "Raw Dataset"
+  project                    = var.project_id
+  location                   = var.project_location
+  dataset_id                 = "raw"
+  friendly_name              = "Raw Dataset"
   delete_contents_on_destroy = false
 }
 
 # Remember to share the spreadsheet with DBT's Project Service Account
 resource "google_bigquery_table" "google_sheets__incomes" {
-  project             = var.project_id
-  dataset_id          = google_bigquery_dataset.raw.dataset_id
-  table_id            = "google_sheets__incomes"
-  deletion_protection = false
+  project                      = var.project_id
+  dataset_id                   = google_bigquery_dataset.raw.dataset_id
+  table_id                     = "google_sheets__incomes"
+  deletion_protection          = false
   ignore_auto_generated_schema = false
 
   external_data_configuration {
@@ -22,10 +22,10 @@ resource "google_bigquery_table" "google_sheets__incomes" {
       range             = "Incomes"
       skip_leading_rows = 1
     }
-    
-    compression   = "NONE"
-    autodetect = false
-    schema     = <<EOF
+
+    compression = "NONE"
+    autodetect  = false
+    schema      = <<EOF
       [
         { "name": "tran_date", "type": "STRING" },
         { "name": "tran_payer", "type": "STRING" },
