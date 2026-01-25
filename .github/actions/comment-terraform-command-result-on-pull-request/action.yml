@@ -27,22 +27,13 @@ runs:
       with:
         script: |
           const body = `
-          <h2>Terraform Comment</h2>
+          ## Terraform Comment
 
-          <span>
-            <b>Project: </b>
-            ${{ inputs.terraform-project }}
-          </span>
+          **Project:** ${{ inputs.terraform-project }}
 
-          <span>
-            <b>Command: </b>
-            ${{ inputs.terraform-command }}
-          </span>
+          **Command:** ${{ inputs.terraform-command }}
 
-          <span>
-            <b>Outcome: </b>
-            ${{ inputs.terraform-command-outcome }}
-          </span>
+          **Outcome:** ${{ inputs.terraform-command-outcome }}
 
           <details>
             <summary>
