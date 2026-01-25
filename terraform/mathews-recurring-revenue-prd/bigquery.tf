@@ -6,7 +6,7 @@ resource "google_bigquery_dataset" "raw" {
   delete_contents_on_destroy = false
 
   inexistent_key {
-    true
+    value = true
   }
 }
 
