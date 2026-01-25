@@ -16,8 +16,11 @@ on:
 
 env:
   terraform-version: "1.12.2"
-  terraform-ma: "terraform-manual-approval"
   terraform-plan-file-retention-days: 1
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   terraform-validate:
@@ -174,7 +177,7 @@ jobs:
       contents: read
       id-token: write
 
-    environment: "${{ env.terraform-ma }}"
+    environment: terraform-manual-approval
 
     needs: terraform-print-validate-and-plan
 
