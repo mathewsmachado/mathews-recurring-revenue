@@ -8,7 +8,7 @@ on:
       - terraform/mathews-recurring-revenue-prd/**.tf
 
 jobs:
-  deploy-terraform-stg:
+  deploy-terraform-prd:
     uses: ./.github/workflows/deploy-terraform.yml
     with:
       gcp-project-id: mathews-recurring-revenue-prd
