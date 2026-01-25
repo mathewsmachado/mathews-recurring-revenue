@@ -17,7 +17,7 @@ on:
 env:
   terraform-version: "1.12.2"
   terraform-plan-file-retention-days: 1
-  terraform-environment: "terraform-manual-approval"
+  terraform-ma: "terraform-manual-approval"
 
 jobs:
   terraform-validate:
@@ -174,7 +174,7 @@ jobs:
       contents: read
       id-token: write
 
-    environment: ${{ env.terraform-environment }}
+    environment: ${{ env.terraform-ma }}
 
     needs: terraform-print-validate-and-plan
 
