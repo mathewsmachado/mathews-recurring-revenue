@@ -52,7 +52,7 @@ jobs:
         run: terraform validate -no-color
 
       - uses: ./.github/actions/comment-terraform-command-result-on-pull-request
-        # if: always()
+        if: always()
         with:
           message-title: Terraform Validate [${{ inputs.gcp-project-id }}]
           command-outcome: ${{ steps.terraform-validate.outcome }}
@@ -97,6 +97,7 @@ jobs:
           retention-days: ${{ env.terraform-plan-file-retention-days }}
 
       - uses: ./.github/actions/comment-terraform-command-result-on-pull-request
+        if: always()
         with:
           message-title: Terraform Plan [${{ inputs.gcp-project-id }}]
           command-outcome: ${{ steps.terraform-plan.outcome }}
@@ -142,6 +143,7 @@ jobs:
         run: terraform apply -no-color -auto-approve ${{ inputs.gcp-project-id }}
 
       - uses: ./.github/actions/comment-terraform-command-result-on-pull-request
+        if: always()
         with:
           message-title: Terraform Apply [${{ inputs.gcp-project-id }}]
           command-outcome: ${{ steps.terraform-apply.outcome }}
