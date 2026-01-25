@@ -29,6 +29,7 @@ jobs:
     permissions:
       contents: read
       id-token: write
+      pull-requests: write
 
     defaults:
       run:
@@ -51,6 +52,7 @@ jobs:
         run: terraform validate -no-color
 
       - uses: ./.github/actions/comment-terraform-command-result-on-pull-request
+        # if: always()
         with:
           message-title: Terraform Validate [${{ inputs.gcp-project-id }}]
           command-outcome: ${{ steps.terraform-validate.outcome }}
@@ -63,6 +65,7 @@ jobs:
     permissions:
       contents: read
       id-token: write
+      pull-requests: write
 
     needs: terraform-validate
 
@@ -106,6 +109,7 @@ jobs:
     permissions:
       contents: read
       id-token: write
+      pull-requests: write
 
     environment: terraform-manual-approval
 
