@@ -57,6 +57,7 @@ jobs:
 
       - name: Persist Terraform Validate Output
         id: persist-terraform-validate-output
+        if: always()
         run: |
           {
             echo 'summary<<EOF'
@@ -111,6 +112,7 @@ jobs:
 
       - name: Persist Terraform Plan Output
         id: persist-terraform-plan-output
+        if: always()
         run: |
           {
             echo 'summary<<EOF'
@@ -131,6 +133,8 @@ jobs:
     needs:
       - terraform-validate
       - terraform-plan
+
+    if: always() && needs.terraform-validate.result != 'cancelled' && needs.terraform-plan.result != 'cancelled'
 
     steps:
       - name: Comment on Pull Request
@@ -210,6 +214,7 @@ jobs:
 
       - name: Persist Terraform Apply Output
         id: persist-terraform-apply-output
+        if: always()
         run: |
           {
             echo 'summary<<EOF'
@@ -228,6 +233,8 @@ jobs:
       pull-requests: write
 
     needs: terraform-apply
+
+    if: always() && needs.terraform-apply.result != 'cancelled'
 
     steps:
       - name: Comment on Pull Request
