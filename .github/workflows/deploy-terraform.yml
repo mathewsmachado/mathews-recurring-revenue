@@ -31,8 +31,8 @@ jobs:
       id-token: write
 
     outputs:
-      summary: ${{ steps.persist-terraform-cmd-output.outputs.summary }}
-      details: ${{ steps.persist-terraform-cmd-output.outputs.details }}
+      summary: ${{ steps.persist-terraform-validate-output.outputs.summary }}
+      details: ${{ steps.persist-terraform-validate-output.outputs.details }}
 
     steps:
       - name: Clone Repository
@@ -54,21 +54,22 @@ jobs:
         run: terraform -chdir=${{ inputs.terraform-project }} init -no-color
 
       - name: Terraform Validate
-        id: terraform-cmd
+        id: terraform-validate
         run: terraform -chdir=${{ inputs.terraform-project }} validate -no-color
 
       - name: Persist Terraform Validate Output
-        id: persist-terraform-cmd-output
+        id: persist-terraform-validate-output
         run: |
           {
             echo 'summary<<EOF'
-            echo '${{ steps.terraform-cmd.outcome }}'
+            echo '${{ steps.terraform-validate.outcome }}'
             echo 'EOF'
 
             echo 'details<<EOF'
-            echo '${{ steps.terraform-cmd.outputs.stdout }}'
+            echo '${{ steps.terraform-validate.outputs.stdout }}'
             echo 'EOF'
           } >> "$GITHUB_OUTPUT"
+
   terraform-plan:
     runs-on: ubuntu-latest
 
@@ -79,8 +80,8 @@ jobs:
     needs: terraform-validate
 
     outputs:
-      summary: ${{ steps.persist-terraform-cmd-output.outputs.summary }}
-      details: ${{ steps.persist-terraform-cmd-output.outputs.details }}
+      summary: ${{ steps.persist-terraform-plan-output.outputs.summary }}
+      details: ${{ steps.persist-terraform-plan-output.outputs.details }}
 
     steps:
       - name: Clone Repository
@@ -102,7 +103,7 @@ jobs:
         run: terraform -chdir=${{ inputs.terraform-project }} init -no-color
 
       - name: Terraform Plan
-        id: terraform-cmd
+        id: terraform-plan
         run: terraform -chdir=${{ inputs.terraform-project }} plan -no-color -out=${{ inputs.gcp-project-id }}
 
       - name: Persist Terraform Plan Output File
@@ -113,15 +114,15 @@ jobs:
           retention-days: ${{ env.terraform-plan-file-retention-days }}
 
       - name: Persist Terraform Plan Output
-        id: persist-terraform-cmd-output
+        id: persist-terraform-plan-output
         run: |
           {
             echo 'summary<<EOF'
-            echo '${{ steps.terraform-cmd.outcome }}'
+            echo '${{ steps.terraform-plan.outcome }}'
             echo 'EOF'
 
             echo 'details<<EOF'
-            echo '${{ steps.terraform-cmd.outputs.stdout }}'
+            echo '${{ steps.terraform-plan.outputs.stdout }}'
             echo 'EOF'
           } >> "$GITHUB_OUTPUT"
 
@@ -181,8 +182,8 @@ jobs:
     needs: terraform-print-validate-and-plan
 
     outputs:
-      summary: ${{ steps.persist-terraform-cmd-output.outputs.summary }}
-      details: ${{ steps.persist-terraform-cmd-output.outputs.details }}
+      summary: ${{ steps.persist-terraform-apply-output.outputs.summary }}
+      details: ${{ steps.persist-terraform-apply-output.outputs.details }}
 
     steps:
       - name: Clone Repository
@@ -210,19 +211,19 @@ jobs:
           path: ${{ inputs.terraform-project }}
 
       - name: Terraform Apply
-        id: terraform-cmd
+        id: terraform-apply
         run: terraform -chdir=${{ inputs.terraform-project }} apply -no-color -auto-approve ${{ inputs.gcp-project-id }}
 
       - name: Persist Terraform Apply Output
-        id: persist-terraform-cmd-output
+        id: persist-terraform-apply-output
         run: |
           {
             echo 'summary<<EOF'
-            echo '${{ steps.terraform-cmd.outcome }}'
+            echo '${{ steps.terraform-apply.outcome }}'
             echo 'EOF'
 
             echo 'details<<EOF'
-            echo '${{ steps.terraform-cmd.outputs.stdout }}'
+            echo '${{ steps.terraform-apply.outputs.stdout }}'
             echo 'EOF'
           } >> "$GITHUB_OUTPUT"
 
