@@ -1,5 +1,5 @@
-name: Comment Terraform Command Result on Pull Request
-description: Comment Terraform Command Result on Pull Request
+name: Comment Terraform Command Output on Pull Request
+description: Comment Terraform Command Output on Pull Request
 author: Mathews Machado
 
 inputs:
@@ -22,7 +22,7 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Comment Terraform Command Result on Pull Request
+    - name: Comment Terraform Command Output on Pull Request
       uses: actions/github-script@v7
       with:
         script: |
@@ -30,8 +30,11 @@ runs:
           ## Terraform Comment
 
           **Project:** ${{ inputs.terraform-project }}
+
           **Command:** ${{ inputs.terraform-command }}
+
           **Outcome:** ${{ inputs.terraform-command-outcome }}
+
           <details>
             <summary>
               <b>Output: </b>

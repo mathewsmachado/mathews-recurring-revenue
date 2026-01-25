@@ -52,8 +52,8 @@ jobs:
         id: terraform-validate
         run: terraform validate -no-color
 
-      - name: Comment Terraform Validate Result on Pull Request
-        uses: ./.github/actions/comment-terraform-command-result-on-pull-request
+      - name: Comment Terraform Validate Output on Pull Request
+        uses: ./.github/actions/comment-terraform-command-output-on-pull-request
         if: always()
         with:
           terraform-project: ${{ inputs.terraform-project }}
@@ -100,8 +100,8 @@ jobs:
           path: ${{ inputs.terraform-project }}/${{ inputs.gcp-project-id }}
           retention-days: ${{ env.terraform-plan-file-retention-days }}
 
-      - name: Comment Terraform Plan Result on Pull Request
-        uses: ./.github/actions/comment-terraform-command-result-on-pull-request
+      - name: Comment Terraform Plan Output on Pull Request
+        uses: ./.github/actions/comment-terraform-command-output-on-pull-request
         if: always()
         with:
           terraform-project: ${{ inputs.terraform-project }}
@@ -149,8 +149,8 @@ jobs:
         id: terraform-apply
         run: terraform apply -no-color -auto-approve ${{ inputs.gcp-project-id }}
 
-      - name: Comment Terraform Apply Result on Pull Request
-        uses: ./.github/actions/comment-terraform-command-result-on-pull-request
+      - name: Comment Terraform Apply Output on Pull Request
+        uses: ./.github/actions/comment-terraform-command-output-on-pull-request
         if: always()
         with:
           terraform-project: ${{ inputs.terraform-project }}
