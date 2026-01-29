@@ -20,7 +20,7 @@ with final as (
         {{ obfuscate_number('tran_taxes_pct', pepper, slope, jitter, upper_bound=100) }} as tran_taxes_pct,
         accounting_year,
         accounting_month,
-        {{ obfuscate_string('accounting_status', pepper) }} as accounting_status,
+        accounting_status,
         _processed_at
     from {{ ref('mdm.incomes_fct_pvt') }}
 )
