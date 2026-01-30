@@ -1,28 +1,78 @@
 {% set pepper = var('pepper', '') %}
-{% set slope = var('slope', '') %}
-{% set jitter = var('jitter', '') %}
+{% set execution_date = var('execution_date', get_current_date()) %}
 
-with final as (
+{% set MMRR_ACCOUNTING_LIFE_START_DATE = env_var('MMRR_ACCOUNTING_LIFE_START_DATE', '') %}
+
+with source as (
+    select * except(accounting_month)
+    from {{ ref('mdm.incomes_fct_pvt') }}
+),
+redistributed as (
+    {{
+        redistribute_evenly_across_months(
+            source_table='source',
+            column_name='accounting_month',
+            lower_bound=MMRR_ACCOUNTING_LIFE_START_DATE,
+            upper_bound=execution_date
+        )
+    }}
+),
+obfuscated as (
+    select
+        -- without change
+        tran_id,
+        accounting_status,
+        _processed_at,
+
+        -- null
+        null as tran_payer,
+        null as tran_payee,
+        null as tran_payer_payee_relation,
+        null as tran_detail,
+        null as tran_currency,
+
+        -- string
+        {{ obfuscate_string('tran_category', pepper) }} as tran_category,
+        {{ obfuscate_string('tran_gross_delta_category', pepper) }} as tran_gross_delta_category,
+        {{ obfuscate_string('tran_gross_delta_detail', pepper) }} as tran_gross_delta_detail,
+
+        -- date
+        accounting_month,
+        date_trunc(accounting_month, year) as accounting_year,
+        safe.date(
+            extract(year from accounting_month),
+            extract(month from accounting_month),
+            extract(day from tran_date)
+        ) as tran_date,
+
+        -- float64
+        {{ random_float64() }} as tran_gross,
+        {{ random_float64() }} as tran_net,
+        {{ random_float64() }} as tran_taxes,
+        {{ random_float64(upper_bound=100) }} as tran_taxes_pct,
+    from redistributed
+),
+final as (
     select
         tran_id,
         tran_date,
-        {{ obfuscate_string('tran_payer', pepper) }} as tran_payer,
-        {{ obfuscate_string('tran_payee', pepper) }} as tran_payee,
-        {{ obfuscate_string('tran_payer_payee_relation', pepper) }} as tran_payer_payee_relation,
-        {{ obfuscate_string('tran_category', pepper) }} as tran_category,
-        {{ obfuscate_string('tran_detail', pepper) }} as tran_detail,
-        {{ obfuscate_string('tran_currency', pepper) }} as tran_currency,
-        {{ obfuscate_number('tran_net', pepper, slope, jitter) }} as tran_net,
-        {{ obfuscate_number('tran_gross', pepper, slope, jitter) }} as tran_gross,
-        {{ obfuscate_string('tran_gross_delta_category', pepper) }} as tran_gross_delta_category,
-        {{ obfuscate_string('tran_gross_delta_detail', pepper) }} as tran_gross_delta_detail,
-        {{ obfuscate_number('tran_taxes', pepper, slope, jitter) }} as tran_taxes,
-        {{ obfuscate_number('tran_taxes_pct', pepper, slope, jitter, upper_bound=100) }} as tran_taxes_pct,
+        tran_payer,
+        tran_payee,
+        tran_payer_payee_relation,
+        tran_category,
+        tran_detail,
+        tran_currency,
+        tran_net,
+        tran_gross,
+        tran_gross_delta_category,
+        tran_gross_delta_detail,
+        tran_taxes,
+        tran_taxes_pct,
         accounting_year,
         accounting_month,
         accounting_status,
         _processed_at
-    from {{ ref('mdm.incomes_fct_pvt') }}
+    from obfuscated
 )
 select *
 from final
