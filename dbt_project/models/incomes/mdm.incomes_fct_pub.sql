@@ -1,7 +1,12 @@
 {% set pepper = var('pepper', '') %}
 {% set execution_date = var('execution_date', get_current_date()) %}
 
-{% set MMRR_ACCOUNTING_LIFE_START_DATE = env_var('MMRR_ACCOUNTING_LIFE_START_DATE', '') %}
+{%
+    set MMRR_ACCOUNTING_LIFE_START_DATE = env_var(
+        'MMRR_ACCOUNTING_LIFE_START_DATE',
+        ''
+    )
+%}
 
 with source as (
     select * except(accounting_month)
@@ -33,8 +38,12 @@ obfuscated as (
 
         -- string
         {{ obfuscate_string('tran_category', pepper) }} as tran_category,
-        {{ obfuscate_string('tran_gross_delta_category', pepper) }} as tran_gross_delta_category,
-        {{ obfuscate_string('tran_gross_delta_detail', pepper) }} as tran_gross_delta_detail,
+        {{
+            obfuscate_string('tran_gross_delta_category', pepper)
+        }} as tran_gross_delta_category,
+        {{
+            obfuscate_string('tran_gross_delta_detail', pepper)
+        }} as tran_gross_delta_detail,
 
         -- date
         accounting_month,
