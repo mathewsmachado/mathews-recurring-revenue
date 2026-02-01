@@ -10,7 +10,7 @@ on:
 env:
   EVIDENCE_SOURCE__mathews_recurring_revenue__location: US
   EVIDENCE_SOURCE__mathews_recurring_revenue__authenticator: gcloud-cli
-  EVIDENCE_SOURCE__mathews_recurring_revenue__project_id: mathews-recurring-revenue-dev
+  EVIDENCE_SOURCE__mathews_recurring_revenue__project_id: mathews-recurring-revenue-stg
   EVIDENCE_VAR__access_policy: pub
 
 jobs:
