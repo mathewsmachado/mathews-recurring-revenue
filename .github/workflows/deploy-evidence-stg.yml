@@ -20,6 +20,7 @@ jobs:
     permissions:
       contents: read
       deployments: write
+      id-token: write
 
     defaults:
       run:
