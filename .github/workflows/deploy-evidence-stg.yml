@@ -1,9 +1,11 @@
+name: Deploy Evidence Staging
+
 on:
   pull_request:
     branches:
       - main
     paths:
-      - evidence
+      - evidence/**
 
 env:
   EVIDENCE_SOURCE__mathews_recurring_revenue__location: US
