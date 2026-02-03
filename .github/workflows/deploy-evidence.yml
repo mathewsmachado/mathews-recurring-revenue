@@ -62,8 +62,8 @@ jobs:
         uses: actions/setup-node@v6
         with:
           cache: npm
-          cache-dependency-path: ${{ defaults.run.working-directory }}/package-lock.json
-          node-version-file: ${{ defaults.run.working-directory }}/package.json
+          cache-dependency-path: evidence/package-lock.json
+          node-version-file: evidence/package.json
 
       - name: Install dependencies
         run: npm ci
@@ -76,20 +76,13 @@ jobs:
         uses: actions/cache@v4
         with:
           path: |
-            ${{ defaults.run.working-directory }}/build
-            ${{ defaults.run.working-directory }}/.vercel/output
+            evidence/build
+            evidence/.vercel/output
           key: >
-            ${{ defaults.run.working-directory }}-
+            evidence-
             ${{ inputs.gcp-project-id }}-
-            ${{ hashFiles(format('{0}/package-lock.json', defaults.run.working-directory)) }}-
-            ${{
-              hashFiles(
-                format('{0}/**', defaults.run.working-directory),
-                format('!{0}/build/**', defaults.run.working-directory),
-                format('!{0}/.vercel/**', defaults.run.working-directory),
-                format('!{0}/README.md', defaults.run.working-directory)
-              )
-            }}
+            ${{ hashFiles('evidence/package-lock.json') }}-
+            ${{ hashFiles('evidence/**', '!evidence/build/**', '!evidence/.vercel/**', '!evidence/README.md') }}
 
       - name: Build Application
         if: steps.cache-evidence.outputs.cache-hit != 'true'
