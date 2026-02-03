@@ -46,12 +46,12 @@ jobs:
       - name: Build Application
         run: npm run build:strict
 
-      - name: Copy Build to Vercel Directory
+      - name: Create .vercel/output/static
         run: |
           mkdir -p .vercel/output/static
           cp -r build/* .vercel/output/static
 
-      - name: Create Vercel Deploy Config
+      - name: Create .vercel/project.json
         run: |
           cat << EOF > .vercel/project.json
           {
@@ -61,6 +61,8 @@ jobs:
           }
           EOF
 
+      - name: Create .vercel/output/config.json
+        run: |
           cat > .vercel/output/config.json << EOF
           {
             "version": 3,
@@ -68,23 +70,8 @@ jobs:
           }
           EOF
 
-      - name: Debug
-        run: |
-          ls -lA .vercel/
-          cat .vercel/project.json
-
-      # - name: Install Vercel CLI
-      #   run: npm install --global vercel@latest
-
-      - name: Pull Vercel Environment Information
-        run: npx vercel pull --token=${{ secrets.VERCEL_TOKEN }} --yes --environment=production
+      # - name: Pull Vercel Environment Information
+      #   run: npx vercel pull --token=${{ secrets.VERCEL_TOKEN }} --yes --environment=production
 
       - name: Deploy Project Artifacts to Vercel
         run: npx vercel deploy --token=${{ secrets.VERCEL_TOKEN }} --prod --prebuilt
-
-      # - uses: actions/setup-node@v4
-      #   with:
-      #     node-version: 20
-
-      # - name: Build Project Artifacts
-      #   run: vercel build --token=${{ secrets.VERCEL_TOKEN }} --prod --output=build
