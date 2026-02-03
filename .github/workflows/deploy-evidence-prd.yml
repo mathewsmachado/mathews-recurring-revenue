@@ -1,0 +1,21 @@
+name: Deploy Evidence Production
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - evidence/**
+
+jobs:
+  evidence-deploy-prd:
+    uses: ./.github/workflows/deploy-evidence.yml
+    with:
+      gcp-project-id: mathews-recurring-revenue-prd
+      gcp-workload-identity-provider: projects/753917517701/locations/global/workloadIdentityPools/github/providers/mathews-recurring-revenue
+      gcp-service-account: github@mathews-recurring-revenue-prd.iam.gserviceaccount.com
+      vercel-org-id: team_moFeFBoZI7YgB3mRzRw4hNuX
+      vercel-project-id: prj_knazEU4aBhRcKyKe7y3zOqjtJdyh
+      vercel-project-name: mathews-recurring-revenue-prd
+    secrets:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
