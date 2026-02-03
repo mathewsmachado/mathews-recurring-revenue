@@ -61,9 +61,9 @@ jobs:
       - name: Setup Node.js and Cache NPM Dependencies
         uses: actions/setup-node@v6
         with:
-          cache: 'npm'
+          cache: npm
           cache-dependency-path: evidence/package-lock.json
-          node-version-file: package.json
+          node-version-file: evidence/package.json
 
       - name: Install dependencies
         run: npm ci
