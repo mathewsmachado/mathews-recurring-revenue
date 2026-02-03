@@ -22,7 +22,7 @@ inputs:
 runs:
   using: composite
   steps:
-    - uses: ./.github/actions/setup-terraform-on-gcp
+    - uses: ./.github/actions/authenticate-to-gcp
       with:
         gcp-project-id: ${{ inputs.gcp-project-id }}
         gcp-workload-identity-provider: ${{ inputs.gcp-workload-identity-provider }}
@@ -38,7 +38,9 @@ runs:
       uses: actions/cache@v4
       with:
         path: ${{ inputs.terraform-project }}/.terraform
-        key: ${{ runner.os }}-${{ inputs.terraform-project }}-${{ hashFiles(format('{0}/.terraform.lock.hcl', inputs.terraform-project)) }}
+        key: >
+          ${{ inputs.terraform-project }}-
+          ${{ hashFiles(format('{0}/.terraform.lock.hcl', inputs.terraform-project)) }}
         restore-keys: ${{ runner.os }}-${{ inputs.terraform-project }}-
 
     - name: Terraform Init
