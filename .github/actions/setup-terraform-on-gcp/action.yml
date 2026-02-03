@@ -22,12 +22,11 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Authenticate to Google Cloud Platform
-      uses: google-github-actions/auth@v3
+    - uses: ./.github/actions/authenticate-to-gcp
       with:
-        project_id: ${{ inputs.gcp-project-id }}
-        workload_identity_provider: ${{ inputs.gcp-workload-identity-provider }}
-        service_account: ${{ inputs.gcp-service-account }}
+        gcp-project-id: ${{ inputs.gcp-project-id }}
+        gcp-workload-identity-provider: ${{ inputs.gcp-workload-identity-provider }}
+        gcp-service-account: ${{ inputs.gcp-service-account }}
 
     - name: Install Terraform
       uses: hashicorp/setup-terraform@v3
@@ -39,7 +38,9 @@ runs:
       uses: actions/cache@v4
       with:
         path: ${{ inputs.terraform-project }}/.terraform
-        key: ${{ runner.os }}-${{ inputs.terraform-project }}-${{ hashFiles(format('{0}/.terraform.lock.hcl', inputs.terraform-project)) }}
+        key: >
+          ${{ inputs.terraform-project }}-
+          ${{ hashFiles(format('{0}/.terraform.lock.hcl', inputs.terraform-project)) }}
         restore-keys: ${{ runner.os }}-${{ inputs.terraform-project }}-
 
     - name: Terraform Init

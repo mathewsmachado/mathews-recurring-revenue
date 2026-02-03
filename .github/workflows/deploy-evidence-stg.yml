@@ -1,0 +1,21 @@
+name: Deploy Evidence Staging
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - evidence/**
+
+jobs:
+  evidence-deploy-stg:
+    uses: ./.github/workflows/deploy-evidence.yml
+    with:
+      gcp-project-id: mathews-recurring-revenue-stg
+      gcp-workload-identity-provider: projects/724228842720/locations/global/workloadIdentityPools/github/providers/mathews-recurring-revenue
+      gcp-service-account: github@mathews-recurring-revenue-stg.iam.gserviceaccount.com
+      vercel-org-id: team_moFeFBoZI7YgB3mRzRw4hNuX
+      vercel-project-id: prj_wDkLGCIiqumf27AEJFSPHsi7ljuy
+      vercel-project-name: mathews-recurring-revenue-stg
+    secrets:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
