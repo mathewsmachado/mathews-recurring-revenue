@@ -7,67 +7,75 @@ on:
     paths:
       - evidence/**
 
-env:
-  EVIDENCE_SOURCE__mathews_recurring_revenue__location: US
-  EVIDENCE_SOURCE__mathews_recurring_revenue__authenticator: gcloud-cli
-  EVIDENCE_SOURCE__mathews_recurring_revenue__project_id: mathews-recurring-revenue-stg
-  EVIDENCE_VAR__access_policy: pub
+# env:
+#   EVIDENCE_SOURCE__mathews_recurring_revenue__location: US
+#   EVIDENCE_SOURCE__mathews_recurring_revenue__authenticator: gcloud-cli
+#   EVIDENCE_SOURCE__mathews_recurring_revenue__project_id: mathews-recurring-revenue-stg
+#   EVIDENCE_VAR__access_policy: pub
 
 jobs:
-  evidence-deploy:
-    runs-on: ubuntu-latest
+  evidence-deploy-stg:
+    uses: ./.github/workflows/deploy-evidence.yml
+    with:
+      gcp-project-id: mathews-recurring-revenue-stg
+      gcp-workload-identity-provider: projects/724228842720/locations/global/workloadIdentityPools/github/providers/mathews-recurring-revenue
+      gcp-service-account: github@mathews-recurring-revenue-stg.iam.gserviceaccount.com
+      vercel-org-id: team_moFeFBoZI7YgB3mRzRw4hNuX
+      vercel-project-id: prj_wDkLGCIiqumf27AEJFSPHsi7ljuy
+      vercel-project-name: mathews-recurring-revenue-stg
+    # runs-on: ubuntu-latest
 
-    permissions:
-      contents: read
-      deployments: write
-      id-token: write
+    # permissions:
+    #   contents: read
+    #   deployments: write
+    #   id-token: write
 
-    defaults:
-      run:
-        working-directory: evidence
+    # defaults:
+    #   run:
+    #     working-directory: evidence
 
-    steps:
-      - name: Clone Repository
-        uses: actions/checkout@v5
+    # steps:
+    #   - name: Clone Repository
+    #     uses: actions/checkout@v5
 
-      - uses: ./.github/actions/authenticate-to-gcp
-        with:
-          gcp-project-id: mathews-recurring-revenue-stg
-          gcp-workload-identity-provider: projects/724228842720/locations/global/workloadIdentityPools/github/providers/mathews-recurring-revenue
-          gcp-service-account: github@mathews-recurring-revenue-stg.iam.gserviceaccount.com
+    #   - uses: ./.github/actions/authenticate-to-gcp
+    #     with:
+    #       gcp-project-id: mathews-recurring-revenue-stg
+    #       gcp-workload-identity-provider: projects/724228842720/locations/global/workloadIdentityPools/github/providers/mathews-recurring-revenue
+    #       gcp-service-account: github@mathews-recurring-revenue-stg.iam.gserviceaccount.com
 
-      - name: Install dependencies
-        run: npm ci
+    #   - name: Install dependencies
+    #     run: npm ci
 
-      - name: Fetch Data
-        run: npm run sources:strict
+    #   - name: Fetch Data
+    #     run: npm run sources:strict
 
-      - name: Build Application
-        run: npm run build:strict
+    #   - name: Build Application
+    #     run: npm run build:strict
 
-      - name: Create .vercel/output/static
-        run: |
-          mkdir -p .vercel/output/static
-          cp -r build/* .vercel/output/static
+    #   - name: Create .vercel/output/static
+    #     run: |
+    #       mkdir -p .vercel/output/static
+    #       cp -r build/* .vercel/output/static
 
-      - name: Create .vercel/project.json
-        run: |
-          cat << EOF > .vercel/project.json
-          {
-            "orgId": "${{ secrets.VERCEL_ORG_ID }}",
-            "projectId": "${{ secrets.VERCEL_PROJECT_ID }}",
-            "projectName": "mathews-recurring-revenue-stg"
-          }
-          EOF
+    #   - name: Create .vercel/project.json
+    #     run: |
+    #       cat << EOF > .vercel/project.json
+    #       {
+    #         "orgId": "${{ secrets.VERCEL_ORG_ID }}",
+    #         "projectId": "${{ secrets.VERCEL_PROJECT_ID }}",
+    #         "projectName": "mathews-recurring-revenue-stg"
+    #       }
+    #       EOF
 
-      - name: Create .vercel/output/config.json
-        run: |
-          cat > .vercel/output/config.json << EOF
-          {
-            "version": 3,
-            "routes": [{ "handle": "filesystem" }]
-          }
-          EOF
+    #   - name: Create .vercel/output/config.json
+    #     run: |
+    #       cat > .vercel/output/config.json << EOF
+    #       {
+    #         "version": 3,
+    #         "routes": [{ "handle": "filesystem" }]
+    #       }
+    #       EOF
 
-      - name: Deploy Project Artifacts to Vercel
-        run: npx vercel deploy --token=${{ secrets.VERCEL_TOKEN }} --prod --prebuilt
+    #   - name: Deploy Project Artifacts to Vercel
+    #     run: npx vercel deploy --token=${{ secrets.VERCEL_TOKEN }} --prod --prebuilt
