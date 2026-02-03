@@ -25,7 +25,6 @@ env:
   EVIDENCE_SOURCE__mathews_recurring_revenue__authenticator: gcloud-cli
   EVIDENCE_SOURCE__mathews_recurring_revenue__project_id: ${{ inputs.gcp-project-id }}
   EVIDENCE_VAR__access_policy: pub
-  vercel-token: ${{ secrets.VERCEL_TOKEN }}
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}-${{ inputs.gcp-project-id }}
@@ -88,4 +87,4 @@ jobs:
           EOF
 
       - name: Deploy Project Artifacts to Vercel
-        run: npx vercel deploy --prod --prebuilt --token=${{ env.vercel-token }}
+        run: npx vercel deploy --prod --prebuilt --token=${{ secrets.VERCEL_TOKEN }}
