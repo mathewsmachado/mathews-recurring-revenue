@@ -306,14 +306,18 @@ wheels = [
 
 [[package]]
 name = "dbt-project"
-version = "0.1.0"
+version = "0.0.1"
 source = { virtual = "." }
 dependencies = [
     { name = "dbt-bigquery" },
+    { name = "dbt-core" },
 ]
 
 [package.metadata]
-requires-dist = [{ name = "dbt-bigquery", specifier = "==1.11.0" }]
+requires-dist = [
+    { name = "dbt-bigquery", specifier = "==1.11.0" },
+    { name = "dbt-core", specifier = "==1.11.2" },
+]
 
 [[package]]
 name = "dbt-protos"
