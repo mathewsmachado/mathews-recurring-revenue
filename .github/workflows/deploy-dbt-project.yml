@@ -11,6 +11,9 @@ on:
         required: true
         type: string
 
+env:
+  GCP_PROJECT_ID: mathews-recurring-revenue-stg
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}-${{ inputs.gcp-project-id }}
   cancel-in-progress: true
