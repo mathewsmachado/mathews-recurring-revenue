@@ -1,9 +1,15 @@
 [project]
 name = "dbt_project"
-version = "0.1.0"
-description = "Mathews Recurring Revenue (a.k.a MRR) transformation layer"
+version = "0.0.1"
+description = "Mathews Recurring Revenue (a.k.a. MRR) transformation layer"
 readme = "README.md"
+license = "MIT"
+authors = [{ name = "Mathews Machado", email = "mathews.machadoamorim@gmail.com" }]
 requires-python = ">=3.12"
-dependencies = [
-    "dbt-bigquery==1.11.0",
-]
+dependencies = ["dbt-core==1.11.2", "dbt-bigquery==1.11.0"]
+
+[project.urls]
+Homepage = "https://github.com/mathewsmachado/mathews-recurring-revenue"
+Documentation = "https://github.com/mathewsmachado/mathews-recurring-revenue"
+Repository = "https://github.com/mathewsmachado/mathews-recurring-revenue"
+Issues = "https://github.com/mathewsmachado/mathews-recurring-revenue/issues"
