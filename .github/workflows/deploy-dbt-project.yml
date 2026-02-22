@@ -1,0 +1,107 @@
+# https://www.youtube.com/watch?v=OGRNIXZQhd0
+
+on:
+  workflow_call:
+    inputs:
+      gcp-project-id:
+        required: true
+        type: string
+      gcp-workload-identity-provider:
+        required: true
+        type: string
+      gcp-service-account:
+        required: true
+        type: string
+    
+    # secrets:
+    #   VERCEL_TOKEN:
+    #     description: Vercel Authentication Token
+    #     required: true
+
+# env:
+#   EVIDENCE_SOURCE__mathews_recurring_revenue__location: US
+#   EVIDENCE_SOURCE__mathews_recurring_revenue__authenticator: gcloud-cli
+#   EVIDENCE_SOURCE__mathews_recurring_revenue__project_id: ${{ inputs.gcp-project-id }}
+#   EVIDENCE_VAR__access_policy: pub
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ inputs.gcp-project-id }}
+  cancel-in-progress: true
+
+jobs:
+  dbt-project-deploy:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+    #   deployments: write
+      id-token: write
+
+    defaults:
+      run:
+        working-directory: dbt_project
+
+    steps:
+      - name: Clone Repository
+        uses: actions/checkout@v5
+
+      - uses: ./.github/actions/authenticate-to-gcp
+        with:
+          gcp-project-id: ${{ inputs.gcp-project-id }}
+          gcp-workload-identity-provider: ${{ inputs.gcp-workload-identity-provider }}
+          gcp-service-account: ${{ inputs.gcp-service-account }}
+
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version-file: ".python-version"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          version: "0.9.21"
+          enable-cache: true
+
+      - name: Install Python Dependencies
+        run: uv sync --locked --all-extras --dev
+
+      - name: Install dbt Dependencies
+        run: uv run dbt deps
+
+      - name: Debug dbt
+        run: uv run dbt debug
+
+    #   - run:
+    #       name: Downloads manifest.json from GCS
+    #       command: |
+    #         gcloud storage cp \
+    #           $GCP_COMPOSER_BUCKET/data/dbt_core/target/manifest.json \
+    #           dbt_core/artifacts
+
+
+    #   - run:
+    #       name: Run modified seeds
+    #       command: |
+    #         dbt seed \
+    #           --defer \
+    #           --state $CIRCLE_WORKING_DIRECTORY/dbt_core/artifacts \
+    #           --select state:modified
+
+    #   - run:
+    #       name: Run modified models
+    #       command: |
+    #         dbt run \
+    #           --empty \
+    #           --defer \
+    #           --state $CIRCLE_WORKING_DIRECTORY/dbt_core/artifacts \
+    #           --select state:modified \
+    #           --exclude models/migration_validation
+
+    #   - run:
+    #       name: Run modified models
+    #       command: |
+    #         dbt run \
+    #           --defer \
+    #           --state $CIRCLE_WORKING_DIRECTORY/dbt_core/artifacts \
+    #           --select state:modified \
+    #           --exclude models/migration_validation

@@ -1,0 +1,21 @@
+# https://www.youtube.com/watch?v=OGRNIXZQhd0
+
+name: Deploy dbt Project Staging
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - dbt_project/**
+
+jobs:
+  dbt-project-deploy-stg:
+    environment: staging
+    uses: ./.github/workflows/deploy-dbt-project.yml
+    with:
+      gcp-project-id: ${{ vars.GCP_PROJECT_ID }}
+      gcp-workload-identity-provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+      gcp-service-account: ${{ vars.GCP_SERVICE_ACCOUNT }}
+    # secrets:
+    #   VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
