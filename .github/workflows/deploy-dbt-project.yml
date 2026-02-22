@@ -12,6 +12,9 @@ on:
         type: string
 
 env:
+  DBT_TARGET: dev
+  GCP_CLIENT_EMAIL: dbt-project@mathews-recurring-revenue-stg.iam.gserviceaccount.com
+  GCP_LOCATION: US
   GCP_PROJECT_ID: mathews-recurring-revenue-stg
 
 concurrency:
