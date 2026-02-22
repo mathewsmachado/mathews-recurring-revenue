@@ -40,7 +40,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v6
         with:
-          python-version-file: ".python-version"
+          python-version-file: "dbt_project/.python-version"
 
       - name: Install uv
         uses: astral-sh/setup-uv@v7
@@ -49,7 +49,7 @@ jobs:
           enable-cache: true
 
       - name: Install Python Dependencies
-        run: uv sync --locked --all-extras --dev
+        run: uv sync
 
       - name: Install dbt Dependencies
         run: uv run dbt deps
