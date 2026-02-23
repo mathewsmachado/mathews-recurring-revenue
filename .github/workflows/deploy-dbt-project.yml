@@ -40,11 +40,11 @@ jobs:
       - name: Clone Repository
         uses: actions/checkout@v5
         
-      # - name: Echo
-      #   run: |
-      #     echo "1. $GITHUB_WORKSPACE"
-      #     echo "2. $PWD"
-      #     echo "3. $(pwd)"
+      - name: Echo
+        run: |
+          echo "1. $GITHUB_WORKSPACE"
+          echo "2. $PWD"
+          echo "3. $(pwd)"
  
       - uses: ./.github/actions/authenticate-to-gcp
         with:
@@ -55,7 +55,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v6
         with:
-          python-version-file: "$PWD/.python-version"
+          python-version-file: "dbt_project/.python-version"
 
       - name: Install uv
         uses: astral-sh/setup-uv@v7
