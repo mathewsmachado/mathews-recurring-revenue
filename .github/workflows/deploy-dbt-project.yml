@@ -19,6 +19,7 @@ env:
   GCP_CLIENT_EMAIL: dbt-project@mathews-recurring-revenue-stg.iam.gserviceaccount.com
   GCP_LOCATION: US
   GCP_PROJECT_ID: mathews-recurring-revenue-stg
+  MMRR_ACCOUNTING_LIFE_START_DATE: '2022-01-04'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}-${{ inputs.gcp-project-id }}
