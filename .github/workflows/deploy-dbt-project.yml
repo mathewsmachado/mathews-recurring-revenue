@@ -37,31 +37,34 @@ jobs:
       - name: Clone Repository
         uses: actions/checkout@v5
 
-      - uses: ./.github/actions/authenticate-to-gcp
-        with:
-          gcp-project-id: ${{ inputs.gcp-project-id }}
-          gcp-workload-identity-provider: ${{ inputs.gcp-workload-identity-provider }}
-          gcp-service-account: ${{ inputs.gcp-service-account }}
-
-      - name: Setup Python
-        uses: actions/setup-python@v6
-        with:
-          python-version-file: "dbt_project/.python-version"
-
-      - name: Install uv
-        uses: astral-sh/setup-uv@v7
-        with:
-          version: "0.9.21"
-          enable-cache: true
-
-      - name: Install Python Dependencies
-        run: uv sync
-
-      - name: Install dbt Dependencies
-        run: uv run dbt deps
-
       - name: Debug dbt
-        run: uv run dbt debug
+        run: ls -lA .
+
+      # - uses: ./.github/actions/authenticate-to-gcp
+      #   with:
+      #     gcp-project-id: ${{ inputs.gcp-project-id }}
+      #     gcp-workload-identity-provider: ${{ inputs.gcp-workload-identity-provider }}
+      #     gcp-service-account: ${{ inputs.gcp-service-account }}
+
+      # - name: Setup Python
+      #   uses: actions/setup-python@v6
+      #   with:
+      #     python-version-file: "dbt_project/.python-version"
+
+      # - name: Install uv
+      #   uses: astral-sh/setup-uv@v7
+      #   with:
+      #     version: "0.9.21"
+      #     enable-cache: true
+
+      # - name: Install Python Dependencies
+      #   run: uv sync
+
+      # - name: Install dbt Dependencies
+      #   run: uv run dbt deps
+
+      # - name: Debug dbt
+      #   run: uv run dbt debug
 
     #   - run:
     #       name: Downloads manifest.json from GCS
@@ -71,29 +74,35 @@ jobs:
     #           dbt_core/artifacts
 
 
-    #   - run:
-    #       name: Run modified seeds
-    #       command: |
-    #         dbt seed \
-    #           --defer \
-    #           --state $CIRCLE_WORKING_DIRECTORY/dbt_core/artifacts \
-    #           --select state:modified
+      # - name: Run Modified Seeds
+      #   run: |
+      #     if [ -f "./manifest.json" ]; then
+      #       dbt seed --defer --state ? --select state:modified
+      #     else
+      #       dbt seed
+      #     fi
 
-    #   - run:
-    #       name: Run modified models
-    #       command: |
-    #         dbt run \
-    #           --empty \
-    #           --defer \
-    #           --state $CIRCLE_WORKING_DIRECTORY/dbt_core/artifacts \
-    #           --select state:modified \
-    #           --exclude models/migration_validation
+      # - name: Run Modified Models
+      #   run: |
+      #     if [ -f "./manifest.json" ]; then
+      #       dbt run --defer --state $CIRCLE_WORKING_DIRECTORY/dbt_core/artifacts --select state:modified
+      #     else
+      #       dbt run
+      #     fi
 
-    #   - run:
-    #       name: Run modified models
-    #       command: |
-    #         dbt run \
-    #           --defer \
-    #           --state $CIRCLE_WORKING_DIRECTORY/dbt_core/artifacts \
-    #           --select state:modified \
-    #           --exclude models/migration_validation
+      # - name: Generate Docs
+      #   run: |
+      #     dbt docs generate \
+      #       --static \
+      #       --no-compile \
+      #       --defer \
+      #       --state $CIRCLE_WORKING_DIRECTORY/dbt_core/artifacts \
+      #       --target-path artifacts \
+      #       --select state:modified \
+      #       --exclude models/migration_validation
+
+      # - name: Generate Docs
+      #   run: |
+      #     gcloud storage cp \
+      #       dbt_core/artifacts/static_index.html \
+      #       gs://data_catalog_dbt/
