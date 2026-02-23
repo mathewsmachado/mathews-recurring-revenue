@@ -73,8 +73,12 @@ jobs:
       - name: Download manifest.json
         run: |
           gcloud storage cp \
-            ${{ inputs.gcp-artifacts-bucket }}/artifacts/manifest.json \
-            artifacts || echo "No manifest.json found."
+            ${{ inputs.gcp-artifacts-bucket }}/target/manifest.json \
+            artifacts || {
+              echo
+              echo "No manifest.json found."
+              exit 1
+            }
 
       - name: Run Unit Tests
         run: |
