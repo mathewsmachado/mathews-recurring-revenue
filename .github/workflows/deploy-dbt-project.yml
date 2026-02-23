@@ -69,11 +69,11 @@ jobs:
       - name: Install dbt Dependencies
         run: uv run dbt deps
 
-      - name: Debug dbt
+      - name: Download manifest.json
         run: |
           gcloud storage cp \
             ${{ inputs.gcp-artifacts-bucket }}/artifacts/manifest.json \
-            artifacts
+            artifacts || echo "No manifest.json found."
 
       - name: Run Modified Seeds
         run: |
