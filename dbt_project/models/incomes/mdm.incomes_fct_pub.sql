@@ -1,6 +1,11 @@
-{% set pepper = var('pepper') %}
+{% set pepper = var('pepper', get_current_timestamp()) %}
 {% set execution_date = var('execution_date', get_current_date()) %}
-{% set MMRR_ACCOUNTING_LIFE_START_DATE = env_var('MMRR_ACCOUNTING_LIFE_START_DATE') %}
+{%
+    set MMRR_ACCOUNTING_LIFE_START_DATE = env_var(
+        'MMRR_ACCOUNTING_LIFE_START_DATE',
+        get_current_date()
+    )
+%}
 
 with source as (
     select * except(accounting_month)

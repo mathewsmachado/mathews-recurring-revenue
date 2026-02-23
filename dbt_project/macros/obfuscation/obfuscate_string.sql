@@ -1,8 +1,4 @@
 {%- macro obfuscate_string(column, pepper, output_size=16) -%}
-    {% if not execute or (execute and flags.WHICH not in ['build', 'run', 'run-operation']) %}
-        {{ return('') }}
-    {% endif %}
-
     {%- set max_output_size = 64 -%}
 
     {%- if not column -%}
