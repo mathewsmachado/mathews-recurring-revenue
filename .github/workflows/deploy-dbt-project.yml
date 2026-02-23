@@ -78,30 +78,18 @@ jobs:
 
       - name: Run Unit Tests
         run: |
-          if [ -f "artifacts/manifest.json" ]; then
-            uv run dbt test \
-              --defer \
-              --state artifacts \
-              --select state:modified,test_type:unit
-          else
-            uv run dbt test
-          fi
+          uv run dbt test \
+            --defer \
+            --state artifacts \
+            --select state:modified,test_type:unit
 
       - name: Run Modified Seeds
         run: |
-          if [ -f "artifacts/manifest.json" ]; then
-            uv run dbt seed --defer --state artifacts --select state:modified
-          else
-            uv run dbt seed
-          fi
+          uv run dbt seed --defer --state artifacts --select state:modified
 
       - name: Run Modified Models
         run: |
-          if [ -f "artifacts/manifest.json" ]; then
-            uv run dbt run --defer --state artifacts --select state:modified
-          else
-            uv run dbt run
-          fi
+          uv run dbt run --defer --state artifacts --select state:modified
 
       - name: Upload manifest.json
         run: |
@@ -111,18 +99,12 @@ jobs:
 
       - name: Generate Docs
         run: |
-          if [ -f "artifacts/manifest.json" ]; then
-            uv run dbt docs generate \
-              --static \
-              --no-compile \
-              --defer \
-              --state artifacts \
-              --select state:modified
-          else
-            uv run dbt docs generate \
-              --static \
-              --no-compile
-          fi
+          uv run dbt docs generate \
+            --static \
+            --no-compile \
+            --defer \
+            --state artifacts \
+            --select state:modified
 
       - name: Upload Docs
         run: |
