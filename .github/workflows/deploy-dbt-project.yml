@@ -40,70 +40,69 @@ jobs:
       - name: Clone Repository
         uses: actions/checkout@v5
         
-      - name: Echo
+      # - name: Echo
+      #   run: |
+      #     echo "1. $GITHUB_WORKSPACE"
+      #     echo "2. $PWD"
+      #     echo "3. $(pwd)"
+ 
+      - uses: ./.github/actions/authenticate-to-gcp
+        with:
+          gcp-project-id: ${{ inputs.gcp-project-id }}
+          gcp-workload-identity-provider: ${{ inputs.gcp-workload-identity-provider }}
+          gcp-service-account: ${{ inputs.gcp-service-account }}
+
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version-file: "$PWD/.python-version"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          version: "0.9.21"
+          enable-cache: true
+
+      - name: Install Python Dependencies
+        run: uv sync
+
+      - name: Install dbt Dependencies
+        run: uv run dbt deps
+
+      - name: Debug dbt
         run: |
-          echo "1. $GITHUB_WORKSPACE"
-          echo "2. $PWD"
-          echo "3. $(pwd)"
+          gcloud storage cp \
+            ${{ inputs.gcp-artifacts-bucket }}/artifacts/manifest.json \
+            artifacts
 
-      # - uses: ./.github/actions/authenticate-to-gcp
-      #   with:
-      #     gcp-project-id: ${{ inputs.gcp-project-id }}
-      #     gcp-workload-identity-provider: ${{ inputs.gcp-workload-identity-provider }}
-      #     gcp-service-account: ${{ inputs.gcp-service-account }}
+      - name: Run Modified Seeds
+        run: |
+          if [ -f "artifacts/manifest.json" ]; then
+            dbt seed --defer --state artifacts --select state:modified
+          else
+            dbt seed
+          fi
 
-      # - name: Setup Python
-      #   uses: actions/setup-python@v6
-      #   with:
-      #     python-version-file: "dbt_project/.python-version"
+      - name: Run Modified Models
+        run: |
+          if [ -f "artifacts/manifest.json" ]; then
+            dbt run --defer --state artifacts --select state:modified
+          else
+            dbt run
+          fi
 
-      # - name: Install uv
-      #   uses: astral-sh/setup-uv@v7
-      #   with:
-      #     version: "0.9.21"
-      #     enable-cache: true
+      - name: Generate Docs
+        run: |
+          dbt docs generate \
+            --static \
+            --no-compile \
+            --defer \
+            --state artifacts \
+            --target-path artifacts \
+            --select state:modified
 
-      # - name: Install Python Dependencies
-      #   run: uv sync
-
-      # - name: Install dbt Dependencies
-      #   run: uv run dbt deps
-
-      # - name: Debug dbt
-      #   run: |
-      #     gcloud storage cp \
-      #       ${{ inputs.gcp-artifacts-bucket }}/artifacts/manifest.json \
-      #       dbt_core/artifacts
-
-      # - name: Run Modified Seeds
-      #   run: |
-      #     if [ -f "artifacts/manifest.json" ]; then
-      #       dbt seed --defer --state artifacts --select state:modified
-      #     else
-      #       dbt seed
-      #     fi
-
-      # - name: Run Modified Models
-      #   run: |
-      #     if [ -f "artifacts/manifest.json" ]; then
-      #       dbt run --defer --state artifacts --select state:modified
-      #     else
-      #       dbt run
-      #     fi
-
-      # - name: Generate Docs
-      #   run: |
-      #     dbt docs generate \
-      #       --static \
-      #       --no-compile \
-      #       --defer \
-      #       --state $CIRCLE_WORKING_DIRECTORY/dbt_core/artifacts \
-      #       --target-path artifacts \
-      #       --select state:modified \
-      #       --exclude models/migration_validation
-
-      # - name: Generate Docs
-      #   run: |
-      #     gcloud storage cp \
-      #       artifacts/static_index.html \
-      #       ${{ inputs.gcp-artifacts-bucket }}/artifacts \
+      - name: Generate Docs
+        run: |
+          gcloud storage cp \
+            artifacts/static_index.html \
+            ${{ inputs.gcp-artifacts-bucket }}/artifacts \
