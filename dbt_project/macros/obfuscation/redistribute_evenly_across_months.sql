@@ -6,6 +6,10 @@
         upper_bound=None
     )
 -%}
+    {% if not execute or (execute and flags.WHICH not in ['build', 'run', 'run-operation']) %}
+        {{ return('') }}
+    {% endif %}
+
     {%- if not source_table -%}
         {{ exceptions.raise_compiler_error("Parameter 'source_table' is required.") }}
     {%- endif -%}
@@ -13,6 +17,7 @@
     {%- if not column_name -%}
         {{ exceptions.raise_compiler_error("Parameter 'column_name' is required.") }}
     {%- endif -%}
+
 
     {%- if not lower_bound -%}
         {{ exceptions.raise_compiler_error("Parameter 'lower_bound' is required.") }}
