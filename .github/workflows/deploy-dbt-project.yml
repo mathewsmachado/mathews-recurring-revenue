@@ -10,6 +10,9 @@ on:
       gcp-service-account:
         required: true
         type: string
+      gcp-artifacts-bucket:
+        required: true
+        type: string
 
 env:
   DBT_TARGET: dev
@@ -36,9 +39,9 @@ jobs:
     steps:
       - name: Clone Repository
         uses: actions/checkout@v5
-
-      - name: Debug dbt
-        run: ls -lA .
+        
+      - name: Echo
+        run: echo $GITHUB_WORKSPACE
 
       # - uses: ./.github/actions/authenticate-to-gcp
       #   with:
@@ -64,28 +67,23 @@ jobs:
       #   run: uv run dbt deps
 
       # - name: Debug dbt
-      #   run: uv run dbt debug
-
-    #   - run:
-    #       name: Downloads manifest.json from GCS
-    #       command: |
-    #         gcloud storage cp \
-    #           $GCP_COMPOSER_BUCKET/data/dbt_core/target/manifest.json \
-    #           dbt_core/artifacts
-
+      #   run: |
+      #     gcloud storage cp \
+      #       ${{ inputs.gcp-artifacts-bucket }}/artifacts/manifest.json \
+      #       dbt_core/artifacts
 
       # - name: Run Modified Seeds
       #   run: |
-      #     if [ -f "./manifest.json" ]; then
-      #       dbt seed --defer --state ? --select state:modified
+      #     if [ -f "artifacts/manifest.json" ]; then
+      #       dbt seed --defer --state artifacts --select state:modified
       #     else
       #       dbt seed
       #     fi
 
       # - name: Run Modified Models
       #   run: |
-      #     if [ -f "./manifest.json" ]; then
-      #       dbt run --defer --state $CIRCLE_WORKING_DIRECTORY/dbt_core/artifacts --select state:modified
+      #     if [ -f "artifacts/manifest.json" ]; then
+      #       dbt run --defer --state artifacts --select state:modified
       #     else
       #       dbt run
       #     fi
@@ -104,5 +102,5 @@ jobs:
       # - name: Generate Docs
       #   run: |
       #     gcloud storage cp \
-      #       dbt_core/artifacts/static_index.html \
-      #       gs://data_catalog_dbt/
+      #       artifacts/static_index.html \
+      #       ${{ inputs.gcp-artifacts-bucket }}/artifacts \

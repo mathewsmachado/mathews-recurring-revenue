@@ -14,3 +14,4 @@ jobs:
       gcp-project-id: mathews-recurring-revenue-stg
       gcp-workload-identity-provider: projects/724228842720/locations/global/workloadIdentityPools/github/providers/mathews-recurring-revenue
       gcp-service-account: github@mathews-recurring-revenue-stg.iam.gserviceaccount.com
+      gcp-artifacts-bucket: gs://mathews-recurring-revenue-stg-dbt-project-bucket
