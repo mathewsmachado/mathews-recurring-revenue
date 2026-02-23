@@ -19,7 +19,7 @@ env:
   GCP_CLIENT_EMAIL: dbt-project@mathews-recurring-revenue-stg.iam.gserviceaccount.com
   GCP_LOCATION: US
   GCP_PROJECT_ID: mathews-recurring-revenue-stg
-  MMRR_ACCOUNTING_LIFE_START_DATE: '2022-01-04'
+  # MMRR_ACCOUNTING_LIFE_START_DATE: '2022-01-04'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}-${{ inputs.gcp-project-id }}
@@ -76,6 +76,17 @@ jobs:
             ${{ inputs.gcp-artifacts-bucket }}/artifacts/manifest.json \
             artifacts || echo "No manifest.json found."
 
+      - name: Run Unit Tests
+        run: |
+          if [ -f "artifacts/manifest.json" ]; then
+            uv run dbt test \
+              --defer \
+              --state artifacts \
+              --select state:modified,test_type:unit
+          else
+            uv run dbt test
+          fi
+
       - name: Run Modified Seeds
         run: |
           if [ -f "artifacts/manifest.json" ]; then
@@ -94,16 +105,21 @@ jobs:
 
       - name: Generate Docs
         run: |
-          uv run dbt docs generate \
-            --static \
-            --no-compile \
-            --defer \
-            --state artifacts \
-            --target-path artifacts \
-            --select state:modified
+          if [ -f "artifacts/manifest.json" ]; then
+            uv run dbt docs generate \
+              --static \
+              --no-compile \
+              --defer \
+              --state artifacts \
+              --select state:modified
+          else
+            uv run dbt docs generate \
+              --static \
+              --no-compile
+          fi
 
-      - name: Generate Docs
+      - name: Upload Docs
         run: |
           gcloud storage cp \
-            artifacts/static_index.html \
-            ${{ inputs.gcp-artifacts-bucket }}/artifacts \
+            target/static_index.html \
+            ${{ inputs.gcp-artifacts-bucket }}/target
