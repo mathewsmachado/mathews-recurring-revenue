@@ -78,22 +78,22 @@ jobs:
       - name: Run Modified Seeds
         run: |
           if [ -f "artifacts/manifest.json" ]; then
-            dbt seed --defer --state artifacts --select state:modified
+            uv run dbt seed --defer --state artifacts --select state:modified
           else
-            dbt seed
+            uv run dbt seed
           fi
 
       - name: Run Modified Models
         run: |
           if [ -f "artifacts/manifest.json" ]; then
-            dbt run --defer --state artifacts --select state:modified
+            uv run dbt run --defer --state artifacts --select state:modified
           else
-            dbt run
+            uv run dbt run
           fi
 
       - name: Generate Docs
         run: |
-          dbt docs generate \
+          uv run dbt docs generate \
             --static \
             --no-compile \
             --defer \
