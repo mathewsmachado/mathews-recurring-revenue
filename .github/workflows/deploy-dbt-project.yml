@@ -71,9 +71,6 @@ jobs:
           gcloud storage cp \
             ${{ inputs.gcp-artifacts-bucket }}/target/manifest.json \
             artifacts/manifest.json || {
-              echo
-              echo
-              echo
               echo "No manifest.json found."
               exit 1
             }
