@@ -1,7 +1,7 @@
-# resource "google_project_service" "artifact_registry" {
-#   project = var.project_id
-#   service = "artifactregistry.googleapis.com"
-# }
+resource "google_project_service" "artifact_registry" {
+  project = var.project_id
+  service = "artifactregistry.googleapis.com"
+}
 
 resource "google_artifact_registry_repository" "dbt-project" {
   project       = var.project_id
@@ -10,7 +10,7 @@ resource "google_artifact_registry_repository" "dbt-project" {
   description   = "dbt Project Artifact Registry Repository"
   format        = "DOCKER"
 
-  #   depends_on = [google_project_service.artifact_registry]
+  depends_on = [google_project_service.artifact_registry]
 
   cleanup_policies {
     id     = "delete-old-images"
