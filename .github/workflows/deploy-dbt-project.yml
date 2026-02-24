@@ -17,7 +17,8 @@ on:
 env:
   DBT_TARGET: dev
   GCP_CLIENT_EMAIL: dbt-project@mathews-recurring-revenue-stg.iam.gserviceaccount.com
-  GCP_LOCATION: US
+  # GCP_LOCATION: US
+  GCP_LOCATION: us-central1
   GCP_PROJECT_ID: mathews-recurring-revenue-stg
   # MMRR_ACCOUNTING_LIFE_START_DATE: '2022-01-04'
 
@@ -41,13 +42,8 @@ jobs:
       - name: Clone Repository
         uses: actions/checkout@v5
         
-      - name: Echo
-        run: |
-          echo "1. $GITHUB_WORKSPACE"
-          echo "2. $PWD"
-          echo "3. $(pwd)"
- 
       - uses: ./.github/actions/authenticate-to-gcp
+        id: gcp-auth
         with:
           gcp-project-id: ${{ inputs.gcp-project-id }}
           gcp-workload-identity-provider: ${{ inputs.gcp-workload-identity-provider }}
@@ -115,3 +111,24 @@ jobs:
           gcloud storage cp \
             target/static_index.html \
             ${{ inputs.gcp-artifacts-bucket }}/target/static_index.html
+
+      - name: Login to Google Artifact Registry
+        uses: docker/login-action@v3
+        with:
+          registry: us-central1-docker.pkg.dev
+          username: oauth2accesstoken
+          password: ${{ steps.gcp-auth.outputs.access_token }}
+
+      - name: Generate Docker Metadata
+        id: docker-meta
+        uses: docker/metadata-action@v5
+        with:
+          images: us-central1-docker.pkg.dev/mathews-recurring-revenue-dev/dbt-project/dbt-project
+          tags: type=sha
+
+      - name: Docker Build and Push
+        uses: docker/build-push-action@v6
+        with:
+          context: "{{defaultContext}}:dbt_project"
+          push: true
+          tags: ${{ steps.docker-meta.outputs.tags }}
