@@ -1,18 +1,23 @@
 # ---------- Build Stage ----------
 FROM ghcr.io/astral-sh/uv:python3.12-alpine AS builder
 
-# Basic config
 WORKDIR /app
 
-# Install Python dependencies
 COPY pyproject.toml uv.lock  dbt_project.yml package-lock.yml .
 
-# Install dbt dependencies
-RUN apk add --no-cache git && \
-    uv sync --locked --no-dev --no-cache && \
-    uv run dbt deps
+RUN apk add --no-cache git
 
-# Cleanup
+RUN uv sync \
+    --no-dev \
+    --no-cache \
+    --no-python-downloads \
+    --no-install-project \
+    --no-editable \
+    --locked \
+    --link-mode=copy
+
+RUN uv run dbt deps
+
 RUN find /app/.venv -type d -name __pycache__ -exec rm -rf {} + && \
     find dbt_packages \
         -mindepth 2 \
@@ -25,25 +30,22 @@ RUN find /app/.venv -type d -name __pycache__ -exec rm -rf {} + && \
 # ---------- Runtime Stage ----------
 FROM python:3.12-alpine AS runner
 
-# Copy dependencies
-COPY --from=builder /app/.venv /app/.venv
-COPY --from=builder /app/dbt_packages /app/dbt_packages
-COPY --from=builder /app/dbt_project.yml /app/dbt_project.yml
+RUN addgroup -S -g 1001 app && \
+    adduser -S -g 1001 -u 1001 -G app app
 
-# Copy app code
-COPY macros /app/macros
-COPY models /app/models
-COPY profiles.yml /app/profiles.yml
+COPY --from=builder --chown=app:app /app/.venv /app/.venv
+COPY --from=builder --chown=app:app /app/dbt_packages /app/dbt_packages
+COPY --from=builder --chown=app:app /app/dbt_project.yml /app/dbt_project.yml
 
-# Basic config
-RUN addgroup -g 1001 -S appgroup && \
-    adduser -S appuser -u 1001 -G appgroup
-
-USER appuser
-
-WORKDIR /app
+COPY --chown=app:app macros /app/macros
+COPY --chown=app:app models /app/models
+COPY --chown=app:app profiles.yml /app/profiles.yml
 
 ENV PATH="/app/.venv/bin:$PATH"
 
-# Set entrypoint
-ENTRYPOINT ["/bin/sh"]
+USER app
+
+WORKDIR /app
+
+ENTRYPOINT ["dbt"]
+CMD ["--help"]
