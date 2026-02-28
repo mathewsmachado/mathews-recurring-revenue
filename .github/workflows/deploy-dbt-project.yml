@@ -48,17 +48,25 @@ jobs:
           gcp-workload-identity-provider: ${{ inputs.gcp-workload-identity-provider }}
           gcp-service-account: ${{ inputs.gcp-service-account }}
 
+      - name: Create Application Default Credentials
+        run: |
+          gcloud iam workload-identity-pools create-cred-config \
+              ${{ inputs.gcp-workload-identity-provider }} \
+              --service-account=${{ inputs.gcp-service-account }} \
+              --output-file=$HOME/.config/gcloud/application_default_credentials.json \
+              --credential-source-file=$GOOGLE_APPLICATION_CREDENTIALS
+
       - name: Log
         run: |
+          echo $HOME
+          echo $GITHUB_WORKSPACE
           echo $GOOGLE_APPLICATION_CREDENTIALS
-          cat $GOOGLE_APPLICATION_CREDENTIALS
 
       - name: Build Docker Image
-        run: docker compose build dbt_project_ci
+        run: ADC_PATH=$HOME/.config/gcloud/application_default_credentials.json docker compose build dbt_project_ci
+
+      - name: Log Application Default Credentials
+        run: docker compose run --rm --entrypoint /bin/sh dbt_project_ci cat .config/gcloud/application_default_credentials.json
 
       - name: Run dbt debug
-        env:
-          GCP_PROJECT_ID: ${{ inputs.gcp-project-id }}
-          GCP_CLIENT_EMAIL: dbt-project@mathews-recurring-revenue-stg.iam.gserviceaccount.com
-        run: |
-          docker compose run --rm dbt_project_ci debug
+        run: docker compose run --rm dbt_project_ci debug
