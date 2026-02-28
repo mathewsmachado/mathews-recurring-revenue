@@ -65,17 +65,18 @@ jobs:
             --tag us-central1-docker.pkg.dev/${{ inputs.gcp-project-id }}/dbt-project/dbt-project:${{ github.event.pull_request.head.sha }} \
             .
 
-      - name: Log
+      # - name: Log
+      #   run: |
+      #     docker run us-central1-docker.pkg.dev/${{ inputs.gcp-project-id }}/dbt-project/dbt-project:${{ github.event.pull_request.head.sha }} debug
+
+      - name: Authenticate to Artifact Registry
         run: |
-          docker run us-central1-docker.pkg.dev/${{ inputs.gcp-project-id }}/dbt-project/dbt-project:${{ github.event.pull_request.head.sha }} debug
+          gcloud auth configure-docker us-central1-docker.pkg.dev
 
-      # - name: Authenticate to Artifact Registry
-      #   run: |
-      #     gcloud auth configure-docker us-central1-docker.pkg.dev
+      - name: Push Docker Image
+        run: |
+          docker push us-central1-docker.pkg.dev/${{ inputs.gcp-project-id }}/dbt-project/dbt-project:${{ github.event.pull_request.head.sha }}
 
-      # - name: Push Docker Image
-      #   run: |
-      #     docker push us-central1-docker.pkg.dev/${{ inputs.gcp-project-id }}/dbt-project/dbt-project:$(git rev-parse --short HEAD)
       # - name: Setup Python
       #   uses: actions/setup-python@v6
       #   with:
