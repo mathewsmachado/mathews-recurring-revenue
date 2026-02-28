@@ -92,6 +92,12 @@ jobs:
         run: |
           uv run dbt run --defer --state artifacts --select state:modified
 
+      - name: Upload manifest.json
+        run: |
+          gcloud storage cp \
+            target/manifest.json \
+            ${{ inputs.gcp-artifacts-bucket }}/target/manifest.json
+
       - name: Generate Docs
         run: |
           uv run dbt docs generate \
