@@ -42,33 +42,84 @@ jobs:
         uses: actions/checkout@v5
 
       - uses: ./.github/actions/authenticate-to-gcp
-        id: gcp-auth
+        # id: gcp-auth
         with:
           gcp-project-id: ${{ inputs.gcp-project-id }}
           gcp-workload-identity-provider: ${{ inputs.gcp-workload-identity-provider }}
           gcp-service-account: ${{ inputs.gcp-service-account }}
 
-      - name: Create Application Default Credentials
+      # - name: Setup Python
+      #   uses: actions/setup-python@v6
+      #   with:
+      #     python-version-file: "dbt_project/.python-version"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          version: "0.9.21"
+          enable-cache: true
+
+      - name: Set up Python
+        run: uv python install
+
+      - name: Install Python Dependencies
+        run: uv sync
+
+      - name: Install dbt Dependencies
+        run: uv run dbt deps
+
+      - name: Download manifest.json
         run: |
-          gcloud iam workload-identity-pools create-cred-config \
-              ${{ inputs.gcp-workload-identity-provider }} \
-              --service-account=${{ env.GCP_CLIENT_EMAIL }} \
-              --output-file=$HOME/.config/gcloud/application_default_credentials.json \
-              --credential-source-file=$GOOGLE_APPLICATION_CREDENTIALS
+          gcloud storage cp \
+            ${{ inputs.gcp-artifacts-bucket }}/target/manifest.json \
+            artifacts/manifest.json || {
+              echo "No manifest.json found."
+              exit 1
+            }
 
-      - name: Log
+      - name: Run Unit Tests
         run: |
-          echo $HOME
-          echo $GITHUB_WORKSPACE
-          echo $GOOGLE_APPLICATION_CREDENTIALS
+          uv run dbt test \
+            --defer \
+            --state artifacts \
+            --select state:modified,test_type:unit
 
-      - name: Build Docker Image
-        run: ADC_PATH=$HOME/.config/gcloud/application_default_credentials.json docker compose build dbt_project_ci
-
-      - name: Log Application Default Credentials
+      - name: Run Modified Seeds
         run: |
-          # docker compose run --rm --entrypoint /bin/sh dbt_project_ci -c "ls -la /app/.config/gcloud/"
-          ADC_PATH=$HOME/.config/gcloud/application_default_credentials.json docker compose run --rm --entrypoint /bin/sh dbt_project_ci -c "cat /app/.config/gcloud/application_default_credentials.json"
+          uv run dbt seed --defer --state artifacts --select state:modified
 
-      - name: Run dbt debug
-        run: ADC_PATH=$HOME/.config/gcloud/application_default_credentials.json docker compose run --rm dbt_project_ci debug
+      - name: Run Modified Models
+        run: |
+          uv run dbt run --defer --state artifacts --select state:modified
+
+      - name: Generate Docs
+        run: |
+          uv run dbt docs generate \
+            --static \
+            --no-compile \
+            --defer \
+            --state artifacts \
+            --select state:modified
+
+      - name: Upload Docs
+        run: |
+          gcloud storage cp \
+            target/static_index.html \
+            ${{ inputs.gcp-artifacts-bucket }}/target/static_index.html
+
+      # - name: Upload manifest.json
+      #   run: |
+      #     gcloud storage cp \
+      #       target/manifest.json \
+      #       ${{ inputs.gcp-artifacts-bucket }}/target/manifest.json
+
+      # - name: Build Docker Image
+      #   run: ADC_PATH=$HOME/.config/gcloud/application_default_credentials.json docker compose build dbt_project_ci
+
+      # - name: Log Application Default Credentials
+      #   run: |
+      #     # docker compose run --rm --entrypoint /bin/sh dbt_project_ci -c "ls -la /app/.config/gcloud/"
+      #     ADC_PATH=$HOME/.config/gcloud/application_default_credentials.json docker compose run --rm --entrypoint /bin/sh dbt_project_ci -c "cat /app/.config/gcloud/application_default_credentials.json"
+
+      # - name: Run dbt debug
+      #   run: ADC_PATH=$HOME/.config/gcloud/application_default_credentials.json docker compose run --rm dbt_project_ci debug
