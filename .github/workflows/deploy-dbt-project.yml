@@ -50,12 +50,20 @@ jobs:
 
       - name: Download manifest.json
         run: |
-          gcloud storage cp \
-            ${{ inputs.gcp-artifacts-bucket }}/target/manifest.json \
-            artifacts/manifest.json || {
-              echo "No manifest.json found."
-              exit 1
-            }
+          pwd
+          echo $HOME
+          
+          ls -lA .config/gcloud
+          ls -lA $HOME/.config/gcloud
+
+      # - name: Download manifest.json
+      #   run: |
+      #     gcloud storage cp \
+      #       ${{ inputs.gcp-artifacts-bucket }}/target/manifest.json \
+      #       artifacts/manifest.json || {
+      #         echo "No manifest.json found."
+      #         exit 1
+      #       }
 
       # gcp_artifact_registry_domain/gcp_project/gcp_artifact_registry_repo/job_name:git_commit_sha
       # ${{ github.sha }}
