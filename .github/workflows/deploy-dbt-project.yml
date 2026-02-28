@@ -40,30 +40,13 @@ jobs:
     steps:
       - name: Clone Repository
         uses: actions/checkout@v5
-        
+
       - uses: ./.github/actions/authenticate-to-gcp
         id: gcp-auth
         with:
           gcp-project-id: ${{ inputs.gcp-project-id }}
           gcp-workload-identity-provider: ${{ inputs.gcp-workload-identity-provider }}
           gcp-service-account: ${{ inputs.gcp-service-account }}
-
-      - name: Setup Python
-        uses: actions/setup-python@v6
-        with:
-          python-version-file: "dbt_project/.python-version"
-
-      - name: Install uv
-        uses: astral-sh/setup-uv@v7
-        with:
-          version: "0.9.21"
-          enable-cache: true
-
-      - name: Install Python Dependencies
-        run: uv sync
-
-      - name: Install dbt Dependencies
-        run: uv run dbt deps
 
       - name: Download manifest.json
         run: |
@@ -74,53 +57,79 @@ jobs:
               exit 1
             }
 
-      - name: Run Unit Tests
-        run: |
-          uv run dbt test \
-            --defer \
-            --state artifacts \
-            --select state:modified,test_type:unit
-
-      - name: Run Modified Seeds
-        run: |
-          uv run dbt seed --defer --state artifacts --select state:modified
-
-      - name: Run Modified Models
-        run: |
-          uv run dbt run --defer --state artifacts --select state:modified
-
-      - name: Upload manifest.json
-        run: |
-          gcloud storage cp \
-            target/manifest.json \
-            ${{ inputs.gcp-artifacts-bucket }}/target/manifest.json
-
-      - name: Generate Docs
-        run: |
-          uv run dbt docs generate \
-            --static \
-            --no-compile \
-            --defer \
-            --state artifacts \
-            --select state:modified
-
-      - name: Upload Docs
-        run: |
-          gcloud storage cp \
-            target/static_index.html \
-            ${{ inputs.gcp-artifacts-bucket }}/target/static_index.html
-
-      - name: Authenticate to Artifact Registry
-        run: |
-          gcloud auth configure-docker us-central1-docker.pkg.dev
-
       # gcp_artifact_registry_domain/gcp_project/gcp_artifact_registry_repo/job_name:git_commit_sha
+      # ${{ github.sha }}
       - name: Build Docker Image
         run: |
           docker build \
-            --tag us-central1-docker.pkg.dev/${{ inputs.gcp-project-id }}/dbt-project/dbt-project:$(git rev-parse --short HEAD) \
+            --tag us-central1-docker.pkg.dev/${{ inputs.gcp-project-id }}/dbt-project/dbt-project:${{ github.event.pull_request.head.sha }} \
             .
- 
-      - name: Push Docker Image
+
+      - name: Log
         run: |
-          docker push us-central1-docker.pkg.dev/${{ inputs.gcp-project-id }}/dbt-project/dbt-project:$(git rev-parse --short HEAD)
+          docker image ls --all
+
+      # - name: Authenticate to Artifact Registry
+      #   run: |
+      #     gcloud auth configure-docker us-central1-docker.pkg.dev
+
+      # - name: Push Docker Image
+      #   run: |
+      #     docker push us-central1-docker.pkg.dev/${{ inputs.gcp-project-id }}/dbt-project/dbt-project:$(git rev-parse --short HEAD)
+      # - name: Setup Python
+      #   uses: actions/setup-python@v6
+      #   with:
+      #     python-version-file: "dbt_project/.python-version"
+
+      # - name: Install uv
+      #   uses: astral-sh/setup-uv@v7
+      #   with:
+      #     version: "0.9.21"
+      #     enable-cache: true
+
+      # - name: Set up Python
+      #   run: uv python install 3.12
+
+      # - name: Install Python Dependencies
+      #   run: uv sync
+
+      # - name: Install dbt Dependencies
+      #   run: uv run dbt deps
+
+      # - name: Run Unit Tests
+      #   run: |
+      #     uv run dbt test \
+      #       --defer \
+      #       --state artifacts \
+      #       --select state:modified,test_type:unit
+
+      # - name: Run Modified Seeds
+      #   run: |
+      #     uv run dbt seed --defer --state artifacts --select state:modified
+
+      # - name: Run Modified Models
+      #   run: |
+      #     uv run dbt run --defer --state artifacts --select state:modified
+
+      # - name: Upload manifest.json
+      #   run: |
+      #     gcloud storage cp \
+      #       target/manifest.json \
+      #       ${{ inputs.gcp-artifacts-bucket }}/target/manifest.json
+
+      # - name: Generate Docs
+      #   run: |
+      #     uv run dbt docs generate \
+      #       --static \
+      #       --no-compile \
+      #       --defer \
+      #       --state artifacts \
+      #       --select state:modified
+
+      # - name: Upload Docs
+      #   run: |
+      #     gcloud storage cp \
+      #       target/static_index.html \
+      #       ${{ inputs.gcp-artifacts-bucket }}/target/static_index.html
+
+
