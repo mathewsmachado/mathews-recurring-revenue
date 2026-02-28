@@ -11,12 +11,15 @@ spec:
           containers:
           - name: dbt-project-1
             image: $DOCKER_IMAGE
-            # args:
-            # - --reference_date
-            # - "2000-01-01"
-            # env:
-            # - name: GCP_PROJECT_PROCESS
-            #   value: $GCP_PROJECT_PROCESS
+            env:
+            - name: DBT_TARGET
+              value: $DBT_TARGET
+            - name: GCP_LOCATION
+              value: $GCP_LOCATION
+            - name: GCP_PROJECT_ID
+              value: $GCP_PROJECT_ID
+            - name: GCP_CLIENT_EMAIL
+              value: $GCP_CLIENT_EMAIL
             resources:
               limits:
                 cpu: 1000m
