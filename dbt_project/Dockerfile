@@ -31,10 +31,10 @@ RUN find /app/.venv -type d -name __pycache__ -exec rm -rf {} + && \
 # ---------- Runtime Stage ----------
 FROM python:3.12-alpine AS runner
 
-# # Create non-root user
-RUN addgroup -S -g 1001 app && \
-    adduser -S -g 1001 -u 1001 -G app app
-    
+# Create non-root user
+RUN addgroup -S -g 1000 app && \
+    adduser -S -g 1000 -u 1000 -G app app
+
 # Install git (necessary for dbt deps)
 RUN apk add --no-cache git
 
@@ -49,7 +49,8 @@ COPY --chown=app:app models /app/models
 COPY --chown=app:app profiles.yml /app/profiles.yml
 
 # Configure environment variables
-ENV PATH="/app/.venv/bin:$PATH" \
+ENV HOME=/app \
+    PATH=/app/.venv/bin:$PATH \
     PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1
 

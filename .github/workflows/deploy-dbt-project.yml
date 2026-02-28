@@ -53,8 +53,8 @@ jobs:
           pwd
           echo $HOME
           
-          ls -lA .config/gcloud
-          ls -lA $HOME/.config/gcloud
+          # ls -lA .config/gcloud 2> /dev/null
+          ls -lA $HOME/.config/gcloud 2> /dev/null
 
       # - name: Download manifest.json
       #   run: |
