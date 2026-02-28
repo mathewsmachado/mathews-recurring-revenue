@@ -52,7 +52,7 @@ jobs:
         run: |
           gcloud iam workload-identity-pools create-cred-config \
               ${{ inputs.gcp-workload-identity-provider }} \
-              --service-account=${{ inputs.gcp-service-account }} \
+              --service-account=${{ env.GCP_CLIENT_EMAIL }} \
               --output-file=$HOME/.config/gcloud/application_default_credentials.json \
               --credential-source-file=$GOOGLE_APPLICATION_CREDENTIALS
 
