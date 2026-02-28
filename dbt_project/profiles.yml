@@ -11,7 +11,7 @@ dbt_project:
       job_retries: 1
       threads: 4
       method: oauth
-      impersonate_service_account: '{{ env_var("GCP_CLIENT_EMAIL") }}'
+      # impersonate_service_account: '{{ env_var("GCP_CLIENT_EMAIL") }}'
 
     # prd:
     #   type: bigquery
