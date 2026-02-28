@@ -1,0 +1,26 @@
+apiVersion: run.googleapis.com/v1
+kind: Job
+metadata:
+  name: dbt-project
+spec:
+  template:
+    spec:
+      taskCount: 1
+      template:
+        spec:
+          containers:
+          - name: dbt-project-1
+            image: $DOCKER_IMAGE
+            # args:
+            # - --reference_date
+            # - "2000-01-01"
+            # env:
+            # - name: GCP_PROJECT_PROCESS
+            #   value: $GCP_PROJECT_PROCESS
+            resources:
+              limits:
+                cpu: 1000m
+                memory: 512Mi
+          maxRetries: 0
+          timeoutSeconds: 300
+          serviceAccountName: $GCP_SERVICE_ACCOUNT
