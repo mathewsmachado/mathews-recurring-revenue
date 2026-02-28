@@ -13,7 +13,7 @@ spec:
             image: $DOCKER_IMAGE
             env:
             - name: DBT_USE_COLORS
-              value: 0
+              value: "0"
             - name: DBT_TARGET
               value: $DBT_TARGET
             - name: GCP_LOCATION
