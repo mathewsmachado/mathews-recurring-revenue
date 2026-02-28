@@ -48,6 +48,11 @@ jobs:
           gcp-workload-identity-provider: ${{ inputs.gcp-workload-identity-provider }}
           gcp-service-account: ${{ inputs.gcp-service-account }}
 
+      - name: Log
+        run: |
+          echo $GOOGLE_APPLICATION_CREDENTIALS
+          cat $GOOGLE_APPLICATION_CREDENTIALS
+
       - name: Build Docker Image
         run: docker compose build dbt_project_ci
 
@@ -55,4 +60,5 @@ jobs:
         env:
           GCP_PROJECT_ID: ${{ inputs.gcp-project-id }}
           GCP_CLIENT_EMAIL: dbt-project@mathews-recurring-revenue-stg.iam.gserviceaccount.com
-        run: docker compose run --rm dbt_project_ci debug
+        run: |
+          docker compose run --rm dbt_project_ci debug
