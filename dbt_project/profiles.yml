@@ -15,7 +15,7 @@ dbt_project:
 
     # prd:
     #   type: bigquery
-    #   location: US
+    #   location: '{{ env_var("GCP_LOCATION") }}'
     #   project: '{{ env_var("GCP_PROJECT_ID") }}'
     #   dataset: dbt_project
     #   priority: interactive
