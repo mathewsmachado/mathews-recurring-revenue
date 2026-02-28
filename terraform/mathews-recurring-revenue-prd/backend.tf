@@ -6,7 +6,7 @@ terraform {
     }
   }
 
-  required_version = "~> 1.14.5"
+  required_version = "~> 1.12.2"
 
   backend "gcs" {
     bucket = "mathews-recurring-revenue-prd-terraform-bucket"
