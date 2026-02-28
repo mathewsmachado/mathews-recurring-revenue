@@ -12,6 +12,8 @@ spec:
           - name: dbt-project-1
             image: $DOCKER_IMAGE
             env:
+            - name: DBT_USE_COLORS
+              value: 0
             - name: DBT_TARGET
               value: $DBT_TARGET
             - name: GCP_LOCATION
