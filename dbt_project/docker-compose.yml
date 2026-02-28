@@ -1,11 +1,9 @@
 services:
-  dbt_project_dev:
+  dbt_project:
     build: .
     entrypoint: ["/bin/sh"]
     volumes:
       - ~/.config/gcloud/application_default_credentials.json:/app/.config/gcloud/application_default_credentials.json:ro
     environment:
-      DBT_TARGET: dev
-      GCP_LOCATION: us-central1
-      GCP_PROJECT_ID: ${GCP_PROJECT_ID}
-      GCP_CLIENT_EMAIL: ${GCP_CLIENT_EMAIL}
+      GOOGLE_CLOUD_PROJECT: ${GOOGLE_CLOUD_PROJECT}
+      GOOGLE_CLOUD_CLIENT_EMAIL: ${GOOGLE_CLOUD_CLIENT_EMAIL}

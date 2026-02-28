@@ -15,11 +15,8 @@ on:
         type: string
 
 env:
-  DBT_TARGET: dev
-  GCP_CLIENT_EMAIL: dbt-project@mathews-recurring-revenue-stg.iam.gserviceaccount.com
-  GCP_LOCATION: US
-  GCP_PROJECT_ID: mathews-recurring-revenue-stg
-  # MMRR_ACCOUNTING_LIFE_START_DATE: '2022-01-04'
+  GOOGLE_CLOUD_CLIENT_EMAIL: dbt-project@mathews-recurring-revenue-stg.iam.gserviceaccount.com
+  GOOGLE_CLOUD_PROJECT: mathews-recurring-revenue-stg
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}-${{ inputs.gcp-project-id }}
@@ -130,9 +127,9 @@ jobs:
       - name: Deploy to Cloud Run
         run: |
           DOCKER_IMAGE=us-central1-docker.pkg.dev/${{ inputs.gcp-project-id }}/dbt-project/dbt-project:${{ github.event.pull_request.head.sha }} \
-          GCP_SERVICE_ACCOUNT=${{ inputs.gcp-service-account }} \
+          GOOGLE_CLOUD_SERVICE_ACCOUNT=${{ inputs.gcp-service-account }} \
           envsubst < job.yaml |
           gcloud run jobs replace \
-          --project=${{ env.GCP_PROJECT_ID }} \
+          --project=${{ env.GOOGLE_CLOUD_PROJECT }} \
           --region=us-central1 \
           -
