@@ -107,19 +107,26 @@ jobs:
             target/static_index.html \
             ${{ inputs.gcp-artifacts-bucket }}/target/static_index.html
 
-      # - name: Upload manifest.json
-      #   run: |
-      #     gcloud storage cp \
-      #       target/manifest.json \
-      #       ${{ inputs.gcp-artifacts-bucket }}/target/manifest.json
+      - name: Build Docker Image
+        run: |
+          docker build \
+            --tag us-central1-docker.pkg.dev/${{ inputs.gcp-project-id }}/dbt-project/dbt-project:${{ github.event.pull_request.head.sha }} \
+            .
 
-      # - name: Build Docker Image
-      #   run: ADC_PATH=$HOME/.config/gcloud/application_default_credentials.json docker compose build dbt_project_ci
+      - name: Authenticate to Artifact Registry
+        run: |
+          gcloud auth configure-docker us-central1-docker.pkg.dev
 
-      # - name: Log Application Default Credentials
-      #   run: |
-      #     # docker compose run --rm --entrypoint /bin/sh dbt_project_ci -c "ls -la /app/.config/gcloud/"
-      #     ADC_PATH=$HOME/.config/gcloud/application_default_credentials.json docker compose run --rm --entrypoint /bin/sh dbt_project_ci -c "cat /app/.config/gcloud/application_default_credentials.json"
+      - name: Push Docker Image
+        run: |
+          docker push us-central1-docker.pkg.dev/${{ inputs.gcp-project-id }}/dbt-project/dbt-project:${{ github.event.pull_request.head.sha }}
 
-      # - name: Run dbt debug
-      #   run: ADC_PATH=$HOME/.config/gcloud/application_default_credentials.json docker compose run --rm dbt_project_ci debug
+      - name: Deploy to Cloud Run
+        run: |
+          DOCKER_IMAGE=us-central1-docker.pkg.dev/${{ inputs.gcp-project-id }}/dbt-project/dbt-project:${{ github.event.pull_request.head.sha }} \
+          GCP_SERVICE_ACCOUNT=${{ inputs.gcp-service-account }} \
+          envsubst < job.yaml |
+          gcloud run jobs replace \
+          --project=${{ env.GCP_PROJECT_ID }} \
+          --region=us-central1 \
+          -
