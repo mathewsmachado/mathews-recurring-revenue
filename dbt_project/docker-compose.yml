@@ -9,14 +9,3 @@ services:
       GCP_LOCATION: us-central1
       GCP_PROJECT_ID: ${GCP_PROJECT_ID}
       GCP_CLIENT_EMAIL: ${GCP_CLIENT_EMAIL}
-
-  dbt_project_ci:
-    build: .
-    volumes:
-      - ${ADC_PATH:-/dev/null}:/app/.config/gcloud/application_default_credentials.json:ro
-    environment:
-      DBT_TARGET: dev
-      GCP_LOCATION: us-central1
-      GCP_PROJECT_ID: ${GCP_PROJECT_ID}
-      GCP_CLIENT_EMAIL: ${GCP_CLIENT_EMAIL}
-      # GOOGLE_APPLICATION_CREDENTIALS: /app/gcp-credentials.json
