@@ -67,7 +67,7 @@ jobs:
 
       - name: Log
         run: |
-          docker image ls --all
+          docker run us-central1-docker.pkg.dev/${{ inputs.gcp-project-id }}/dbt-project/dbt-project:${{ github.event.pull_request.head.sha }} debug
 
       # - name: Authenticate to Artifact Registry
       #   run: |
