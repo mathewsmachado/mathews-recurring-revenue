@@ -48,103 +48,11 @@ jobs:
           gcp-workload-identity-provider: ${{ inputs.gcp-workload-identity-provider }}
           gcp-service-account: ${{ inputs.gcp-service-account }}
 
-      - name: Echo
-        run: |
-          echo ${{ steps.gcp-auth.outputs.credentials_file_path }}
-          echo $GITHUB_WORKSPACE
+      - name: Build Docker Image
+        run: docker compose build dbt_project_ci
 
-      # - name: Download manifest.json
-      #   run: |
-      #     gcloud storage cp \
-      #       ${{ inputs.gcp-artifacts-bucket }}/target/manifest.json \
-      #       artifacts/manifest.json || {
-      #         echo "No manifest.json found."
-      #         exit 1
-      #       }
-
-      # gcp_artifact_registry_domain/gcp_project/gcp_artifact_registry_repo/job_name:git_commit_sha
-      # - name: Build Docker Image
-      #   run: |
-      #     docker build \
-      #       --tag us-central1-docker.pkg.dev/${{ inputs.gcp-project-id }}/dbt-project/dbt-project:${{ github.event.pull_request.head.sha }} \
-      #       .
-
-      - name: Debug
-        run: |
-          docker run us-central1-docker.pkg.dev/${{ inputs.gcp-project-id }}/dbt-project/dbt-project:${{ github.event.pull_request.head.sha }} debug
-
-      # - name: Authenticate to Artifact Registry
-      #   run: |
-      #     gcloud auth configure-docker us-central1-docker.pkg.dev
-
-      # - name: Push Docker Image
-      #   run: |
-      #     docker push us-central1-docker.pkg.dev/${{ inputs.gcp-project-id }}/dbt-project/dbt-project:${{ github.event.pull_request.head.sha }}
-
-      # - name: Deploy to Cloud Run
-      #   run: |
-      #     DOCKER_IMAGE=us-central1-docker.pkg.dev/${{ inputs.gcp-project-id }}/dbt-project/dbt-project:${{ github.event.pull_request.head.sha }} \
-      #     GCP_SERVICE_ACCOUNT=${{ inputs.gcp-service-account }} \
-      #     envsubst < job.yaml |
-      #     gcloud run jobs replace \
-      #     --project=${{ env.GCP_PROJECT_ID }} \
-      #     --region=us-central1 \
-      #     -
-
-      # - name: Setup Python
-      #   uses: actions/setup-python@v6
-      #   with:
-      #     python-version-file: "dbt_project/.python-version"
-
-      # - name: Install uv
-      #   uses: astral-sh/setup-uv@v7
-      #   with:
-      #     version: "0.9.21"
-      #     enable-cache: true
-
-      # - name: Set up Python
-      #   run: uv python install 3.12
-
-      # - name: Install Python Dependencies
-      #   run: uv sync
-
-      # - name: Install dbt Dependencies
-      #   run: uv run dbt deps
-
-      # - name: Run Unit Tests
-      #   run: |
-      #     uv run dbt test \
-      #       --defer \
-      #       --state artifacts \
-      #       --select state:modified,test_type:unit
-
-      # - name: Run Modified Seeds
-      #   run: |
-      #     uv run dbt seed --defer --state artifacts --select state:modified
-
-      # - name: Run Modified Models
-      #   run: |
-      #     uv run dbt run --defer --state artifacts --select state:modified
-
-      # - name: Upload manifest.json
-      #   run: |
-      #     gcloud storage cp \
-      #       target/manifest.json \
-      #       ${{ inputs.gcp-artifacts-bucket }}/target/manifest.json
-
-      # - name: Generate Docs
-      #   run: |
-      #     uv run dbt docs generate \
-      #       --static \
-      #       --no-compile \
-      #       --defer \
-      #       --state artifacts \
-      #       --select state:modified
-
-      # - name: Upload Docs
-      #   run: |
-      #     gcloud storage cp \
-      #       target/static_index.html \
-      #       ${{ inputs.gcp-artifacts-bucket }}/target/static_index.html
-
-
+      - name: Run dbt debug
+        env:
+          GCP_PROJECT_ID: ${{ inputs.gcp-project-id }}
+          GCP_CLIENT_EMAIL: dbt-project@mathews-recurring-revenue-stg.iam.gserviceaccount.com
+        run: docker compose run --rm dbt_project_ci debug
