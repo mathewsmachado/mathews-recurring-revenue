@@ -3,9 +3,6 @@ FROM ghcr.io/astral-sh/uv:python3.12-alpine AS builder
 
 WORKDIR /app
 
-# Install git (necessary for dbt deps)
-RUN apk add --no-cache git
-
 # Install Python dependencies
 COPY pyproject.toml uv.lock .
 RUN uv sync \
@@ -37,6 +34,9 @@ FROM python:3.12-alpine AS runner
 # # Create non-root user
 RUN addgroup -S -g 1001 app && \
     adduser -S -g 1001 -u 1001 -G app app
+    
+# Install git (necessary for dbt deps)
+RUN apk add --no-cache git
 
 # Copy dependencies
 COPY --from=builder --chown=app:app /app/.venv /app/.venv
