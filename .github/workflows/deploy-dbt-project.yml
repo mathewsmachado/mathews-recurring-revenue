@@ -48,12 +48,10 @@ jobs:
           gcp-workload-identity-provider: ${{ inputs.gcp-workload-identity-provider }}
           gcp-service-account: ${{ inputs.gcp-service-account }}
 
-      - name: Download manifest.json
+      - name: Echo
         run: |
-          pwd
-          echo $HOME
-          echo $GOOGLE_APPLICATION_CREDENTIALS
-          ls -lA $HOME/.config 2> /dev/null
+          echo ${{ steps.gcp-auth.outputs.credentials_file_path }}
+          echo $GITHUB_WORKSPACE
 
       # - name: Download manifest.json
       #   run: |
@@ -65,14 +63,13 @@ jobs:
       #       }
 
       # gcp_artifact_registry_domain/gcp_project/gcp_artifact_registry_repo/job_name:git_commit_sha
-      # ${{ github.sha }}
-      - name: Build Docker Image
-        run: |
-          docker build \
-            --tag us-central1-docker.pkg.dev/${{ inputs.gcp-project-id }}/dbt-project/dbt-project:${{ github.event.pull_request.head.sha }} \
-            .
+      # - name: Build Docker Image
+      #   run: |
+      #     docker build \
+      #       --tag us-central1-docker.pkg.dev/${{ inputs.gcp-project-id }}/dbt-project/dbt-project:${{ github.event.pull_request.head.sha }} \
+      #       .
 
-      - name: Log
+      - name: Debug
         run: |
           docker run us-central1-docker.pkg.dev/${{ inputs.gcp-project-id }}/dbt-project/dbt-project:${{ github.event.pull_request.head.sha }} debug
 
