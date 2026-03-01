@@ -39,16 +39,10 @@ jobs:
         uses: actions/checkout@v5
 
       - uses: ./.github/actions/authenticate-to-gcp
-        # id: gcp-auth
         with:
           gcp-project-id: ${{ inputs.gcp-project-id }}
           gcp-workload-identity-provider: ${{ inputs.gcp-workload-identity-provider }}
           gcp-service-account: ${{ inputs.gcp-service-account }}
-
-      # - name: Setup Python
-      #   uses: actions/setup-python@v6
-      #   with:
-      #     python-version-file: "dbt_project/.python-version"
 
       - name: Install uv
         uses: astral-sh/setup-uv@v7
@@ -82,12 +76,10 @@ jobs:
             --select state:modified,test_type:unit
 
       - name: Run Modified Seeds
-        run: |
-          uv run dbt seed --defer --state artifacts --select state:modified
+        run: uv run dbt seed --defer --state artifacts --select state:modified
 
       - name: Run Modified Models
-        run: |
-          uv run dbt run --defer --state artifacts --select state:modified
+        run: uv run dbt run --defer --state artifacts --select state:modified
 
       - name: Upload manifest.json
         run: |
@@ -110,23 +102,25 @@ jobs:
             target/static_index.html \
             ${{ inputs.gcp-artifacts-bucket }}/target/static_index.html
 
+      - name: Generate Docker Metadata
+        id: docker-metadata
+        run: echo "image=us-central1-docker.pkg.dev/${{ inputs.gcp-project-id }}/dbt-project/dbt-project:${{ github.event.pull_request.head.sha }}" >> $GITHUB_OUTPUT
+
       - name: Build Docker Image
         run: |
           docker build \
-            --tag us-central1-docker.pkg.dev/${{ inputs.gcp-project-id }}/dbt-project/dbt-project:${{ github.event.pull_request.head.sha }} \
+            --tag ${{ steps.docker-metadata.outputs.image }} \
             .
 
       - name: Authenticate to Artifact Registry
-        run: |
-          gcloud auth configure-docker us-central1-docker.pkg.dev
+        run: gcloud auth configure-docker us-central1-docker.pkg.dev
 
       - name: Push Docker Image
-        run: |
-          docker push us-central1-docker.pkg.dev/${{ inputs.gcp-project-id }}/dbt-project/dbt-project:${{ github.event.pull_request.head.sha }}
+        run: docker push ${{ steps.docker-metadata.outputs.image }}
 
       - name: Deploy to Cloud Run
         run: |
-          DOCKER_IMAGE=us-central1-docker.pkg.dev/${{ inputs.gcp-project-id }}/dbt-project/dbt-project:${{ github.event.pull_request.head.sha }} \
+          DOCKER_IMAGE=${{ steps.docker-metadata.outputs.image }} \
           GOOGLE_CLOUD_SERVICE_ACCOUNT=${{ inputs.gcp-service-account }} \
           envsubst < job.yaml |
           gcloud run jobs replace \
