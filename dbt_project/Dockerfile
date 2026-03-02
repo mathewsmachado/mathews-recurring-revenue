@@ -20,7 +20,10 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 
 # Install dbt dependencies
 COPY dbt_project.yml package-lock.yml .
-RUN uv run dbt deps
+RUN --mount=type=cache,target=/root/.cache/uv \
+    --mount=type=bind,source=uv.lock,target=uv.lock \
+    --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
+    uv run dbt deps
 
 # Remove Python cache
 RUN find /app/.venv -type d -name __pycache__ -exec rm -rf {} + && \
