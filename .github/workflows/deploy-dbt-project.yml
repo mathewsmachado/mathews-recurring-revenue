@@ -13,10 +13,13 @@ on:
       gcp-artifacts-bucket:
         required: true
         type: string
+      gcp-artifacts-bucket-prd:
+        required: true
+        type: string
 
 env:
-  GOOGLE_CLOUD_CLIENT_EMAIL: dbt-project@mathews-recurring-revenue-stg.iam.gserviceaccount.com
-  GOOGLE_CLOUD_PROJECT: mathews-recurring-revenue-stg
+  GCP_CLIENT_EMAIL: dbt-project@mathews-recurring-revenue-stg.iam.gserviceaccount.com
+  GCP_PROJECT: mathews-recurring-revenue-stg
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}-${{ inputs.gcp-project-id }}
@@ -124,6 +127,6 @@ jobs:
           GOOGLE_CLOUD_SERVICE_ACCOUNT=${{ inputs.gcp-service-account }} \
           envsubst < job.yaml |
           gcloud run jobs replace \
-          --project=${{ env.GOOGLE_CLOUD_PROJECT }} \
+          --project=${{ env.GCP_PROJECT }} \
           --region=us-central1 \
           -

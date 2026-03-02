@@ -25,7 +25,7 @@ query-comment:
 # https://docs.getdbt.com/reference/model-configs
 models:
   dbt_project:
-    +database: '{{ env_var("GOOGLE_CLOUD_PROJECT", "") }}'
+    +database: '{{ env_var("GCP_PROJECT", "") }}'
     +materialized: table
     +on_schema_change: sync_all_columns
     +persist_docs:

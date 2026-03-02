@@ -3,11 +3,11 @@ dbt_project:
   outputs:
     default:
       type: bigquery
-      project: '{{ env_var("GOOGLE_CLOUD_PROJECT") }}'
+      project: '{{ env_var("GCP_PROJECT") }}'
       dataset: dbt_project
       priority: interactive
       job_execution_timeout_seconds: 120
       job_retries: 1
       threads: 4
       method: oauth
-      impersonate_service_account: '{{ env_var("GOOGLE_CLOUD_CLIENT_EMAIL") }}'
+      impersonate_service_account: '{{ env_var("GCP_CLIENT_EMAIL") }}'
