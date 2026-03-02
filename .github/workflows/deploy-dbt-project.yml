@@ -147,7 +147,7 @@ jobs:
       - name: Deploy to Cloud Run
         run: |
           DOCKER_IMAGE=${{ steps.docker-metadata.outputs.image }} \
-          GOOGLE_CLOUD_SERVICE_ACCOUNT=${{ inputs.gcp-service-account }} \
+          GCP_SERVICE_ACCOUNT=${{ inputs.gcp-service-account }} \
           envsubst < job.yaml |
           gcloud run jobs replace \
           --project=${{ env.GCP_PROJECT }} \
