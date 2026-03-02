@@ -62,6 +62,14 @@ jobs:
       - name: Install Python Dependencies
         run: uv sync
 
+      - name: Cache dbt Dependencies
+        uses: actions/cache@v4
+        with:
+          path: dbt_project/dbt_packages
+          key: dbt_project/dbt_packages-${{ hashFiles('dbt_project/packages.yml') }}
+          restore-keys: |
+            dbt_project/dbt_packages-
+
       - name: Install dbt Dependencies
         run: uv run dbt deps
 
