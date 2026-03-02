@@ -1,10 +1,9 @@
 dbt_project:
-  target: '{{ env_var("DBT_TARGET") }}'
+  target: default
   outputs:
-    dev:
+    default:
       type: bigquery
-      location: '{{ env_var("GCP_LOCATION") }}'
-      project: '{{ env_var("GCP_PROJECT_ID") }}'
+      project: '{{ env_var("GCP_PROJECT") }}'
       dataset: dbt_project
       priority: interactive
       job_execution_timeout_seconds: 120
@@ -12,25 +11,3 @@ dbt_project:
       threads: 4
       method: oauth
       impersonate_service_account: '{{ env_var("GCP_CLIENT_EMAIL") }}'
-
-    # prd:
-    #   type: bigquery
-    #   location: US
-    #   project: '{{ env_var("GCP_PROJECT_ID") }}'
-    #   dataset: dbt_project
-    #   priority: interactive
-    #   job_execution_timeout_seconds: 120
-    #   job_retries: 1
-    #   threads: 4
-    #   method: service-account-json
-    #   keyfile_json:
-    #     type: service_account
-    #     project_id: '{{ env_var("GCP_PROJECT_ID") }}'
-    #     private_key_id: '{{ env_var("GCP_PRIVATE_KEY_ID") }}'
-    #     private_key: '{{ env_var("GCP_PRIVATE_KEY") }}'
-    #     client_email: '{{ env_var("GCP_CLIENT_EMAIL") }}'
-    #     client_id: '{{ env_var("GCP_CLIENT_ID") }}'
-    #     auth_uri: https://accounts.google.com/o/oauth2/auth
-    #     token_uri: https://oauth2.googleapis.com/token
-    #     auth_provider_x509_cert_url: https://www.googleapis.com/oauth2/v1/certs
-    #     client_x509_cert_url: '{{ env_var("GCP_CLIENT_X509_CERT_URL") }}'

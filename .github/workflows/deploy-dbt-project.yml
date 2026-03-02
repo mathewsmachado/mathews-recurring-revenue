@@ -1,0 +1,155 @@
+on:
+  workflow_call:
+    inputs:
+      gcp-project-id:
+        required: true
+        type: string
+      gcp-workload-identity-provider:
+        required: true
+        type: string
+      gcp-service-account:
+        required: true
+        type: string
+      gcp-artifacts-bucket:
+        required: true
+        type: string
+      gcp-artifacts-bucket-prd:
+        required: true
+        type: string
+      gcp-service-account-dbt:
+        required: true
+        type: string
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ inputs.gcp-project-id }}
+  cancel-in-progress: true
+
+jobs:
+  dbt-project-deploy:
+    runs-on: ubuntu-latest
+
+    env:
+      GCP_PROJECT: ${{ inputs.gcp-project-id }}
+      GCP_CLIENT_EMAIL: ${{ inputs.gcp-service-account-dbt }}
+
+    permissions:
+      contents: read
+      id-token: write
+
+    defaults:
+      run:
+        working-directory: dbt_project
+
+    steps:
+      - name: Clone Repository
+        uses: actions/checkout@v5
+
+      - uses: ./.github/actions/authenticate-to-gcp
+        with:
+          gcp-project-id: ${{ inputs.gcp-project-id }}
+          gcp-workload-identity-provider: ${{ inputs.gcp-workload-identity-provider }}
+          gcp-service-account: ${{ inputs.gcp-service-account }}
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          version: "0.9.21"
+          enable-cache: true
+
+      - name: Set up Python
+        run: uv python install
+
+      - name: Install Python Dependencies
+        run: uv sync
+
+      - name: Cache dbt Dependencies
+        uses: actions/cache@v4
+        with:
+          path: dbt_project/dbt_packages
+          key: dbt_project/dbt_packages-${{ hashFiles('dbt_project/packages.yml') }}
+          restore-keys: |
+            dbt_project/dbt_packages-
+
+      - name: Install dbt Dependencies
+        run: uv run dbt deps
+
+      - name: Download manifest.json
+        run: |
+          gcloud storage cp \
+            ${{ inputs.gcp-artifacts-bucket-prd }}/target/manifest.json \
+            artifacts/manifest.json || {
+              echo "No manifest.json found."
+              exit 1
+            }
+
+      - name: Run Unit Tests
+        run: |
+          uv run dbt test \
+            --defer \
+            --state artifacts \
+            --select state:modified,test_type:unit
+
+      - name: Run Modified Seeds
+        run: uv run dbt seed --defer --state artifacts --select state:modified
+
+      - name: Run Modified Models
+        run: uv run dbt run --defer --state artifacts --select state:modified
+
+      - name: Upload manifest.json
+        if: inputs.gcp-artifacts-bucket == inputs.gcp-artifacts-bucket-prd
+        run: |
+          gcloud storage cp \
+            target/manifest.json \
+            ${{ inputs.gcp-artifacts-bucket }}/target/manifest.json
+
+      - name: Generate Docs
+        run: |
+          uv run dbt docs generate \
+            --static \
+            --no-compile \
+            --defer \
+            --state artifacts \
+            --select state:modified
+
+      - name: Upload Docs
+        run: |
+          gcloud storage cp \
+            target/static_index.html \
+            ${{ inputs.gcp-artifacts-bucket }}/target/static_index.html
+
+      - name: Get GCP access token
+        id: gcp-token
+        run: echo "token=$(gcloud auth print-access-token)" >> $GITHUB_OUTPUT
+
+      - name: Login to Artifact Registry
+        uses: docker/login-action@v3
+        with:
+          registry: us-central1-docker.pkg.dev
+          username: oauth2accesstoken
+          password: ${{ steps.gcp-token.outputs.token }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Generate Docker Metadata
+        id: docker-metadata
+        run: echo "image=us-central1-docker.pkg.dev/${{ inputs.gcp-project-id }}/dbt-project/dbt-project:${{ github.event.pull_request.head.sha }}" >> $GITHUB_OUTPUT
+
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v6
+        with:
+          context: dbt_project
+          tags: ${{ steps.docker-metadata.outputs.image }}
+          cache-from: type=gha,ref=${{ steps.docker-metadata.outputs.image }}
+          cache-to: type=gha,ref=${{ steps.docker-metadata.outputs.image }},mode=max
+          push: true
+
+      - name: Deploy to Cloud Run
+        run: |
+          DOCKER_IMAGE=${{ steps.docker-metadata.outputs.image }} \
+          GCP_SERVICE_ACCOUNT=${{ inputs.gcp-service-account }} \
+          envsubst < job.yaml |
+          gcloud run jobs replace \
+          --project=${{ env.GCP_PROJECT }} \
+          --region=us-central1 \
+          -

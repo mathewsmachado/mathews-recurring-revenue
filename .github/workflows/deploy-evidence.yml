@@ -65,7 +65,7 @@ jobs:
           cache-dependency-path: evidence/package-lock.json
           node-version-file: evidence/package.json
 
-      - name: Install dependencies
+      - name: Install Dependencies
         run: npm ci
 
       - name: Fetch Data
