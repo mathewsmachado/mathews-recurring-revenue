@@ -65,7 +65,7 @@ jobs:
       - name: Download manifest.json
         run: |
           gcloud storage cp \
-            ${{ inputs.gcp-artifacts-bucket }}/target/manifest.json \
+            ${{ inputs.gcp-artifacts-bucket-prd }}/target/manifest.json \
             artifacts/manifest.json || {
               echo "No manifest.json found."
               exit 1
@@ -85,6 +85,7 @@ jobs:
         run: uv run dbt run --defer --state artifacts --select state:modified
 
       - name: Upload manifest.json
+        if: inputs.gcp-artifacts-bucket == inputs.gcp-artifacts-bucket-prd
         run: |
           gcloud storage cp \
             target/manifest.json \
