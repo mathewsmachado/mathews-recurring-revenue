@@ -16,3 +16,4 @@ jobs:
       gcp-service-account: github@mathews-recurring-revenue-stg.iam.gserviceaccount.com
       gcp-artifacts-bucket: gs://mathews-recurring-revenue-stg-dbt-project-bucket
       gcp-artifacts-bucket-prd: gs://mathews-recurring-revenue-prd-dbt-project-bucket
+      gcp-service-account-dbt: dbt-project@mathews-recurring-revenue-stg.iam.gserviceaccount.com

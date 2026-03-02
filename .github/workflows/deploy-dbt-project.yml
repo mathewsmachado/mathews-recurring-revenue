@@ -16,10 +16,9 @@ on:
       gcp-artifacts-bucket-prd:
         required: true
         type: string
-
-env:
-  GCP_CLIENT_EMAIL: dbt-project@mathews-recurring-revenue-stg.iam.gserviceaccount.com
-  GCP_PROJECT: mathews-recurring-revenue-stg
+      gcp-service-account-dbt:
+        required: true
+        type: string
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}-${{ inputs.gcp-project-id }}
@@ -28,6 +27,10 @@ concurrency:
 jobs:
   dbt-project-deploy:
     runs-on: ubuntu-latest
+
+    env:
+      GCP_PROJECT: ${{ inputs.gcp-project-id }}
+      GCP_CLIENT_EMAIL: ${{ inputs.gcp-service-account-dbt }}
 
     permissions:
       contents: read
