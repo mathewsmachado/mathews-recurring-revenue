@@ -25,7 +25,123 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  dbt-project-deploy:
+  test:
+    runs-on: ubuntu-latest
+
+    env:
+      GCP_PROJECT: ${{ inputs.gcp-project-id }}
+      GCP_CLIENT_EMAIL: ${{ inputs.gcp-service-account-dbt }}
+
+    permissions:
+      contents: read
+      id-token: write
+
+    defaults:
+      run:
+        working-directory: dbt_project
+
+    steps:
+      - name: Clone Repository
+        uses: actions/checkout@v5
+
+      - uses: ./.github/actions/setup-dbt-on-gcp
+        with:
+          gcp-project-id: ${{ inputs.gcp-project-id }}
+          gcp-workload-identity-provider: ${{ inputs.gcp-workload-identity-provider }}
+          gcp-service-account: ${{ inputs.gcp-service-account }}
+          gcp-artifacts-bucket-prd: ${{ inputs.gcp-artifacts-bucket-prd }}
+
+      - name: Run Unit Tests
+        run: |
+          uv run dbt test \
+            --defer \
+            --state artifacts \
+            --select state:modified,test_type:unit
+
+  run:
+    needs: test
+    runs-on: ubuntu-latest
+
+    env:
+      GCP_PROJECT: ${{ inputs.gcp-project-id }}
+      GCP_CLIENT_EMAIL: ${{ inputs.gcp-service-account-dbt }}
+
+    permissions:
+      contents: read
+      id-token: write
+
+    defaults:
+      run:
+        working-directory: dbt_project
+
+    steps:
+      - name: Clone Repository
+        uses: actions/checkout@v5
+
+      - uses: ./.github/actions/setup-dbt-on-gcp
+        with:
+          gcp-project-id: ${{ inputs.gcp-project-id }}
+          gcp-workload-identity-provider: ${{ inputs.gcp-workload-identity-provider }}
+          gcp-service-account: ${{ inputs.gcp-service-account }}
+          gcp-artifacts-bucket-prd: ${{ inputs.gcp-artifacts-bucket-prd }}
+
+      - name: Run Modified Seeds
+        run: uv run dbt seed --defer --state artifacts --select state:modified
+
+      - name: Run Modified Models
+        run: uv run dbt run --defer --state artifacts --select state:modified
+
+  upload-assets:
+    needs: run
+    runs-on: ubuntu-latest
+
+    env:
+      GCP_PROJECT: ${{ inputs.gcp-project-id }}
+      GCP_CLIENT_EMAIL: ${{ inputs.gcp-service-account-dbt }}
+
+    permissions:
+      contents: read
+      id-token: write
+
+    defaults:
+      run:
+        working-directory: dbt_project
+
+    steps:
+      - name: Clone Repository
+        uses: actions/checkout@v5
+
+      - uses: ./.github/actions/setup-dbt-on-gcp
+        with:
+          gcp-project-id: ${{ inputs.gcp-project-id }}
+          gcp-workload-identity-provider: ${{ inputs.gcp-workload-identity-provider }}
+          gcp-service-account: ${{ inputs.gcp-service-account }}
+          gcp-artifacts-bucket-prd: ${{ inputs.gcp-artifacts-bucket-prd }}
+
+      - name: Generate Docs
+        run: |
+          uv run dbt docs generate \
+            --static \
+            --no-compile \
+            --defer \
+            --state artifacts \
+            --select state:modified
+
+      - name: Upload Docs
+        run: |
+          gcloud storage cp \
+            target/static_index.html \
+            ${{ inputs.gcp-artifacts-bucket }}/target/static_index.html
+
+      - name: Upload manifest.json
+        if: inputs.gcp-artifacts-bucket == inputs.gcp-artifacts-bucket-prd
+        run: |
+          gcloud storage cp \
+            target/manifest.json \
+            ${{ inputs.gcp-artifacts-bucket }}/target/manifest.json
+
+  deploy:
+    needs: run
     runs-on: ubuntu-latest
 
     env:
@@ -49,75 +165,6 @@ jobs:
           gcp-project-id: ${{ inputs.gcp-project-id }}
           gcp-workload-identity-provider: ${{ inputs.gcp-workload-identity-provider }}
           gcp-service-account: ${{ inputs.gcp-service-account }}
-
-      - name: Install uv
-        uses: astral-sh/setup-uv@v7
-        with:
-          version: "0.9.21"
-          enable-cache: true
-
-      - name: Set up Python
-        run: uv python install
-
-      - name: Install Python Dependencies
-        run: uv sync
-
-      - name: Cache dbt Dependencies
-        id: cache-dbt-dependencies
-        uses: actions/cache@v4
-        with:
-          path: dbt_project/dbt_packages
-          key: dbt_project/dbt_packages-${{ hashFiles('dbt_project/packages.yml') }}
-          restore-keys: |
-            dbt_project/dbt_packages-
-
-      - name: Install dbt Dependencies
-        if: steps.cache-dbt-dependencies.outputs.cache-hit != 'true'
-        run: uv run dbt deps
-
-      - name: Download manifest.json
-        run: |
-          gcloud storage cp \
-            ${{ inputs.gcp-artifacts-bucket-prd }}/target/manifest.json \
-            artifacts/manifest.json || {
-              echo "No manifest.json found."
-              exit 1
-            }
-
-      - name: Run Unit Tests
-        run: |
-          uv run dbt test \
-            --defer \
-            --state artifacts \
-            --select state:modified,test_type:unit
-
-      - name: Run Modified Seeds
-        run: uv run dbt seed --defer --state artifacts --select state:modified
-
-      - name: Run Modified Models
-        run: uv run dbt run --defer --state artifacts --select state:modified
-
-      - name: Upload manifest.json
-        if: inputs.gcp-artifacts-bucket == inputs.gcp-artifacts-bucket-prd
-        run: |
-          gcloud storage cp \
-            target/manifest.json \
-            ${{ inputs.gcp-artifacts-bucket }}/target/manifest.json
-
-      - name: Generate Docs
-        run: |
-          uv run dbt docs generate \
-            --static \
-            --no-compile \
-            --defer \
-            --state artifacts \
-            --select state:modified
-
-      - name: Upload Docs
-        run: |
-          gcloud storage cp \
-            target/static_index.html \
-            ${{ inputs.gcp-artifacts-bucket }}/target/static_index.html
 
       - name: Get GCP access token
         id: gcp-token
