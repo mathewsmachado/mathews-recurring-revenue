@@ -46,4 +46,4 @@ runs:
     - name: Terraform Init
       shell: bash
       working-directory: ${{ inputs.terraform-project }}
-      run: terraform init -no-color
+      run: terraform init -no-color -reconfigure

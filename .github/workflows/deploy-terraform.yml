@@ -15,7 +15,7 @@ on:
         type: string
 
 env:
-  terraform-version: "1.12.2"
+  terraform-version: "1.14.5"
   terraform-plan-file-retention-days: 1
 
 concurrency:
