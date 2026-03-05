@@ -14,6 +14,7 @@
         {{ exceptions.raise_compiler_error("Parameter 'column_name' is required.") }}
     {%- endif -%}
 
+
     {%- if not lower_bound -%}
         {{ exceptions.raise_compiler_error("Parameter 'lower_bound' is required.") }}
     {%- endif -%}
