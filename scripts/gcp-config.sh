@@ -17,7 +17,7 @@ usage() {
     cat <<EOF
 Usage: $SCRIPT_NAME [OPTIONS]
 
-Authenticate with GCP and configure project/account defaults.
+Configure GCP project and account defaults.
 
 Options:
     -p, --project ID      GCP project ID (default: $DEFAULT_PROJECT)
@@ -67,14 +67,12 @@ main() {
     current_project=$(gcloud config get project 2>/dev/null || true)
 
     if [[ "$current_account" == "$ACCOUNT_ID" && "$current_project" == "$PROJECT_ID" ]]; then
-        log_info "Already logged in as ${ACCOUNT_ID} on project ${PROJECT_ID}"
+        log_info "Already configured as ${ACCOUNT_ID} on project ${PROJECT_ID}"
         exit 0
     fi
 
-    log_info "Authenticating with GCP (project: ${PROJECT_ID}, account: ${ACCOUNT_ID})"
+    log_info "Configuring GCP (project: ${PROJECT_ID}, account: ${ACCOUNT_ID})"
 
-    gcloud auth login
-    gcloud auth application-default login
     gcloud config set project "$PROJECT_ID"
     gcloud config set account "$ACCOUNT_ID"
 
