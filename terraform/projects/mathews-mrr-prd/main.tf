@@ -41,7 +41,7 @@ module "dbt_project_bucket" {
   iam_members = [
     {
       role   = "roles/storage.objectViewer"
-      member = "serviceAccount:github@mathews-mrr-stg.iam.gserviceaccount.com"
+      member = "serviceAccount:${local.shared.service_accounts.dbt_project.account_id}@mathews-mrr-stg.iam.gserviceaccount.com"
     }
   ]
 }
