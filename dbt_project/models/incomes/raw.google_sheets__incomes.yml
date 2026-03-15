@@ -91,3 +91,4 @@ sources:
               - by date (tran_date)
             table_partitioned_by: null
             table_clustered_by: null
+ 
