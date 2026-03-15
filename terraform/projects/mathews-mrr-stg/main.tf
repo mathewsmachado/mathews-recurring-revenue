@@ -50,3 +50,15 @@ module "dbt_project_sa" {
 
   depends_on = [module.service]
 }
+
+module "evidence_sa" {
+  source = "../../modules/service-accounts"
+
+  project_id   = var.project_id
+  account_id   = local.shared.service_accounts.evidence.account_id
+  display_name = local.shared.service_accounts.evidence.display_name
+  description  = local.shared.service_accounts.evidence.description
+  roles        = toset(local.shared.service_accounts.evidence.roles)
+
+  depends_on = [module.service]
+}

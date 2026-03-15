@@ -30,7 +30,20 @@
       "account_id": "dbt-project",
       "display_name": "dbt-project",
       "description": "DBT Project Service Account",
-      "roles": ["roles/bigquery.user", "roles/bigquery.dataEditor"]
+      "roles": [
+        "roles/bigquery.dataEditor",
+        "roles/bigquery.user",
+        "roles/iam.serviceAccountTokenCreator"
+      ]
+    },
+    "evidence": {
+      "account_id": "evidence",
+      "display_name": "evidence",
+      "description": "Evidence Service Account",
+      "roles": [
+        "roles/bigquery.user",
+        "roles/iam.serviceAccountTokenCreator"
+      ]
     }
   }
 }
