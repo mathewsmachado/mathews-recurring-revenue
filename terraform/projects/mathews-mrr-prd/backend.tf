@@ -14,11 +14,12 @@ terraform {
   }
 }
 
-locals {
-  shared = jsondecode(file("../../shared/config.json"))
-}
-
 provider "google" {
   project = var.project_id
   region  = local.shared.project_region
+}
+
+locals {
+  shared     = jsondecode(file("../../shared/config.json"))
+  wif_member = "principalSet://iam.googleapis.com/projects/489693200516/locations/global/workloadIdentityPools/github/attribute.repository/mathews-recurring-revenue"
 }

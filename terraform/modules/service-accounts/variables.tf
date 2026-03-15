@@ -28,3 +28,9 @@ variable "impersonation_members" {
   type        = set(string)
   default     = []
 }
+
+variable "workload_identity_members" {
+  description = "Set of Workload Identity members who can impersonate this service account"
+  type        = set(string)
+  default     = []
+}

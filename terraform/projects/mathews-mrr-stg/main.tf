@@ -47,6 +47,7 @@ module "dbt_project_sa" {
   display_name = local.shared.service_accounts.dbt_project.display_name
   description  = local.shared.service_accounts.dbt_project.description
   roles        = toset(local.shared.service_accounts.dbt_project.roles)
+  workload_identity_members = [local.wif_member]
 
   depends_on = [module.service]
 }
@@ -59,6 +60,7 @@ module "evidence_sa" {
   display_name = local.shared.service_accounts.evidence.display_name
   description  = local.shared.service_accounts.evidence.description
   roles        = toset(local.shared.service_accounts.evidence.roles)
+  workload_identity_members = [local.wif_member]
 
   depends_on = [module.service]
 }

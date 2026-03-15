@@ -6,4 +6,4 @@ This project is intended to be executed only by CI/CD workflow, do not execute i
 
 ## First Time Setup
 
-1. Run scripts/setup-terraform-remote.sh --project mathews-mrr-stg
+1. Run scripts/tf-setup-remote.sh --project mathews-mrr-stg

@@ -6,4 +6,4 @@ This project is intended to be executed only manually, do not execute it by CI/C
 
 ## First Time Setup
 
-1. Run scripts/setup-terraform-local.sh
+1. Run scripts/tf-setup-local.sh

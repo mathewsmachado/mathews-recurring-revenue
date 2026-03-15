@@ -22,3 +22,11 @@ resource "google_service_account_iam_member" "main" {
   role               = "roles/iam.serviceAccountTokenCreator"
   member             = each.value
 }
+
+resource "google_service_account_iam_member" "workload_identity" {
+  for_each = var.workload_identity_members
+
+  service_account_id = google_service_account.main.name
+  role               = "roles/iam.workloadIdentityUser"
+  member             = each.value
+}
