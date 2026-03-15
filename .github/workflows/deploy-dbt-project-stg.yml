@@ -11,9 +11,8 @@ jobs:
   dbt-project-deploy-stg:
     uses: ./.github/workflows/deploy-dbt-project.yml
     with:
-      gcp-project-id: mathews-recurring-revenue-stg
-      gcp-workload-identity-provider: projects/724228842720/locations/global/workloadIdentityPools/github/providers/mathews-recurring-revenue
-      gcp-service-account: github@mathews-recurring-revenue-stg.iam.gserviceaccount.com
-      gcp-artifacts-bucket: gs://mathews-recurring-revenue-stg-dbt-project-bucket
-      gcp-artifacts-bucket-prd: gs://mathews-recurring-revenue-prd-dbt-project-bucket
-      gcp-service-account-dbt: dbt-project@mathews-recurring-revenue-stg.iam.gserviceaccount.com
+      gcp-project-id: mathews-mrr-stg
+      gcp-workload-identity-provider: projects/398127736452/locations/global/workloadIdentityPools/github/providers/mathews-mrr
+      gcp-service-account: dbt-project@mathews-mrr-stg.iam.gserviceaccount.com
+      gcp-artifacts-bucket: gs://mathews-mrr-stg-dbt-project-bucket
+      gcp-artifacts-bucket-prd: gs://mathews-mrr-prd-dbt-project-bucket

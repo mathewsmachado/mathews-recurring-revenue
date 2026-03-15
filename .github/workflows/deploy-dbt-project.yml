@@ -16,9 +16,6 @@ on:
       gcp-artifacts-bucket-prd:
         required: true
         type: string
-      gcp-service-account-dbt:
-        required: true
-        type: string
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}-${{ inputs.gcp-project-id }}
@@ -30,7 +27,7 @@ jobs:
 
     env:
       GCP_PROJECT: ${{ inputs.gcp-project-id }}
-      GCP_CLIENT_EMAIL: ${{ inputs.gcp-service-account-dbt }}
+      GCP_CLIENT_EMAIL: ${{ inputs.gcp-service-account }}
 
     permissions:
       contents: read
@@ -53,10 +50,14 @@ jobs:
 
       - name: Run Unit Tests
         run: |
-          uv run dbt test \
-            --defer \
-            --state artifacts \
-            --select state:modified,test_type:unit
+          if [ ! -f artifacts/manifest.json ]; then
+            uv run dbt test
+          else
+            uv run dbt test \
+              --defer \
+              --state artifacts \
+              --select state:modified,test_type:unit
+          fi
 
   dbt-run:
     needs: dbt-validate
@@ -64,7 +65,7 @@ jobs:
 
     env:
       GCP_PROJECT: ${{ inputs.gcp-project-id }}
-      GCP_CLIENT_EMAIL: ${{ inputs.gcp-service-account-dbt }}
+      GCP_CLIENT_EMAIL: ${{ inputs.gcp-service-account }}
 
     permissions:
       contents: read
@@ -86,10 +87,20 @@ jobs:
           gcp-artifacts-bucket-prd: ${{ inputs.gcp-artifacts-bucket-prd }}
 
       - name: Run Modified Seeds
-        run: uv run dbt seed --defer --state artifacts --select state:modified
+        run: |
+          if [ ! -f artifacts/manifest.json ]; then
+            uv run dbt seed
+          else
+            uv run dbt seed --defer --state artifacts --select state:modified
+          fi
 
       - name: Run Modified Models
-        run: uv run dbt run --defer --state artifacts --select state:modified
+        run: |
+          if [ ! -f artifacts/manifest.json ]; then
+            uv run dbt run
+          else
+            uv run dbt run --defer --state artifacts --select state:modified
+          fi
 
   dbt-upload-assets:
     needs: dbt-run
@@ -97,7 +108,7 @@ jobs:
 
     env:
       GCP_PROJECT: ${{ inputs.gcp-project-id }}
-      GCP_CLIENT_EMAIL: ${{ inputs.gcp-service-account-dbt }}
+      GCP_CLIENT_EMAIL: ${{ inputs.gcp-service-account }}
 
     permissions:
       contents: read
@@ -120,11 +131,15 @@ jobs:
 
       - name: Generate Docs
         run: |
-          uv run dbt docs generate \
-            --static \
-            --defer \
-            --state artifacts \
-            --select state:modified
+          if [ ! -f artifacts/manifest.json ]; then
+            uv run dbt docs generate --static
+          else
+            uv run dbt docs generate \
+              --static \
+              --defer \
+              --state artifacts \
+              --select state:modified
+          fi
 
       - name: Upload Docs
         run: |
@@ -145,7 +160,7 @@ jobs:
 
     env:
       GCP_PROJECT: ${{ inputs.gcp-project-id }}
-      GCP_CLIENT_EMAIL: ${{ inputs.gcp-service-account-dbt }}
+      GCP_CLIENT_EMAIL: ${{ inputs.gcp-service-account }}
 
     permissions:
       contents: read

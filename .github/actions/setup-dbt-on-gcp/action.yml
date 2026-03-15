@@ -62,7 +62,8 @@ runs:
       run: |
         gcloud storage cp \
           ${{ inputs.gcp-artifacts-bucket-prd }}/target/manifest.json \
-          artifacts/manifest.json || {
-            echo "No manifest.json found."
-            exit 1
-          }
+          artifacts/manifest.json || true
+          # {
+          #   echo "No manifest.json found."
+          #   exit 1
+          # }

@@ -5,13 +5,15 @@ on:
     branches:
       - main
     paths:
-      - terraform/mathews-recurring-revenue-prd/**.tf
+      - terraform/modules/**
+      - terraform/shared/**
+      - terraform/projects/mathews-mrr-prd/**
 
 jobs:
   deploy-terraform-prd:
     uses: ./.github/workflows/deploy-terraform.yml
     with:
-      gcp-project-id: mathews-recurring-revenue-prd
-      gcp-workload-identity-provider: projects/753917517701/locations/global/workloadIdentityPools/github/providers/mathews-recurring-revenue
-      gcp-service-account: github@mathews-recurring-revenue-prd.iam.gserviceaccount.com
-      terraform-project: terraform/mathews-recurring-revenue-prd
+      gcp-project-id: mathews-mrr-prd
+      gcp-workload-identity-provider: projects/489693200516/locations/global/workloadIdentityPools/github/providers/mathews-mrr
+      gcp-service-account: terraform@mathews-mrr-prd.iam.gserviceaccount.com
+      terraform-project: terraform/projects/mathews-mrr-prd

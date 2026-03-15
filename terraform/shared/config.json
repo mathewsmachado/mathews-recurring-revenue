@@ -1,0 +1,53 @@
+{
+  "project_location": "US",
+  "project_region": "us-central1",
+  "services": [
+    "artifactregistry.googleapis.com",
+    "iam.googleapis.com",
+    "run.googleapis.com"
+  ],
+  "artifact_registry": {
+    "repository_id": "dbt-project",
+    "description": "dbt Project Artifact Registry Repository"
+  },
+  "bigquery": {
+    "dataset_id": "raw",
+    "friendly_name": "Raw Dataset",
+    "tables": {
+      "incomes": {
+        "table_id": "google_sheets__incomes",
+        "source_uri": "https://docs.google.com/spreadsheets/d/1BAdR_wHcAb2o7WAIBK36hdH-yTRt7HG8Vt-RcZFkBik",
+        "range": "Incomes",
+        "skip_leading_rows": 1
+      }
+    }
+  },
+  "storage": {
+    "dbt_project_bucket_suffix": "dbt-project-bucket"
+  },
+  "service_accounts": {
+    "dbt_project": {
+      "account_id": "dbt-project",
+      "display_name": "dbt-project",
+      "description": "DBT Project Service Account",
+      "roles": [
+        "roles/artifactregistry.writer",
+        "roles/bigquery.dataEditor",
+        "roles/bigquery.user",
+        "roles/iam.serviceAccountTokenCreator",
+        "roles/iam.serviceAccountUser",
+        "roles/run.developer",
+        "roles/storage.objectAdmin"
+      ]
+    },
+    "evidence": {
+      "account_id": "evidence",
+      "display_name": "evidence",
+      "description": "Evidence Service Account",
+      "roles": [
+        "roles/bigquery.user",
+        "roles/iam.serviceAccountTokenCreator"
+      ]
+    }
+  }
+}
