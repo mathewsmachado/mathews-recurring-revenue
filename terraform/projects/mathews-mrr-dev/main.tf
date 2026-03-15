@@ -47,4 +47,6 @@ module "dbt_project_sa" {
   roles        = toset(local.shared.service_accounts.dbt_project.roles)
 
   impersonation_members = ["user:mathews.machadoamorim@gmail.com"]
+
+  depends_on = [module.service]
 }

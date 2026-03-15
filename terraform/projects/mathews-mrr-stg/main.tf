@@ -45,4 +45,6 @@ module "dbt_project_sa" {
   display_name = local.shared.service_accounts.dbt_project.display_name
   description  = local.shared.service_accounts.dbt_project.description
   roles        = toset(local.shared.service_accounts.dbt_project.roles)
+
+  depends_on = [module.service]
 }

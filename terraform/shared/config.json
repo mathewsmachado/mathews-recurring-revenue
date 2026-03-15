@@ -1,7 +1,11 @@
 {
   "project_location": "US",
   "project_region": "us-central1",
-  "services": ["run.googleapis.com"],
+  "services": [
+    "artifactregistry.googleapis.com",
+    "iam.googleapis.com",
+    "run.googleapis.com"
+  ],
   "artifact_registry": {
     "repository_id": "dbt-project",
     "description": "dbt Project Artifact Registry Repository"
