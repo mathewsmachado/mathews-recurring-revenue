@@ -12,6 +12,8 @@ module "artifact_registry" {
   location      = local.shared.project_region
   repository_id = local.shared.artifact_registry.repository_id
   description   = local.shared.artifact_registry.description
+
+  depends_on = [module.service]
 }
 
 module "bigquery" {

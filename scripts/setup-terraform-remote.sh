@@ -12,7 +12,7 @@ readonly SA_NAME="terraform"
 readonly WIF_POOL="github"
 readonly WIF_PROVIDER="mathews-mrr"
 readonly REPO_OWNER="mathewsmachado"
-readonly REPO_NAME="mathews-mrr"
+readonly REPO_NAME="mathews-recurring-revenue"
 
 readonly -a SA_ROLES=(
     "roles/editor"
