@@ -6,6 +6,8 @@ on:
       - main
     paths:
       - evidence/**
+  schedule:
+    - cron: '30 0 * * *'
 
 jobs:
   evidence-deploy-prd:

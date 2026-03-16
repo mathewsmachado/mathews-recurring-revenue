@@ -1,0 +1,39 @@
+name: dbt Project Run Production
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+
+jobs:
+  dbt-project-run-prd:
+    runs-on: ubuntu-latest
+    environment: prd
+
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Clone Repository
+        uses: actions/checkout@v5
+
+      - uses: ./.github/actions/gcp-authenticate
+        with:
+          gcp-project-id: ${{ vars.GCP_PROJECT_ID }}
+          gcp-workload-identity-provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          gcp-service-account: ${{ vars.GCP_SERVICE_ACCOUNT_DBT_PROJECT }}
+
+      - name: Generate dbt Variables
+        id: dbt-vars
+        run: |
+          _PROCESSED_AT="$(date '+%Y-%m-%d %H:%M:%S.%6N')" && \
+          EXECUTION_DATE="$(date '+%Y-%m-%d')" && \
+          PEPPER="$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c 32)" && \
+          echo "dbt_vars={\"_processed_at\": \"$_PROCESSED_AT\", \"execution_date\": \"$EXECUTION_DATE\", \"pepper\": \"$PEPPER\"}" >> $GITHUB_OUTPUT
+
+      - name: Trigger Cloud Run Job
+        run: |
+          gcloud run jobs execute dbt-project \
+            --region=us-central1 \
+            --args="run", "--vars", "${{ steps.dbt-vars.outputs.dbt_vars }}" \
+            --async
