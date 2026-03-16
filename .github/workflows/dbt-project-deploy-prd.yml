@@ -1,4 +1,4 @@
-name: Deploy dbt Project Production
+name: dbt Deploy Project Production
 
 on:
   push:

@@ -1,4 +1,4 @@
-name: Deploy Evidence Production
+name: Evidence Deploy Production
 
 on:
   push:

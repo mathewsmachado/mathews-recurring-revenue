@@ -1,4 +1,4 @@
-name: Deploy Terraform Staging
+name: Terraform Deploy Staging
 
 on:
   pull_request:

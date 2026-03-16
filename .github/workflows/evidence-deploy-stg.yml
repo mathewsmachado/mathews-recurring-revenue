@@ -1,4 +1,4 @@
-name: Deploy Evidence Staging
+name: Evidence Deploy Staging
 
 on:
   pull_request:

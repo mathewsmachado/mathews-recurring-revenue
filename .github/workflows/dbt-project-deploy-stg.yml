@@ -1,4 +1,4 @@
-name: Deploy dbt Project Staging
+name: dbt Deploy Project Staging
 
 on:
   pull_request:
