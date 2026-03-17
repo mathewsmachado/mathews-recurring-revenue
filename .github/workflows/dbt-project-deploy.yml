@@ -190,7 +190,7 @@ jobs:
 
       - name: Generate Docker Metadata
         id: docker-metadata
-        run: echo "image=us-central1-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/dbt-project/dbt-project:${{ github.event.pull_request.head.sha }}" >> $GITHUB_OUTPUT
+        run: echo "image=us-central1-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/dbt-project/dbt-project:${{ github.event.pull_request.head.sha || github.sha }}" >> $GITHUB_OUTPUT
 
       - name: Build and Push Docker Image
         uses: docker/build-push-action@v6
