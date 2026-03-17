@@ -1,0 +1,16 @@
+name: Terraform Deploy Production
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - terraform/modules/**
+      - terraform/shared/**
+      - terraform/projects/mathews-mrr-prd/**
+
+jobs:
+  deploy-terraform-prd:
+    uses: ./.github/workflows/terraform-deploy.yml
+    with:
+      environment: prd

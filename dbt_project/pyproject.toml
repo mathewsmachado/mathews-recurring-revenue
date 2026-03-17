@@ -9,7 +9,7 @@ requires-python = ">=3.12"
 dependencies = ["dbt-core==1.11.2", "dbt-bigquery==1.11.0"]
 
 [project.urls]
-Homepage = "https://github.com/mathewsmachado/mathews-recurring-revenue"
-Documentation = "https://github.com/mathewsmachado/mathews-recurring-revenue"
-Repository = "https://github.com/mathewsmachado/mathews-recurring-revenue"
-Issues = "https://github.com/mathewsmachado/mathews-recurring-revenue/issues"
+Homepage = "https://github.com/mathewsmachado/mathews-mrr"
+Documentation = "https://github.com/mathewsmachado/mathews-mrr/README.md"
+Repository = "https://github.com/mathewsmachado/mathews-mrr"
+Issues = "https://github.com/mathewsmachado/mathews-mrr/issues"

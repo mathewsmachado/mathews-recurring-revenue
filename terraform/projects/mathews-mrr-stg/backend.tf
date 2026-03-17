@@ -1,0 +1,25 @@
+terraform {
+  required_providers {
+    google = {
+      source  = "hashicorp/google"
+      version = "7.16.0"
+    }
+  }
+
+  required_version = "1.14.5"
+
+  backend "gcs" {
+    bucket = "mathews-mrr-stg-terraform-bucket"
+    prefix = "state"
+  }
+}
+
+provider "google" {
+  project = var.project_id
+  region  = local.shared.project_region
+}
+
+locals {
+  shared     = jsondecode(file("../../shared/config.json"))
+  wif_member = "principalSet://iam.googleapis.com/projects/398127736452/locations/global/workloadIdentityPools/github/attribute.repository/mathewsmachado/mathews-mrr"
+}

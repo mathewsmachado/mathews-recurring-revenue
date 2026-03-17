@@ -1,0 +1,153 @@
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+
+env:
+  terraform-version: "1.14.5"
+  terraform-plan-file-retention-days: 1
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ inputs.environment }}
+  cancel-in-progress: true
+
+jobs:
+  terraform-validate:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+
+    permissions:
+      contents: read
+      id-token: write
+      pull-requests: write
+
+    defaults:
+      run:
+        working-directory: ${{ vars.TERRAFORM_PROJECT }}
+
+    steps:
+      - name: Clone Repository
+        uses: actions/checkout@v5
+
+      - name: Setup Terraform on Google Cloud Platform
+        uses: ./.github/actions/terraform-gcp-setup
+        with:
+          gcp-project-id: ${{ vars.GCP_PROJECT_ID }}
+          gcp-workload-identity-provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          gcp-service-account: ${{ vars.GCP_SERVICE_ACCOUNT_TERRAFORM }}
+          terraform-project: ${{ vars.TERRAFORM_PROJECT }}
+          terraform-version: ${{ env.terraform-version }}
+
+      - name: Terraform Validate
+        id: terraform-validate
+        run: terraform validate -no-color
+
+      - name: Comment Terraform Validate Output on Pull Request
+        uses: ./.github/actions/terraform-pull-request-comment-command-output
+        if: always()
+        with:
+          terraform-project: ${{ vars.TERRAFORM_PROJECT }}
+          terraform-command: validate
+          terraform-command-outcome: ${{ steps.terraform-validate.outcome }}
+          terraform-command-stdout: ${{ steps.terraform-validate.outputs.stdout }}
+          terraform-command-stderr: ${{ steps.terraform-validate.outputs.stderr }}
+
+  terraform-plan:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+
+    permissions:
+      contents: read
+      id-token: write
+      pull-requests: write
+
+    needs: terraform-validate
+
+    defaults:
+      run:
+        working-directory: ${{ vars.TERRAFORM_PROJECT }}
+
+    steps:
+      - name: Clone Repository
+        uses: actions/checkout@v5
+
+      - name: Setup Terraform on Google Cloud Platform
+        uses: ./.github/actions/terraform-gcp-setup
+        with:
+          gcp-project-id: ${{ vars.GCP_PROJECT_ID }}
+          gcp-workload-identity-provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          gcp-service-account: ${{ vars.GCP_SERVICE_ACCOUNT_TERRAFORM }}
+          terraform-project: ${{ vars.TERRAFORM_PROJECT }}
+          terraform-version: ${{ env.terraform-version }}
+
+      - name: Terraform Plan
+        id: terraform-plan
+        run: terraform plan -no-color -out=${{ vars.GCP_PROJECT_ID }}
+
+      - name: Persist Terraform Plan Output File
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ vars.GCP_PROJECT_ID }}
+          path: ${{ vars.TERRAFORM_PROJECT }}/${{ vars.GCP_PROJECT_ID }}
+          retention-days: ${{ env.terraform-plan-file-retention-days }}
+
+      - name: Comment Terraform Plan Output on Pull Request
+        uses: ./.github/actions/terraform-pull-request-comment-command-output
+        if: always()
+        with:
+          terraform-project: ${{ vars.TERRAFORM_PROJECT }}
+          terraform-command: plan
+          terraform-command-outcome: ${{ steps.terraform-plan.outcome }}
+          terraform-command-stdout: ${{ steps.terraform-plan.outputs.stdout }}
+          terraform-command-stderr: ${{ steps.terraform-plan.outputs.stderr }}
+
+  terraform-apply:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      id-token: write
+      pull-requests: write
+
+    environment: ${{ inputs.environment }}
+
+    needs: terraform-plan
+
+    defaults:
+      run:
+        working-directory: ${{ vars.TERRAFORM_PROJECT }}
+
+    steps:
+      - name: Clone Repository
+        uses: actions/checkout@v5
+
+      - name: Setup Terraform on Google Cloud Platform
+        uses: ./.github/actions/terraform-gcp-setup
+        with:
+          gcp-project-id: ${{ vars.GCP_PROJECT_ID }}
+          gcp-workload-identity-provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          gcp-service-account: ${{ vars.GCP_SERVICE_ACCOUNT_TERRAFORM }}
+          terraform-project: ${{ vars.TERRAFORM_PROJECT }}
+          terraform-version: ${{ env.terraform-version }}
+
+      - name: Retrieve Terraform Plan File
+        uses: actions/download-artifact@v5
+        with:
+          name: ${{ vars.GCP_PROJECT_ID }}
+          path: ${{ vars.TERRAFORM_PROJECT }}
+
+      - name: Terraform Apply
+        id: terraform-apply
+        run: terraform apply -no-color -auto-approve ${{ vars.GCP_PROJECT_ID }}
+
+      - name: Comment Terraform Apply Output on Pull Request
+        uses: ./.github/actions/terraform-pull-request-comment-command-output
+        if: always()
+        with:
+          terraform-project: ${{ vars.TERRAFORM_PROJECT }}
+          terraform-command: apply
+          terraform-command-outcome: ${{ steps.terraform-apply.outcome }}
+          terraform-command-stdout: ${{ steps.terraform-apply.outputs.stdout }}
+          terraform-command-stderr: ${{ steps.terraform-apply.outputs.stderr }}

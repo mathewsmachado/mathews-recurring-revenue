@@ -1,0 +1,49 @@
+name: Terraform Google Cloud Platform Setup
+description: Authenticate to GCP, Install and Initialize Terraform
+author: Mathews Machado
+
+inputs:
+  gcp-project-id:
+    required: true
+    description: Google Cloud Platform Project Id
+  gcp-workload-identity-provider:
+    required: true
+    description: Google Cloud Platform Workload Identity Provider
+  gcp-service-account:
+    required: true
+    description: Google Cloud Platform Service Account
+  terraform-version:
+    required: true
+    description: Terraform Version
+  terraform-project:
+    required: true
+    description: Terraform Project
+
+runs:
+  using: composite
+  steps:
+    - uses: ./.github/actions/gcp-authenticate
+      with:
+        gcp-project-id: ${{ inputs.gcp-project-id }}
+        gcp-workload-identity-provider: ${{ inputs.gcp-workload-identity-provider }}
+        gcp-service-account: ${{ inputs.gcp-service-account }}
+
+    - name: Install Terraform
+      uses: hashicorp/setup-terraform@v3
+      with:
+        terraform_version: ${{ inputs.terraform-version }}
+
+    - name: Cache Terraform Modules and Providers
+      id: cache-terraform
+      uses: actions/cache@v4
+      with:
+        path: ${{ inputs.terraform-project }}/.terraform
+        key: >
+          ${{ inputs.terraform-project }}-
+          ${{ hashFiles(format('{0}/.terraform.lock.hcl', inputs.terraform-project)) }}
+        restore-keys: ${{ runner.os }}-${{ inputs.terraform-project }}-
+
+    - name: Terraform Init
+      shell: bash
+      working-directory: ${{ inputs.terraform-project }}
+      run: terraform init -no-color -reconfigure

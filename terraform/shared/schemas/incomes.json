@@ -1,0 +1,15 @@
+[
+  { "name": "tran_date", "type": "STRING" },
+  { "name": "tran_payer", "type": "STRING" },
+  { "name": "tran_payee", "type": "STRING" },
+  { "name": "tran_payer_payee_relation", "type": "STRING" },
+  { "name": "tran_category", "type": "STRING" },
+  { "name": "tran_detail", "type": "STRING" },
+  { "name": "tran_currency", "type": "STRING" },
+  { "name": "tran_net", "type": "STRING" },
+  { "name": "tran_gross", "type": "STRING" },
+  { "name": "tran_gross_delta_category", "type": "STRING" },
+  { "name": "tran_gross_delta_detail", "type": "STRING" },
+  { "name": "accounting_month", "type": "STRING" },
+  { "name": "accounting_status", "type": "STRING" }
+]

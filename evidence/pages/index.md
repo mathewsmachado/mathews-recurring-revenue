@@ -1,9 +1,9 @@
 ---
-title: Mathews Recurring Revenue
+title: Mathews Machado Recurring Revenue
 ---
 
 <LastRefreshed/>
 <hr />
 <LineBreak/>
 
-Welcome to my personal **Monthly Recurring Revenue** project.
+Explore the [Incomes](/incomes) page to view detailed income tracking and analysis.

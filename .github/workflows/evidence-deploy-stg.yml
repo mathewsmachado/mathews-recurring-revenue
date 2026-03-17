@@ -1,0 +1,16 @@
+name: Evidence Deploy Staging
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - evidence/**
+
+jobs:
+  evidence-deploy-stg:
+    uses: ./.github/workflows/evidence-deploy.yml
+    with:
+      environment: stg
+    secrets:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}

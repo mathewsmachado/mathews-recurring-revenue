@@ -3,6 +3,10 @@ title: Incomes
 full_width: true
 ---
 
+<script>
+    const access_policy = import.meta.env.VITE_access_policy;
+</script>
+
 <!-- SQL -->
 ```sql last_refreshed
 select timezone('Etc/UTC', max(_processed_at))::string as last_refreshed
@@ -36,7 +40,7 @@ with grouped as (
 )
 select
     accounting_year,
-    sum(tran_net) over(order by accounting_year) as nvcpy,
+    sum(tran_net) over(order by accounting_year) as net_value_cumulated_per_year,
 from grouped
 order by 1 desc
 ```
@@ -45,7 +49,7 @@ order by 1 desc
 with grouped as (
 	select
         accounting_year + interval 24 hour as accounting_year,
-        sum(tran_net) as nvpy,
+        sum(tran_net) as net_value_per_year,
     from mathews_recurring_revenue.incomes
     where accounting_status = 'Closed'
 	group by 1
@@ -53,21 +57,21 @@ with grouped as (
 lagged as (
     select
         accounting_year,
-        nvpy,
-        lag(nvpy, 1) over(order by accounting_year) as nvpy_prev,
+        net_value_per_year,
+        lag(net_value_per_year, 1) over(order by accounting_year) as net_value_per_year_prev,
     from grouped
 )
 select
     accounting_year,
-    nvpy,
-    round(coalesce((nvpy - nvpy_prev) / nvpy_prev * 100, 0), 2) as nvpy_delta
+    net_value_per_year,
+    round(coalesce((net_value_per_year - net_value_per_year_prev) / net_value_per_year_prev * 100, 0), 2) as net_value_per_year_delta
 from lagged
 ```
 
 ```sql net_value_per_month
 select
     accounting_month + interval 24 hour as accounting_month,
-    sum(tran_net) as nvpm,
+    sum(tran_net) as net_value_per_month,
 from mathews_recurring_revenue.incomes
 where accounting_status = 'Closed'
 group by 1
@@ -195,47 +199,46 @@ order by
 
     <BigValue
         data={net_value_cumulated_per_year}
-        value=nvcpy
-        title='NVCpY'
+        value=net_value_cumulated_per_year
+        title='Net Value Cumulated Per Year'
         fmt='brl2k'
         sparkline=accounting_year
         sparklineType=bar
         sparklineColor='#16A34A'
-        description='Net Value Cumulated per Year'
     />
 </div>
 <LineBreak/>
 
-<div class="grid grid-cols-1 xl:grid-cols-2 gap-4">
+<div class='grid grid-cols-1 xl:grid-cols-2 gap-4'>
     <BarChart
-        title='NVpY'
-        subtitle='Net Value per Year'
+        title='Net Value per Year'
         data={net_value_per_year}
-        y=nvpy
+        y=net_value_per_year
         x=accounting_year
         labels=true
         labelFmt=brl2k
         labelPosition=inside
     >
-        {#each net_value_per_year as nvpy}
-            <ReferenceArea
-                xMin={nvpy.accounting_year}
-                xMax={nvpy.accounting_year}
-                label={
-                    nvpy.nvpy_delta > 0
-                        ? `(+${nvpy.nvpy_delta}%)`
-                        : `(${nvpy.nvpy_delta}%)`
-                }
-                labelColor={nvpy.nvpy_delta >= 0 ? '#16A34A' : '#FF0000'}
-            />
-        {/each}
+        <!-- {#if access_policy !== 'pub'} -->
+            {#each net_value_per_year as net_value_per_year}
+                <ReferenceArea
+                    xMin={net_value_per_year.accounting_year}
+                    xMax={net_value_per_year.accounting_year}
+                    label={
+                        net_value_per_year.net_value_per_year_delta > 0
+                            ? `(+${net_value_per_year.net_value_per_year_delta}%)`
+                            : `(${net_value_per_year.net_value_per_year_delta}%)`
+                    }
+                    labelColor={net_value_per_year.net_value_per_year_delta >= 0 ? '#16A34A' : '#FF0000'}
+                />
+            {/each}
+        <!-- {/if} -->
     </BarChart>
 
     <LineChart
-        title='NVpM'
-        subtitle='Net Value per Month'
+        title='Net Value per Month'
         data={net_value_per_month}
-        y=nvpm
+        y=net_value_per_month
         x=accounting_month
         labels=true
         labelFmt=brl2k
@@ -245,8 +248,7 @@ order by
 <LineBreak/>
 
 <DataTable
-    title='NVbYbC'
-    subtitle='Net Value by Year by Category'
+    title='Net Value by Year by Category'
     data={net_value_by_year_by_category}
     search=true
     subtotals=true
@@ -260,7 +262,7 @@ order by
 </DataTable>
 <LineBreak/>
 
-<Details title='NVbMbC (Net Value by Month by Category)' open=false>
+<Details title='Net Value by Month by Category' open=false>
     <DataTable
         data={net_value_by_month_by_category}
         search=true

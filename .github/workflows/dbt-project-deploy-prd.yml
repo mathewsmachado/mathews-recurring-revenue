@@ -1,0 +1,16 @@
+name: dbt Deploy Project Production
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - dbt_project/**
+
+jobs:
+  dbt-project-deploy-prd:
+    uses: ./.github/workflows/dbt-project-deploy.yml
+    with:
+      environment: prd
+    secrets:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}

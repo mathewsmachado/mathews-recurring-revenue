@@ -1,0 +1,84 @@
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+
+    secrets:
+      VERCEL_TOKEN:
+        description: Vercel Authentication Token
+        required: true
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ inputs.environment }}
+  cancel-in-progress: true
+
+jobs:
+  evidence-deploy:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+
+    env:
+      EVIDENCE_SOURCE__mathews_recurring_revenue__location: US
+      EVIDENCE_SOURCE__mathews_recurring_revenue__authenticator: gcloud-cli
+      EVIDENCE_SOURCE__mathews_recurring_revenue__project_id: ${{ vars.GCP_PROJECT_ID }}
+      EVIDENCE_VAR__access_policy: pub
+
+    permissions:
+      contents: read
+      deployments: write
+      id-token: write
+
+    defaults:
+      run:
+        working-directory: evidence
+
+    steps:
+      - name: Clone Repository
+        uses: actions/checkout@v5
+
+      - uses: ./.github/actions/gcp-authenticate
+        with:
+          gcp-project-id: ${{ vars.GCP_PROJECT_ID }}
+          gcp-workload-identity-provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          gcp-service-account: ${{ vars.GCP_SERVICE_ACCOUNT_EVIDENCE }}
+
+      - name: Setup Node.js and Cache NPM Dependencies
+        uses: actions/setup-node@v6
+        with:
+          cache: npm
+          cache-dependency-path: evidence/package-lock.json
+          node-version-file: evidence/package.json
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Fetch Data
+        run: npm run sources:strict
+
+      - name: Cache Application Build
+        id: cache-evidence
+        uses: actions/cache@v4
+        with:
+          path: |
+            evidence/build
+            evidence/.vercel/output
+          key: >
+            evidence-
+            ${{ vars.GCP_PROJECT_ID }}-
+            ${{ hashFiles('evidence/package-lock.json') }}-
+            ${{ hashFiles('evidence/**', '!evidence/build/**', '!evidence/.vercel/**', '!evidence/README.md') }}
+
+      - name: Build Application
+        if: steps.cache-evidence.outputs.cache-hit != 'true'
+        run: npm run build:strict
+
+      - name: Deploy to Vercel
+        uses: ./.github/actions/vercel-deploy
+        with:
+          dir-path: evidence/build
+          vercel-org-id: ${{ vars.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ vars.VERCEL_PROJECT_ID_EVIDENCE }}
+          vercel-project-name: ${{ vars.VERCEL_PROJECT_NAME_EVIDENCE }}
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}

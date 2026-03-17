@@ -8,4 +8,4 @@ type: bigquery
 options:
   authenticator: gcloud-cli
   location: US
-  project_id: mathews-recurring-revenue-dev
+  project_id: mathews-mrr-dev

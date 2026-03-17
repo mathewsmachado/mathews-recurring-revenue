@@ -1,0 +1,16 @@
+name: dbt Deploy Project Staging
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - dbt_project/**
+
+jobs:
+  dbt-project-deploy-stg:
+    uses: ./.github/workflows/dbt-project-deploy.yml
+    with:
+      environment: stg
+    secrets:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}

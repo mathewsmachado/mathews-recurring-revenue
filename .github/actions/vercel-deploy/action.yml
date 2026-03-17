@@ -1,0 +1,58 @@
+name: Vercel Deploy
+description: Deploy to Vercel
+author: Mathews Machado
+
+inputs:
+  dir-path:
+    required: true
+    description: Path where the files to be deployed are located
+  vercel-org-id:
+    required: true
+    description: Vercel Organization ID
+  vercel-project-id:
+    required: true
+    description: Vercel Project ID
+  vercel-project-name:
+    required: true
+    description: Vercel Project Name
+  vercel-token:
+    required: true
+    description: Vercel Authentication Token
+
+runs:
+  using: composite
+  steps:
+    - name: Create .vercel/output/static
+      shell: bash
+      # working-directory: ${{ inputs.dir-path }}
+      run: |
+        mkdir -p .vercel/output/static
+        cp -r ${{ inputs.dir-path }}/* .vercel/output/static
+
+    - name: Create .vercel/project.json
+      shell: bash
+      # working-directory: ${{ inputs.dir-path }}
+      run: |
+        cat << EOF > .vercel/project.json
+        {
+          "orgId": "${{ inputs.vercel-org-id }}",
+          "projectId": "${{ inputs.vercel-project-id }}",
+          "projectName": "${{ inputs.vercel-project-name }}"
+        }
+        EOF
+
+    - name: Create .vercel/output/config.json
+      shell: bash
+      # working-directory: ${{ inputs.dir-path }}
+      run: |
+        cat > .vercel/output/config.json << EOF
+        {
+          "version": 3,
+          "routes": [{ "handle": "filesystem" }]
+        }
+        EOF
+
+    - name: Deploy Project Artifacts to Vercel
+      shell: bash
+      # working-directory: ${{ inputs.dir-path }}
+      run: npx vercel deploy --yes --prod --prebuilt --token=${{ inputs.vercel-token }}
