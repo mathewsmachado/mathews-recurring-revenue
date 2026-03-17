@@ -30,11 +30,11 @@ jobs:
           _PROCESSED_AT="$(date '+%Y-%m-%d %H:%M:%S.%6N')" && \
           EXECUTION_DATE="$(date '+%Y-%m-%d')" && \
           PEPPER="$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c 32)" && \
-          echo "dbt_vars={\\"_processed_at\\": \\"$_PROCESSED_AT\\", \\"execution_date\\": \\"$EXECUTION_DATE\\", \\"pepper\\": \\"$PEPPER\\"}" >> $GITHUB_OUTPUT
+          echo "dbt_vars={\"_processed_at\": \"$_PROCESSED_AT\", \"execution_date\": \"$EXECUTION_DATE\", \"pepper\": \"$PEPPER\"}" >> $GITHUB_OUTPUT
 
       - name: Trigger Cloud Run Job
         run: |
           gcloud run jobs execute dbt-project \
             --region=us-central1 \
-            --args="run,--vars,${{ steps.dbt-vars.outputs.dbt_vars }}" \
+            --args='run,--vars,${{ steps.dbt-vars.outputs.dbt_vars }}' \
             --async
