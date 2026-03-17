@@ -211,17 +211,13 @@ jobs:
           --region=us-central1 \
           -
 
+      - name: Generate manifest.json
+        if: vars.GCP_ARTIFACTS_BUCKET == vars.GCP_ARTIFACTS_BUCKET_PRD
+        run: dbt parse
+
       - name: Upload manifest.json
         if: vars.GCP_ARTIFACTS_BUCKET == vars.GCP_ARTIFACTS_BUCKET_PRD
         run: |
-          pwd
-          echo
-          echo
-          echo
-          ls -lA
-          echo
-          echo
-          echo
           gcloud storage cp \
-            dbt_project/target/manifest.json \
+            target/manifest.json \
             ${{ vars.GCP_ARTIFACTS_BUCKET }}/target
