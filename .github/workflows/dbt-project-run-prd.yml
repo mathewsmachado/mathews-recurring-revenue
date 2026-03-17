@@ -36,5 +36,5 @@ jobs:
         run: |
           gcloud run jobs execute dbt-project \
             --region=us-central1 \
-            --args='run,--vars,${{ steps.dbt-vars.outputs.dbt_vars }}' \
+            --args='run,--vars,\'${{ steps.dbt-vars.outputs.dbt_vars }}\'' \
             --async
