@@ -214,6 +214,14 @@ jobs:
       - name: Upload manifest.json
         if: vars.GCP_ARTIFACTS_BUCKET == vars.GCP_ARTIFACTS_BUCKET_PRD
         run: |
+          pwd
+          echo
+          echo
+          echo
+          ls -lA
+          echo
+          echo
+          echo
           gcloud storage cp \
-            target/manifest.json \
+            dbt_project/target/manifest.json \
             ${{ vars.GCP_ARTIFACTS_BUCKET }}/target
