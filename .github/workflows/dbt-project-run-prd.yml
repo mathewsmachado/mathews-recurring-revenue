@@ -35,5 +35,5 @@ jobs:
         run: |
           gcloud run jobs execute dbt-project \
             --region=us-central1 \
-            --args="run,--vars,'{\"_processed_at\": \"${{ steps.dbt-vars.outputs._processed_at }}\", \"execution_date\": \"${{ steps.dbt-vars.outputs.execution_date }}\", \"pepper\": \"${{ steps.dbt-vars.outputs.pepper }}\"}'" \
+            --args="^::^run::--vars::{\"_processed_at\": \"${{ steps.dbt-vars.outputs._processed_at }}\", \"execution_date\": \"${{ steps.dbt-vars.outputs.execution_date }}\", \"pepper\": \"${{ steps.dbt-vars.outputs.pepper }}\"}" \
             --async
